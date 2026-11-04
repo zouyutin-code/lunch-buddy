@@ -13,6 +13,8 @@ const MON = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct
 const MAX_BACKUP = 300000;          // characters of JSON per member
 const MOVE_TTL = 15 * 60 * 1000;    // move codes work once, for 15 minutes
 const VAULT_IDLE = 400 * 86400000;  // personal backups untouched this long are deleted
+const KEEP_DAYS = 120;              // after-school plans and notes older than this are deleted
+const ACT_RE = /^[a-z]{2,12}$/;
 
 class HttpError extends Error {
   constructor(status, code, message) { super(message); this.status = status; this.code = code; }
@@ -48,7 +50,12 @@ function ensureBackupTables(env) {
       env.DB.prepare('CREATE INDEX IF NOT EXISTS vaults_updated ON vaults(updated_at)'),
       env.DB.prepare('CREATE TABLE IF NOT EXISTS vault_codes (code_hash TEXT PRIMARY KEY, vault_id TEXT NOT NULL REFERENCES vaults(id) ON DELETE CASCADE, expires_at INTEGER NOT NULL)'),
       env.DB.prepare('CREATE INDEX IF NOT EXISTS vault_codes_vault ON vault_codes(vault_id)'),
-      env.DB.prepare('CREATE INDEX IF NOT EXISTS rate_ts ON rate(ts)')
+      env.DB.prepare('CREATE INDEX IF NOT EXISTS rate_ts ON rate(ts)'),
+      env.DB.prepare('CREATE TABLE IF NOT EXISTS plans (member_id TEXT NOT NULL REFERENCES members(id) ON DELETE CASCADE, family_id TEXT NOT NULL, day TEXT NOT NULL, blocks TEXT NOT NULL, updated_at INTEGER NOT NULL, PRIMARY KEY (member_id, day))'),
+      env.DB.prepare('CREATE INDEX IF NOT EXISTS plans_family_day ON plans(family_id, day)'),
+      env.DB.prepare('CREATE TABLE IF NOT EXISTS notes (id TEXT PRIMARY KEY, family_id TEXT NOT NULL, kid_id TEXT NOT NULL REFERENCES members(id) ON DELETE CASCADE, parent_id TEXT NOT NULL REFERENCES members(id) ON DELETE CASCADE, day TEXT NOT NULL, text TEXT NOT NULL, reply TEXT, reply_at INTEGER, kid_seen INTEGER NOT NULL DEFAULT 0, parent_seen INTEGER NOT NULL DEFAULT 1, created_at INTEGER NOT NULL, updated_at INTEGER NOT NULL, UNIQUE (kid_id, parent_id, day))'),
+      env.DB.prepare('CREATE INDEX IF NOT EXISTS notes_kid_day ON notes(kid_id, day)'),
+      env.DB.prepare('CREATE INDEX IF NOT EXISTS notes_parent ON notes(parent_id, parent_seen)')
     ]).catch((e) => { tablesReady = null; throw e; });
   }
   return tablesReady;
@@ -89,6 +96,46 @@ async function limit(env, key, max, windowSec) {
     env.DB.prepare('INSERT INTO rate (key, ts) VALUES (?, ?)').bind(key, t),
     env.DB.prepare('DELETE FROM rate WHERE ts < ?').bind(t - 86400000)
   ]);
+}
+// A day's after-school plan: half-hour blocks {s: start slot 0-13, n: length, a: activity id, t: own name for "other", d: done}.
+function cleanBlocks(v) {
+  if (!Array.isArray(v) || v.length > 14) throw new HttpError(400, 'bad_plan', 'Bad plan');
+  const used = Array(14).fill(false), out = [];
+  for (const b of v) {
+    const s = Math.floor(Number(b && b.s)), n = Math.floor(Number(b && b.n)), a = String((b && b.a) || '');
+    if (!(s >= 0 && n >= 1 && s + n <= 14) || !ACT_RE.test(a)) throw new HttpError(400, 'bad_plan', 'Bad plan');
+    for (let j = s; j < s + n; j++) { if (used[j]) throw new HttpError(400, 'bad_plan', 'Activities overlap'); used[j] = true; }
+    const x = { s, n, a, d: b.d ? 1 : 0 };
+    if (a === 'other') x.t = clean(b.t, 24, 'Activity name');
+    out.push(x);
+  }
+  return out.sort((p, q) => p.s - q.s);
+}
+function dayArg(v) {
+  const day = String(v || '');
+  if (!DAY_RE.test(day) || isNaN(new Date(day + 'T12:00:00Z'))) throw new HttpError(400, 'bad_day', 'Bad date');
+  return day;
+}
+function rangeArgs(url) {
+  const start = dayArg(url.searchParams.get('start')), end = dayArg(url.searchParams.get('end'));
+  if (end < start || (new Date(end + 'T12:00:00Z') - new Date(start + 'T12:00:00Z')) > 62 * 86400000) throw new HttpError(400, 'bad_range', 'Bad date range');
+  return { start, end };
+}
+const oldDay = () => new Date(now() - KEEP_DAYS * 86400000).toISOString().slice(0, 10);
+// The kid a request is about: yourself if you're a kid, or (for parents) an active kid in your family.
+async function kidFor(env, me, kidId) {
+  if (me.role === 'kid') {
+    if (kidId && kidId !== me.id) throw new HttpError(403, 'not_yours', 'You can only see your own plan.');
+    return me;
+  }
+  const kid = await env.DB.prepare("SELECT id, nickname FROM members WHERE id = ? AND family_id = ? AND role = 'kid' AND status = 'active'").bind(String(kidId || ''), me.family_id).first();
+  if (!kid) throw new HttpError(404, 'no_kid', 'That kid isn’t in your family anymore.');
+  return kid;
+}
+async function notifyMember(env, memberId, payload, waitUntil) {
+  if (!env.VAPID_PRIVATE_JWK) return;
+  const { results } = await env.DB.prepare('SELECT * FROM push_subs WHERE member_id = ?').bind(memberId).all();
+  if (results.length) waitUntil(Promise.all(results.map((s) => deliver(env, s, payload))));
 }
 const ipOf = (request) => request.headers.get('cf-connecting-ip') || 'local';
 
@@ -137,6 +184,7 @@ async function state(env, me) {
   let members = [];
   let unread = 0;
   let pushOn = false;
+  let notes = { notesNew: 0, notesDay: null, notesKid: null };
   if (active) {
     const q = me.role === 'parent'
       ? 'SELECT id, nickname, role, status FROM members WHERE family_id = ? ORDER BY status, created_at'
@@ -145,11 +193,18 @@ async function state(env, me) {
     unread = (await env.DB.prepare('SELECT COUNT(*) AS n FROM events WHERE family_id = ? AND id > ? AND (member_id IS NULL OR member_id <> ?)')
       .bind(me.family_id, me.last_seen_event, me.id).first()).n;
     pushOn = !!(await env.DB.prepare('SELECT 1 AS x FROM push_subs WHERE member_id = ? LIMIT 1').bind(me.id).first());
+    // New notes from home (kids) or new replies to your notes (parents), with the newest one's day to jump to.
+    await ensureBackupTables(env);
+    const nq = me.role === 'kid'
+      ? 'SELECT COUNT(*) AS n, MAX(day) AS day, NULL AS kid FROM notes WHERE kid_id = ? AND kid_seen = 0'
+      : 'SELECT COUNT(*) AS n, MAX(day) AS day, (SELECT kid_id FROM notes WHERE parent_id = ?1 AND parent_seen = 0 ORDER BY reply_at DESC LIMIT 1) AS kid FROM notes WHERE parent_id = ?1 AND parent_seen = 0';
+    const nr = await env.DB.prepare(nq).bind(me.id).first();
+    notes = { notesNew: nr.n, notesDay: nr.n ? nr.day : null, notesKid: nr.n ? nr.kid : null };
   }
   return {
     me: { id: me.id, nickname: me.nickname, role: me.role, status: me.status },
     family: { name: me.family_name, code: active ? me.family_code : null },
-    members, unread, pushOn,
+    members, unread, pushOn, ...notes,
     vapidKey: env.VAPID_PUBLIC_KEY || null
   };
 }
@@ -465,6 +520,97 @@ const ROUTES = {
   'POST push/unsubscribe': async ({ env, request, body }) => {
     const me = await auth(env, request, { active: false });
     await env.DB.prepare('DELETE FROM push_subs WHERE endpoint = ? AND member_id = ?').bind(String(body.endpoint || ''), me.id).run();
+    return json({ ok: true });
+  },
+
+  // ── Flight Plan: kids' after-school plans, and parents' notes of encouragement ──
+  'PUT plans': async ({ env, request, body }) => {
+    const me = await auth(env, request);
+    if (me.role !== 'kid') throw new HttpError(403, 'kids_only', 'Only kids share a plan.');
+    await ensureBackupTables(env);
+    await limit(env, 'plan:' + me.id, 200, 600);
+    const day = dayArg(body.day), blocks = cleanBlocks(body.blocks);
+    await env.DB.batch([
+      blocks.length
+        ? env.DB.prepare('INSERT INTO plans (member_id, family_id, day, blocks, updated_at) VALUES (?, ?, ?, ?, ?) ON CONFLICT (member_id, day) DO UPDATE SET blocks = excluded.blocks, updated_at = excluded.updated_at')
+          .bind(me.id, me.family_id, day, JSON.stringify(blocks), now())
+        : env.DB.prepare('DELETE FROM plans WHERE member_id = ? AND day = ?').bind(me.id, day),
+      env.DB.prepare('DELETE FROM plans WHERE member_id = ? AND day < ?').bind(me.id, oldDay())
+    ]);
+    return json({ ok: true });
+  },
+
+  'GET plans': async ({ env, request, url }) => {
+    const me = await auth(env, request);
+    await ensureBackupTables(env);
+    const kid = await kidFor(env, me, url.searchParams.get('member') || me.id);
+    const { start, end } = rangeArgs(url);
+    const { results } = await env.DB.prepare('SELECT day, blocks FROM plans WHERE member_id = ? AND day >= ? AND day <= ? ORDER BY day').bind(kid.id, start, end).all();
+    return json({ plans: results.map((r) => ({ day: r.day, blocks: JSON.parse(r.blocks) })) });
+  },
+
+  'GET notes': async ({ env, request, url }) => {
+    const me = await auth(env, request);
+    await ensureBackupTables(env);
+    const kid = await kidFor(env, me, url.searchParams.get('kid') || me.id);
+    const { start, end } = rangeArgs(url);
+    const { results } = await env.DB.prepare(
+      'SELECT n.*, m.nickname AS parent_name FROM notes n JOIN members m ON m.id = n.parent_id WHERE n.kid_id = ? AND n.day >= ? AND n.day <= ? ORDER BY n.day, n.created_at'
+    ).bind(kid.id, start, end).all();
+    return json({
+      notes: results.map((n) => ({
+        id: n.id, day: n.day, parent: n.parent_name, parentId: n.parent_id, text: n.text, reply: n.reply, replyAt: n.reply_at,
+        mine: n.parent_id === me.id, isNew: me.role === 'kid' ? !n.kid_seen : n.parent_id === me.id && !n.parent_seen
+      }))
+    });
+  },
+
+  // A parent's note to one kid for one day (one per parent per kid per day; sending again replaces it).
+  'PUT notes': async ({ env, request, body, waitUntil }) => {
+    const me = await auth(env, request, { parent: true });
+    await ensureBackupTables(env);
+    await limit(env, 'note:' + me.id, 60, 600);
+    const kid = await kidFor(env, me, body.kid), day = dayArg(body.day), text = clean(body.text, 140, 'Note'), t = now();
+    const had = await env.DB.prepare('SELECT 1 AS x FROM notes WHERE kid_id = ? AND parent_id = ? AND day = ?').bind(kid.id, me.id, day).first();
+    await env.DB.batch([
+      env.DB.prepare('INSERT INTO notes (id, family_id, kid_id, parent_id, day, text, kid_seen, parent_seen, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, 0, 1, ?, ?) ON CONFLICT (kid_id, parent_id, day) DO UPDATE SET text = excluded.text, kid_seen = 0, updated_at = excluded.updated_at')
+        .bind(uid(), me.family_id, kid.id, me.id, day, text, t, t),
+      env.DB.prepare('DELETE FROM notes WHERE kid_id = ? AND day < ?').bind(kid.id, oldDay())
+    ]);
+    if (!had) await notifyMember(env, kid.id, { title: `A note from ${me.nickname} 💌`, body: text, tag: 'note-' + day, url: '/?tab=plan' }, waitUntil);
+    return json({ ok: true });
+  },
+
+  'POST notes/delete': async ({ env, request, body }) => {
+    const me = await auth(env, request, { parent: true });
+    await ensureBackupTables(env);
+    await env.DB.prepare('DELETE FROM notes WHERE id = ? AND parent_id = ?').bind(String(body.id || ''), me.id).run();
+    return json({ ok: true });
+  },
+
+  // A kid's reply to a note; tells the parent who wrote it.
+  'POST notes/reply': async ({ env, request, body, waitUntil }) => {
+    const me = await auth(env, request);
+    if (me.role !== 'kid') throw new HttpError(403, 'kids_only', 'Only kids reply to notes.');
+    await ensureBackupTables(env);
+    await limit(env, 'reply:' + me.id, 60, 600);
+    const reply = clean(body.reply, 80, 'Reply');
+    const n = await env.DB.prepare('SELECT * FROM notes WHERE id = ? AND kid_id = ?').bind(String(body.id || ''), me.id).first();
+    if (!n) throw new HttpError(404, 'no_note', 'That note was deleted.');
+    if (n.reply === reply) return json({ ok: true });
+    await env.DB.prepare('UPDATE notes SET reply = ?, reply_at = ?, parent_seen = 0, kid_seen = 1 WHERE id = ?').bind(reply, now(), n.id).run();
+    await notifyMember(env, n.parent_id, { title: `${me.nickname} replied 💬`, body: `“${n.text.length > 60 ? n.text.slice(0, 57) + '…' : n.text}” → ${reply}`, tag: 'reply-' + n.id, url: '/?tab=plan' }, waitUntil);
+    return json({ ok: true });
+  },
+
+  // Notes (kids) or replies (parents) the person has now read.
+  'POST notes/seen': async ({ env, request, body }) => {
+    const me = await auth(env, request);
+    await ensureBackupTables(env);
+    const ids = Array.isArray(body.ids) ? body.ids.slice(0, 50).map(String) : [];
+    if (!ids.length) return json({ ok: true });
+    const q = me.role === 'kid' ? 'UPDATE notes SET kid_seen = 1 WHERE kid_id = ? AND id IN ' : 'UPDATE notes SET parent_seen = 1 WHERE parent_id = ? AND id IN ';
+    await env.DB.prepare(q + `(${ids.map(() => '?').join(',')})`).bind(me.id, ...ids).run();
     return json({ ok: true });
   },
 

@@ -377,6 +377,11 @@ input::placeholder{color:#B49A86}
           <span style="font-size:24px;flex:none">🔔</span><span style="flex:1;min-width:0">{{ famUnreadText }}</span><span style="font-size:18px">›</span>
         </button>
       </sc-if>
+      <sc-if value="{{ fpHasNewNotes }}" hint-placeholder-val="{{ false }}">
+        <button sc-camel-on-click="{{ goPlan }}" style="display:flex;align-items:center;gap:10px;min-height:52px;background:#FFE3EC;border:2px solid #3B2A20;border-radius:18px;padding:8px 14px;font-family:inherit;font-weight:800;font-size:15px;color:#3B2A20;cursor:pointer;text-align:left;box-shadow:3px 3px 0 #3B2A20">
+          <span style="font-size:24px;flex:none">💌</span><span style="flex:1;min-width:0">{{ fpNewNotesText }}</span><span style="font-size:18px">›</span>
+        </button>
+      </sc-if>
 
       <div style="display:flex;align-items:center;justify-content:space-between;gap:8px">
         <button sc-camel-on-click="{{ prevWeek }}" style="width:44px;height:44px;border-radius:50%;border:2px solid #3B2A20;background:#fff;font-size:18px;font-weight:800;cursor:pointer;color:#3B2A20">‹</button>
@@ -573,12 +578,13 @@ input::placeholder{color:#B49A86}
     <div style="padding:18px 16px 0;display:flex;flex-direction:column;gap:14px">
       <div>
         <h2 style="font-family:'Baloo 2',sans-serif;font-size:26px;margin:0;font-weight:800">🐣 The Nest</h2>
-        <div style="font-size:14px;font-weight:600;color:#8A6E5A">Every badge lives here: quests to do, badges you’ve earned and badges you design yourself.</div>
+        <div style="font-size:14px;font-weight:600;color:#8A6E5A">Every badge and point lives here: quests, badges you’ve earned, badges you design, and points from Peck Patch and your Flight Plan.</div>
       </div>
-      <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px">
+      <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px">
         <div style="background:#FFD166;border:2px solid #3B2A20;border-radius:18px;padding:10px 12px"><div style="font-family:'Baloo 2',sans-serif;font-size:28px;font-weight:800;line-height:1">{{ badgeTotal }}</div><div style="font-size:12px;font-weight:800">badges</div></div>
         <div style="background:#FFB4A2;border:2px solid #3B2A20;border-radius:18px;padding:10px 12px"><div style="font-family:'Baloo 2',sans-serif;font-size:28px;font-weight:800;line-height:1">{{ streak }} 🔥</div><div style="font-size:12px;font-weight:800">day streak</div></div>
-        <button sc-camel-on-click="{{ goGame }}" style="background:#BFE0FA;border:2px solid #3B2A20;border-radius:18px;padding:10px 12px;text-align:left;font-family:inherit;color:#3B2A20;cursor:pointer"><div style="font-family:'Baloo 2',sans-serif;font-size:28px;font-weight:800;line-height:1">{{ peckPts }}</div><div style="font-size:12px;font-weight:800">game points ›</div></button>
+        <button sc-camel-on-click="{{ goPlan }}" style="background:#DDF5E8;border:2px solid #3B2A20;border-radius:18px;padding:10px 12px;text-align:left;font-family:inherit;color:#3B2A20;cursor:pointer"><div style="font-family:'Baloo 2',sans-serif;font-size:28px;font-weight:800;line-height:1">⭐ {{ planPts }}</div><div style="font-size:12px;font-weight:800">plan points ›</div></button>
+        <button sc-camel-on-click="{{ goGame }}" style="background:#BFE0FA;border:2px solid #3B2A20;border-radius:18px;padding:10px 12px;text-align:left;font-family:inherit;color:#3B2A20;cursor:pointer"><div style="font-family:'Baloo 2',sans-serif;font-size:28px;font-weight:800;line-height:1">⭐ {{ peckPts }}</div><div style="font-size:12px;font-weight:800">game points ›</div></button>
       </div>
       <div role="tablist" aria-label="Nest view" style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:4px;background:#F1E4D6;border:2px solid #3B2A20;border-radius:18px;padding:4px">
         <sc-for list="{{ nestTabs }}" as="nt" hint-placeholder-count="2">
@@ -767,6 +773,167 @@ input::placeholder{color:#B49A86}
     </div>
   </sc-if>
 
+  <sc-if value="{{ isPlan }}" hint-placeholder-val="{{ false }}">
+    <div style="padding:18px 16px 0;display:flex;flex-direction:column;gap:14px">
+      <div>
+        <h2 style="font-family:'Baloo 2',sans-serif;font-size:26px;margin:0;font-weight:800">🗓️ Flight Plan</h2>
+        <div style="font-size:14px;font-weight:600;color:#8A6E5A;text-wrap:pretty">{{ fpSubtitle }}</div>
+      </div>
+
+      <sc-if value="{{ fpHasKidChips }}" hint-placeholder-val="{{ false }}">
+        <div role="tablist" aria-label="Whose plan" style="display:flex;gap:6px;flex-wrap:wrap">
+          <sc-for list="{{ fpKids }}" as="kc" hint-placeholder-count="2">
+            <button role="tab" aria-selected="{{ kc.sel }}" sc-camel-on-click="{{ kc.onClick }}" style="min-height:40px;padding:0 14px;border-radius:999px;border:2px solid #3B2A20;background:{{ kc.bg }};color:{{ kc.fg }};font-family:inherit;font-weight:800;font-size:14px;cursor:pointer">{{ kc.label }}</button>
+          </sc-for>
+        </div>
+      </sc-if>
+
+      <section aria-label="{{ fpBannerTitle }}" style="background:#FFE3EC;border:2px solid #3B2A20;border-radius:24px;padding:14px;box-shadow:4px 4px 0 #3B2A20;display:flex;flex-direction:column;gap:10px">
+        <div style="display:flex;align-items:baseline;justify-content:space-between;gap:8px">
+          <h3 style="font-family:'Baloo 2',sans-serif;font-size:19px;margin:0;font-weight:800;line-height:1.1">💌 {{ fpBannerTitle }}</h3>
+          <span style="font-size:12px;font-weight:800;color:#B23A6A;white-space:nowrap">{{ fpBannerDay }}</span>
+        </div>
+        <sc-if value="{{ fpBannerEmpty }}" hint-placeholder-val="{{ true }}">
+          <div style="font-size:13px;font-weight:700;color:#8A4A5E;line-height:1.4;text-wrap:pretty">{{ fpBannerEmptyText }}</div>
+        </sc-if>
+        <sc-for list="{{ fpNoteCards }}" as="nc" hint-placeholder-count="1">
+          <div style="background:#fff;border:2px solid #3B2A20;border-radius:18px;padding:10px 12px;display:flex;flex-direction:column;gap:8px">
+            <div style="display:flex;align-items:flex-start;gap:10px">
+              <span aria-hidden="true" style="font-size:24px;line-height:1.1;flex:none">{{ nc.emoji }}</span>
+              <div style="flex:1;min-width:0">
+                <div style="font-size:12px;font-weight:800;color:#B23A6A">{{ nc.from }}</div>
+                <div style="font-size:16px;font-weight:800;line-height:1.3;overflow-wrap:anywhere;text-wrap:pretty">{{ nc.text }}</div>
+              </div>
+              <sc-if value="{{ nc.isNew }}" hint-placeholder-val="{{ false }}">
+                <span style="flex:none;background:#E2553F;color:#fff;border-radius:999px;padding:1px 8px;font-size:10px;font-weight:800;letter-spacing:.06em;text-transform:uppercase">{{ nc.newLabel }}</span>
+              </sc-if>
+            </div>
+            <sc-if value="{{ nc.hasReply }}" hint-placeholder-val="{{ false }}">
+              <div style="align-self:flex-end;max-width:88%;background:#DDF5E8;border:2px solid #3B2A20;border-radius:16px 16px 4px 16px;padding:6px 12px">
+                <div style="font-size:11px;font-weight:800;color:#2E6B4F">{{ nc.replyWho }}</div>
+                <div style="font-size:14px;font-weight:800;line-height:1.3;overflow-wrap:anywhere">{{ nc.reply }}</div>
+              </div>
+            </sc-if>
+            <sc-if value="{{ nc.canReply }}" hint-placeholder-val="{{ false }}">
+              <div style="display:flex;flex-wrap:wrap;gap:6px">
+                <sc-for list="{{ nc.quick }}" as="qr" hint-placeholder-count="3">
+                  <button sc-camel-on-click="{{ qr.onClick }}" style="min-height:38px;padding:0 12px;border-radius:999px;border:2px solid #3B2A20;background:#FFF7EC;font-family:inherit;font-weight:800;font-size:13px;color:#3B2A20;cursor:pointer;opacity:{{ fpBusyOp }}">{{ qr.label }}</button>
+                </sc-for>
+              </div>
+              <div style="display:flex;gap:6px">
+                <input value="{{ nc.draft }}" sc-camel-on-change="{{ nc.onDraft }}" maxlength="80" aria-label="Your reply" placeholder="Or write a reply…" style="flex:1;height:44px;border-radius:14px;border:2px solid #3B2A20;padding:0 12px;font-family:inherit;font-size:16px;font-weight:700;color:#3B2A20;background:#fff;outline:none;min-width:0">
+                <button sc-camel-on-click="{{ nc.onSend }}" style="height:44px;padding:0 14px;border-radius:14px;border:2px solid #3B2A20;background:#3DBE8B;color:#fff;font-family:inherit;font-weight:800;font-size:14px;cursor:pointer;flex:none;opacity:{{ fpBusyOp }}">Send</button>
+              </div>
+            </sc-if>
+            <sc-if value="{{ nc.canChangeReply }}" hint-placeholder-val="{{ false }}">
+              <button sc-camel-on-click="{{ nc.onChangeReply }}" style="align-self:flex-end;min-height:32px;border:none;background:none;font-family:inherit;font-weight:800;font-size:13px;color:#2E6B4F;cursor:pointer;padding:0 4px">✏️ Change my reply</button>
+            </sc-if>
+            <sc-if value="{{ nc.canEdit }}" hint-placeholder-val="{{ false }}">
+              <div style="display:flex;justify-content:flex-end;gap:6px">
+                <button sc-camel-on-click="{{ nc.onEdit }}" style="height:36px;padding:0 12px;border-radius:12px;border:2px solid #3B2A20;background:#fff;font-family:inherit;font-weight:800;font-size:13px;color:#3B2A20;cursor:pointer">✏️ Edit</button>
+                <button aria-label="Delete this note" sc-camel-on-click="{{ nc.onDelete }}" style="width:36px;height:36px;border-radius:12px;border:2px solid #3B2A20;background:#fff;font-size:15px;cursor:pointer;padding:0">🗑️</button>
+              </div>
+            </sc-if>
+          </div>
+        </sc-for>
+        <sc-if value="{{ fpCanCompose }}" hint-placeholder-val="{{ false }}">
+          <div style="display:flex;flex-wrap:wrap;gap:6px">
+            <sc-for list="{{ fpSuggest }}" as="sg" hint-placeholder-count="3">
+              <button sc-camel-on-click="{{ sg.onClick }}" style="min-height:36px;padding:0 12px;border-radius:999px;border:2px dashed #C9748C;background:#FFF7EC;font-family:inherit;font-weight:700;font-size:13px;color:#3B2A20;cursor:pointer;text-align:left">{{ sg.label }}</button>
+            </sc-for>
+          </div>
+          <textarea value="{{ fpNoteDraft }}" sc-camel-on-change="{{ onFpNote }}" maxlength="140" rows="2" aria-label="{{ fpNoteAria }}" placeholder="Write a word of encouragement…" style="border-radius:16px;border:2px solid #3B2A20;padding:10px 14px;font-family:inherit;font-size:16px;font-weight:700;color:#3B2A20;background:#fff;outline:none;resize:vertical;min-width:0"></textarea>
+          <div style="display:flex;gap:8px">
+            <sc-if value="{{ fpNoteEditing }}" hint-placeholder-val="{{ false }}">
+              <button sc-camel-on-click="{{ fpCancelEdit }}" style="height:48px;padding:0 16px;border-radius:16px;border:2px solid #3B2A20;background:#fff;color:#3B2A20;font-family:inherit;font-weight:800;font-size:15px;cursor:pointer">Cancel</button>
+            </sc-if>
+            <button sc-camel-on-click="{{ fpSendNote }}" style="flex:1;height:48px;border-radius:16px;border:2px solid #3B2A20;background:#FF6B8A;color:#fff;font-family:'Baloo 2',sans-serif;font-size:18px;font-weight:800;cursor:pointer;box-shadow:0 3px 0 #3B2A20;opacity:{{ fpBusyOp }}">{{ fpSendLabel }}</button>
+          </div>
+        </sc-if>
+      </section>
+
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:8px">
+        <button aria-label="Previous week" sc-camel-on-click="{{ fpPrevWeek }}" style="width:44px;height:44px;border-radius:50%;border:2px solid #3B2A20;background:#fff;font-size:18px;font-weight:800;cursor:pointer;color:#3B2A20;flex:none">‹</button>
+        <div style="text-align:center;min-width:0">
+          <div style="font-family:'Baloo 2',sans-serif;font-weight:700;font-size:18px">{{ fpWeekLabel }}</div>
+          <div style="font-size:12px;font-weight:700;color:#8A6E5A">{{ fpWeekNote }}</div>
+        </div>
+        <button aria-label="Next week" sc-camel-on-click="{{ fpNextWeek }}" style="width:44px;height:44px;border-radius:50%;border:2px solid #3B2A20;background:#fff;font-size:18px;font-weight:800;cursor:pointer;color:#3B2A20;flex:none">›</button>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:4px">
+        <sc-for list="{{ fpDays }}" as="d" hint-placeholder-count="7">
+          <button aria-label="{{ d.aria }}" aria-pressed="{{ d.pressed }}" sc-camel-on-click="{{ d.onClick }}" style="position:relative;border:2px solid #3B2A20;border-radius:14px;padding:6px 0 4px;background:{{ d.bg }};color:{{ d.fg }};cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:1px;font-family:inherit;box-shadow:{{ d.shadow }};min-width:0">
+            <span style="font-size:11px;font-weight:800;line-height:1.1">{{ d.label }}</span>
+            <span style="font-family:'Baloo 2',sans-serif;font-size:18px;font-weight:800;line-height:1">{{ d.date }}</span>
+            <span style="font-size:10px;font-weight:800;line-height:1.2;min-height:12px;white-space:nowrap">{{ d.mark }}</span>
+            <sc-if value="{{ d.hasNote }}" hint-placeholder-val="{{ false }}">
+              <span aria-hidden="true" style="position:absolute;top:-9px;right:-5px;font-size:14px">💌</span>
+            </sc-if>
+          </button>
+        </sc-for>
+      </div>
+
+      <section style="background:#fff;border:2px solid #3B2A20;border-radius:24px;padding:14px;box-shadow:4px 4px 0 #3B2A20;display:flex;flex-direction:column;gap:10px">
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:8px">
+          <h3 style="font-family:'Baloo 2',sans-serif;font-size:20px;margin:0;font-weight:800;line-height:1.1;min-width:0">{{ fpDayTitle }}</h3>
+          <span style="flex:none;background:#FFD166;border:2px solid #3B2A20;border-radius:999px;padding:2px 12px;font-family:'Baloo 2',sans-serif;font-size:17px;font-weight:800">⭐ {{ fpPts }}</span>
+        </div>
+        <div style="font-size:13px;font-weight:700;color:#8A6E5A">{{ fpTimeLine }}</div>
+        <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px">
+          <sc-for list="{{ fpBal }}" as="bl" hint-placeholder-count="3">
+            <div style="border:2px solid {{ bl.border }};background:{{ bl.bg }};border-radius:14px;padding:6px 8px;display:flex;flex-direction:column;gap:1px;min-width:0">
+              <span style="font-size:13px;font-weight:800;white-space:nowrap">{{ bl.e }} {{ bl.label }} {{ bl.mark }}</span>
+              <span style="font-size:11px;font-weight:700;color:#6B5444;line-height:1.2">{{ bl.text }}</span>
+            </div>
+          </sc-for>
+        </div>
+        <div style="font-size:12px;font-weight:800;color:{{ fpBalColor }};line-height:1.35;text-wrap:pretty">{{ fpBalLine }}</div>
+        <sc-if value="{{ fpCanCopy }}" hint-placeholder-val="{{ false }}">
+          <button sc-camel-on-click="{{ fpCopy }}" style="min-height:44px;border-radius:14px;border:2px dashed #3B2A20;background:#FFF7EC;font-family:inherit;font-weight:800;font-size:14px;color:#3B2A20;cursor:pointer">{{ fpCopyLabel }}</button>
+        </sc-if>
+        <sc-if value="{{ fpHasLockNote }}" hint-placeholder-val="{{ false }}">
+          <div style="background:#F6EEE6;border-radius:12px;padding:8px 10px;font-size:12px;font-weight:700;color:#6B5444;line-height:1.35">{{ fpLockNote }}</div>
+        </sc-if>
+      </section>
+
+      <sc-if value="{{ fpShowGrid }}" hint-placeholder-val="{{ true }}">
+        <section aria-label="Afternoon timeline" style="background:#FFFDF8;border:2px solid #3B2A20;border-radius:24px;padding:16px 10px 6px 6px;box-shadow:4px 4px 0 #3B2A20">
+          <div style="position:relative;display:grid;grid-template-columns:44px minmax(0,1fr);grid-template-rows:repeat(14,56px) 12px;column-gap:6px">
+            <sc-for list="{{ fpTimes }}" as="tm" hint-placeholder-count="15">
+              <div style="grid-column:1;grid-row:{{ tm.row }};font-size:{{ tm.fs }};font-weight:800;color:{{ tm.color }};text-align:right;line-height:1;margin-top:-6px;white-space:nowrap">{{ tm.label }}</div>
+            </sc-for>
+            <sc-for list="{{ fpGaps }}" as="gp" hint-placeholder-count="2">
+              <div style="grid-column:2;grid-row:{{ gp.row }};margin:3px 0;border:2px dashed #EADBC8;border-radius:16px"></div>
+            </sc-for>
+            <sc-for list="{{ fpEmpty }}" as="es" hint-placeholder-count="4">
+              <button aria-label="{{ es.aria }}" sc-camel-on-click="{{ es.onClick }}" style="grid-column:2;grid-row:{{ es.row }};margin:3px 0;border:2px dashed #E1CDB8;border-radius:16px;background:#fff;font-family:inherit;font-weight:800;font-size:13px;color:#B49A86;cursor:pointer;text-align:left;padding:0 14px;display:flex;align-items:center;gap:8px"><span style="font-size:18px;line-height:1">+</span>{{ es.label }}</button>
+            </sc-for>
+            <sc-for list="{{ fpBlocks }}" as="b" hint-placeholder-count="2">
+              <div style="grid-column:2;grid-row:{{ b.row }};margin:3px 0;display:flex;border:2px solid #3B2A20;border-radius:16px;background:{{ b.bg }};box-shadow:0 3px 0 #3B2A20;overflow:hidden;min-height:0">
+                <button aria-label="{{ b.aria }}" sc-camel-on-click="{{ b.onOpen }}" style="flex:1;min-width:0;display:flex;align-items:center;gap:10px;padding:0 10px;border:none;background:none;font-family:inherit;color:#3B2A20;text-align:left;cursor:pointer">
+                  <span style="width:38px;height:38px;flex:none">{{ b.icon }}</span>
+                  <span style="min-width:0;flex:1">
+                    <span style="display:block;font-weight:800;font-size:15px;line-height:1.15;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ b.name }}</span>
+                    <span style="display:block;font-size:12px;font-weight:700;color:#6B5444;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ b.sub }}</span>
+                  </span>
+                </button>
+                <button aria-label="{{ b.checkAria }}" aria-pressed="{{ b.pressed }}" sc-camel-on-click="{{ b.onCheck }}" style="width:50px;flex:none;border:none;border-left:2px solid #3B2A20;background:{{ b.checkBg }};cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0">
+                  <span style="width:28px;height:28px;border-radius:50%;border:2px solid #3B2A20;background:{{ b.dotBg }};color:#1F5E40;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:800">{{ b.check }}</span>
+                </button>
+              </div>
+            </sc-for>
+            <sc-if value="{{ fpHasNow }}" hint-placeholder-val="{{ false }}">
+              <div aria-hidden="true" style="position:absolute;left:44px;right:0;top:{{ fpNowTop }};border-top:3px solid #E2553F;z-index:2;pointer-events:none"><span style="position:absolute;left:-5px;top:-7px;width:11px;height:11px;border-radius:50%;background:#E2553F"></span></div>
+            </sc-if>
+          </div>
+        </section>
+      </sc-if>
+      <sc-if value="{{ fpLoadingKid }}" hint-placeholder-val="{{ false }}">
+        <div style="text-align:center;padding:12px;color:#8A6E5A;font-weight:700">Loading {{ fpKidName }}’s plan…</div>
+      </sc-if>
+    </div>
+  </sc-if>
+
   <sc-if value="{{ isGame }}" hint-placeholder-val="{{ false }}">
     <div style="padding:18px 16px 0;display:flex;flex-direction:column;gap:16px">
       <div style="display:flex;align-items:center;gap:12px">
@@ -827,7 +994,7 @@ input::placeholder{color:#B49A86}
       <sc-if value="{{ famNone }}" hint-placeholder-val="{{ true }}">
         <section style="background:#FFF1C2;border:2px solid #3B2A20;border-radius:24px;padding:16px;box-shadow:4px 4px 0 #3B2A20;display:flex;flex-direction:column;gap:10px">
           <h3 style="font-family:'Baloo 2',sans-serif;font-size:20px;margin:0;font-weight:800">🏡 Start a family</h3>
-          <div style="font-size:13px;font-weight:600;color:#7A4B12">For parents. You get a code to share with your kids, an alert when they plan a lunch add-on, and new-phone codes for everyone in the family.</div>
+          <div style="font-size:13px;font-weight:600;color:#7A4B12">For parents. You get a code to share with your kids, alerts about their lunch plans, a look at their Flight Plan where you can leave notes of encouragement, and new-phone codes for everyone.</div>
           <label style="display:flex;flex-direction:column;gap:4px">
             <span style="font-size:12px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:#7A4B12">Family name</span>
             <input value="{{ famForm.familyName }}" sc-camel-on-change="{{ onFamFamilyName }}" maxlength="40" placeholder="e.g. The Lees" style="height:48px;border-radius:16px;border:2px solid #3B2A20;padding:0 14px;font-family:inherit;font-size:16px;font-weight:700;color:#3B2A20;background:#fff;outline:none;min-width:0">
@@ -861,7 +1028,7 @@ input::placeholder{color:#B49A86}
 
         <section style="background:#fff;border:2px solid #3B2A20;border-radius:24px;padding:16px;box-shadow:4px 4px 0 #3B2A20;display:flex;flex-direction:column;gap:10px">
           <h3 style="font-family:'Baloo 2',sans-serif;font-size:20px;margin:0;font-weight:800">☁️ Your backup</h3>
-          <div style="font-size:13px;font-weight:700;color:#8A6E5A;line-height:1.4">Your ideas, favorites, badges, quests and game points are backed up automatically, so a new phone can get them back. No account needed.</div>
+          <div style="font-size:13px;font-weight:700;color:#8A6E5A;line-height:1.4">Your ideas, favorites, badges, quests, Flight Plans and game points are backed up automatically, so a new phone can get them back. No account needed.</div>
           <div style="display:flex;align-items:center;gap:8px;font-size:14px;font-weight:800;color:#2E6B4F"><span aria-hidden="true">{{ backupIcon }}</span><span>{{ backupText }}</span></div>
           <sc-if value="{{ hasMoveSelf }}" hint-placeholder-val="{{ false }}">
             <div style="background:#FFF1C2;border:2px dashed #3B2A20;border-radius:18px;padding:12px;display:flex;flex-direction:column;gap:6px;text-align:center">
@@ -883,7 +1050,7 @@ input::placeholder{color:#B49A86}
           </label>
           <button sc-camel-on-click="{{ redeemMove }}" style="height:52px;border-radius:18px;border:2px solid #3B2A20;background:#3DBE8B;color:#3B2A20;font-family:'Baloo 2',sans-serif;font-size:19px;font-weight:800;cursor:pointer;opacity:{{ famBusyOp }}">{{ redeemLabel }}</button>
         </section>
-        <div style="font-size:12px;font-weight:600;color:#8A6E5A;line-height:1.4;padding:0 4px">Lunch Buddy backs up this phone’s ideas, badges and game points using a random key saved on this phone: no name, email or password. Families also share nicknames and lunch add-on picks. Use a first name or nickname, not a full name.</div>
+        <div style="font-size:12px;font-weight:600;color:#8A6E5A;line-height:1.4;padding:0 4px">Lunch Buddy backs up this phone’s ideas, badges, plans and game points using a random key saved on this phone: no name, email or password. Families also share nicknames and lunch add-on picks, kids’ Flight Plans with their parents, and notes between them. Use a first name or nickname, not a full name.</div>
       </sc-if>
 
       <sc-if value="{{ famPending }}" hint-placeholder-val="{{ false }}">
@@ -985,7 +1152,7 @@ input::placeholder{color:#B49A86}
 
         <section style="background:#fff;border:2px solid #3B2A20;border-radius:24px;padding:16px;box-shadow:4px 4px 0 #3B2A20;display:flex;flex-direction:column;gap:10px">
           <h3 style="font-family:'Baloo 2',sans-serif;font-size:20px;margin:0;font-weight:800">☁️ Backup</h3>
-          <div style="font-size:13px;font-weight:700;color:#8A6E5A;line-height:1.4">Your ideas, favorites, badges, quests and game points are copied to your family, so a new phone can get them back.</div>
+          <div style="font-size:13px;font-weight:700;color:#8A6E5A;line-height:1.4">Your ideas, favorites, badges, quests, Flight Plans and game points are copied to your family, so a new phone can get them back.</div>
           <div style="display:flex;align-items:center;gap:8px;font-size:14px;font-weight:800;color:#2E6B4F"><span aria-hidden="true">{{ backupIcon }}</span><span>{{ backupText }}</span></div>
           <sc-if value="{{ hasMoveSelf }}" hint-placeholder-val="{{ false }}">
             <div style="background:#FFF1C2;border:2px dashed #3B2A20;border-radius:18px;padding:12px;display:flex;flex-direction:column;gap:6px;text-align:center">
@@ -1272,6 +1439,53 @@ input::placeholder{color:#B49A86}
     </div>
   </sc-if>
 
+  <sc-if value="{{ fpHasSheet }}" hint-placeholder-val="{{ false }}">
+    <div style="position:fixed;inset:0;z-index:9;display:flex;flex-direction:column;justify-content:flex-end;align-items:center">
+      <div sc-camel-on-click="{{ fpClose }}" style="position:absolute;inset:0;background:rgba(59,42,32,.5)"></div>
+      <div role="dialog" aria-modal="true" aria-label="{{ fpSh.title }}" style="position:relative;width:100%;max-width:440px;max-height:90vh;overflow-y:auto;box-sizing:border-box;background:#FFF7EC;border:2px solid #3B2A20;border-bottom:none;border-radius:28px 28px 0 0;padding:18px 16px 0;display:flex;flex-direction:column;gap:12px">
+        <div style="width:44px;height:5px;border-radius:999px;background:#D8C2AC;align-self:center;flex:none"></div>
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;flex:none">
+          <div style="min-width:0">
+            <div style="font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#E2553F">{{ fpSh.sub }}</div>
+            <div style="font-family:'Baloo 2',sans-serif;font-size:22px;font-weight:800;line-height:1.1">{{ fpSh.title }}</div>
+          </div>
+          <button aria-label="Close" sc-camel-on-click="{{ fpClose }}" style="width:40px;height:40px;border-radius:50%;border:2px solid #3B2A20;background:#fff;font-size:16px;font-weight:800;color:#3B2A20;cursor:pointer;flex:none;padding:0">✕</button>
+        </div>
+        <sc-if value="{{ fpShOther }}" hint-placeholder-val="{{ false }}">
+          <label style="display:flex;flex-direction:column;gap:4px;flex:none">
+            <span style="font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#7A4B12">What is it?</span>
+            <input value="{{ fpShT }}" sc-camel-on-change="{{ onFpT }}" maxlength="24" placeholder="e.g. Chess club" style="height:48px;border-radius:16px;border:2px solid #3B2A20;padding:0 14px;font-family:inherit;font-size:16px;font-weight:700;color:#3B2A20;background:#fff;outline:none;min-width:0">
+          </label>
+        </sc-if>
+        <div style="font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#7A4B12;flex:none">How long?</div>
+        <div style="display:flex;gap:6px;flex-wrap:wrap;flex:none">
+          <sc-for list="{{ fpLens }}" as="ln" hint-placeholder-count="4">
+            <button aria-pressed="{{ ln.pressed }}" sc-camel-on-click="{{ ln.onClick }}" style="min-height:40px;padding:0 12px;border-radius:999px;border:2px solid #3B2A20;background:{{ ln.bg }};color:{{ ln.fg }};font-family:inherit;font-weight:800;font-size:13px;cursor:pointer">{{ ln.label }}</button>
+          </sc-for>
+        </div>
+        <sc-for list="{{ fpGroups }}" as="gr" hint-placeholder-count="3">
+          <div style="display:flex;align-items:baseline;justify-content:space-between;gap:8px;flex:none;margin-top:2px">
+            <span style="font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#7A4B12">{{ gr.title }}</span>
+            <span style="font-size:12px;font-weight:800;color:#8A6E5A;white-space:nowrap">{{ gr.pts }}</span>
+          </div>
+          <div style="display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;flex:none">
+            <sc-for list="{{ gr.acts }}" as="ac" hint-placeholder-count="4">
+              <button aria-pressed="{{ ac.pressed }}" sc-camel-on-click="{{ ac.onClick }}" style="border-radius:16px;border:2px solid {{ ac.border }};background:{{ ac.bg }};box-shadow:{{ ac.shadow }};padding:8px 2px 6px;display:flex;flex-direction:column;align-items:center;gap:4px;font-family:inherit;font-size:11px;font-weight:800;line-height:1.1;color:#3B2A20;cursor:pointer;min-width:0;text-align:center">
+                <span style="width:44px;height:44px">{{ ac.icon }}</span>{{ ac.name }}
+              </button>
+            </sc-for>
+          </div>
+        </sc-for>
+        <div style="position:sticky;bottom:0;background:#FFF7EC;padding:12px 0 20px;display:flex;gap:8px;flex:none;border-top:2px solid #F1E4D6;margin-top:2px">
+          <sc-if value="{{ fpShEditing }}" hint-placeholder-val="{{ false }}">
+            <button aria-label="Remove from plan" sc-camel-on-click="{{ fpRemove }}" style="width:54px;height:54px;border-radius:18px;border:2px solid #3B2A20;background:#fff;font-size:20px;cursor:pointer;flex:none;padding:0">🗑️</button>
+          </sc-if>
+          <button sc-camel-on-click="{{ fpSave }}" style="flex:1;height:54px;border-radius:18px;border:2px solid #3B2A20;background:{{ fpSaveBg }};opacity:{{ fpSaveOp }};color:#3B2A20;font-family:'Baloo 2',sans-serif;font-size:18px;font-weight:800;cursor:pointer;box-shadow:0 4px 0 #3B2A20">{{ fpSaveLabel }}</button>
+        </div>
+      </div>
+    </div>
+  </sc-if>
+
   <sc-if value="{{ hasToast }}" hint-placeholder-val="{{ false }}">
     <div role="status" style="position:fixed;bottom:88px;left:50%;transform:translateX(-50%);background:#fff;border:2px solid #3B2A20;border-radius:999px;padding:10px 18px;font-weight:800;font-size:14px;z-index:11;white-space:nowrap;max-width:calc(100% - 48px);overflow:hidden;text-overflow:ellipsis;box-shadow:3px 3px 0 #3B2A20">{{ toast }}</div>
   </sc-if>
@@ -1341,7 +1555,14 @@ const GOALS = [
   { id: 'swan', emoji: '🦢', name: 'Swan Lake', color: '#E6EEF7', rarity: 'Legendary', rule: 'Plate badges 10 school days in a row', goal: 10, stat: 'best', cheer: 'Two weeks straight. Graceful and unstoppable.' },
   { id: 'gallery', emoji: '🖼️', name: 'Gallery Show', color: '#FFD166', rarity: 'Legendary', rule: 'Earn 20 plate badges', goal: 20, stat: 'total', cheer: 'Twenty works on the wall. Your solo show is open.' },
   { id: 'questmaster', emoji: '🎯', name: 'Quest Master', color: '#FFD6E0', rarity: 'Legendary', rule: 'Finish daily quests on 15 days', goal: 15, stat: 'questDays', cheer: 'Fifteen days of quests. Legendary dedication.' },
-  { id: 'goldbeak', emoji: '🏆', name: 'Golden Beak', color: '#FFD166', rarity: 'Legendary', rule: 'Get 3 stars on all 12 Peck Patch levels', goal: 12, stat: 'perfect', cheer: 'Every patch, perfectly pecked.' }
+  { id: 'goldbeak', emoji: '🏆', name: 'Golden Beak', color: '#FFD166', rarity: 'Legendary', rule: 'Get 3 stars on all 12 Peck Patch levels', goal: 12, stat: 'perfect', cheer: 'Every patch, perfectly pecked.' },
+  // Flight Plan goals (hours count finished half hours)
+  { id: 'navigator', emoji: '🧭', name: 'Navigator', color: '#E1F0FB', rarity: 'Common', rule: 'Finish 5 activities in your Flight Plan', goal: 5, stat: 'planDone', cheer: 'Five plans made and done. You’re steering your own afternoons.' },
+  { id: 'bookworm', emoji: '📖', name: 'Bookworm', color: '#BFE0FA', rarity: 'Rare', rule: 'Read for 5 hours in your Flight Plan', goal: 5, stat: 'readHrs', cheer: 'Five hours of stories. Your brain says thank you.' },
+  { id: 'brainpower', emoji: '🧠', name: 'Brain Power', color: '#F3E3FA', rarity: 'Rare', rule: 'Do 10 hours of homework', goal: 10, stat: 'studyHrs', cheer: 'Ten hours of homework, done and dusted.' },
+  { id: 'swift', emoji: '⚡', name: 'Swift', color: '#DDF5E8', rarity: 'Rare', rule: 'Be active for 10 hours', goal: 10, stat: 'moveHrs', cheer: 'Swifts are some of the fastest birds around. Ten active hours: so are you.' },
+  { id: 'balancebeam', emoji: '🤸', name: 'Balance Beam', color: '#FFE3D8', rarity: 'Epic', rule: 'Have 5 balanced afternoons', goal: 5, stat: 'balDays', cheer: 'Learning, moving and not too much screen time, five times over.' },
+  { id: 'skyhigh', emoji: '☁️', name: 'Sky High', color: '#E6EEF7', rarity: 'Legendary', rule: 'Earn 1,000 Flight Plan points', goal: 1000, stat: 'planPts', cheer: 'A thousand points from planning your own time. Sky high!' }
 ];
 const RARE_UP = ['golden', 'rainbow', 'songbird', 'veghero'];
 const Q_AUTO = [
@@ -1381,7 +1602,8 @@ const LEGACY_Q = { parrot: 'ladybug', owl: 'butterfly', flamingo: 'snail', swan:
 const WEEKLY = [
   { id: 'questweek', emoji: '🗓️', name: 'Quest Week', rule: 'Finish daily quests all 5 school days', goal: 5 },
   { id: 'rainbowweek', emoji: '🌈', name: 'Rainbow Week', rule: 'All 5 food groups on 3 days', goal: 3 },
-  { id: 'peckweek', emoji: '🪱', name: 'Worm Hunt', rule: 'Score 150 points in Peck Patch', goal: 150 }
+  { id: 'peckweek', emoji: '🪱', name: 'Worm Hunt', rule: 'Score 150 points in Peck Patch', goal: 150 },
+  { id: 'balanceweek', emoji: '⚖️', name: 'Balanced Week', rule: 'Balanced afternoons on 3 days in your Flight Plan', goal: 3 }
 ];
 // Weekly or long-term challenges from the old Quests tab. They're no longer offered, but ones a kid earned still show.
 const RETIRED = { hydroweek: { emoji: '🐳', name: 'Hydration Week' }, twinpeacock: { emoji: '💎', name: 'Twin Masterpieces' }, curator: { emoji: '🏛️', name: 'Curator' } };
@@ -1463,10 +1685,11 @@ function mergeSaved(loc, rem) {
   return {
     favs: mergeDays(loc.favs, rem.favs), eaten: mergeDays(loc.eaten, rem.eaten), badges: mergeKeep(loc.badges, rem.badges),
     myIdeas, seenMs: unionList(loc.seenMs, rem.seenMs), questDone: mergeDays(loc.questDone, rem.questDone),
-    stickers, holos: mergeKeep(loc.holos, rem.holos), peck, myBadges
+    stickers, holos: mergeKeep(loc.holos, rem.holos), peck, myBadges,
+    sched: cleanSched(mergeKeep(cleanSched(loc.sched), cleanSched(rem.sched)))
   };
 }
-const hasStuff = d => !!d && (['favs', 'eaten', 'badges', 'questDone', 'stickers', 'holos'].some(k => isObj(d[k]) && Object.keys(d[k]).length)
+const hasStuff = d => !!d && (['favs', 'eaten', 'badges', 'questDone', 'stickers', 'holos', 'sched'].some(k => isObj(d[k]) && Object.keys(d[k]).length)
   || ['myIdeas', 'myBadges'].some(k => Array.isArray(d[k]) && d[k].length) || (isObj(d.peck) && (Number(d.peck.pts) > 0 || Object.keys(d.peck.best || {}).length > 0)));
 const fmtMove = v => { const c = String(v || '').toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 8); return c.length > 4 ? c.slice(0, 4) + '-' + c.slice(4) : c; };
 // ── Badges kids design themselves ──
@@ -1482,7 +1705,10 @@ const MB_TYPES = [
   { id: 'protein', e: '🍗', label: 'Get protein', unit: 'days', step: 1, max: 100, def: 5 },
   { id: 'plates', e: '🏅', label: 'Plate badges', unit: 'badges', step: 1, max: 100, def: 5 },
   { id: 'quests', e: '🎯', label: 'Daily quests', unit: 'days', step: 1, max: 100, def: 5 },
-  { id: 'points', e: '⭐', label: 'Game points', unit: 'points', step: 50, max: 5000, def: 300 }
+  { id: 'points', e: '⭐', label: 'Game points', unit: 'points', step: 50, max: 5000, def: 300 },
+  { id: 'planpts', e: '🗓️', label: 'Plan points', unit: 'points', step: 50, max: 5000, def: 200 },
+  { id: 'study', e: '📚', label: 'Study hours', unit: 'hours', step: 1, max: 100, def: 5 },
+  { id: 'active', e: '⚽', label: 'Active hours', unit: 'hours', step: 1, max: 100, def: 5 }
 ];
 const MB_BLANK = { emoji: '🥕', color: '#FFD166', name: '', type: 'own', task: '', goal: 5 };
 const plural = (n, w) => `${n} ${w}${n === 1 ? '' : 's'}`;
@@ -1491,7 +1717,8 @@ const mbRule = b => ({
   fruit: `Eat fruit on ${plural(b.goal, 'day')}`, veggie: `Eat veggies on ${plural(b.goal, 'day')}`,
   water: `Drink water on ${plural(b.goal, 'day')}`, dairy: `Get dairy on ${plural(b.goal, 'day')}`,
   protein: `Get protein on ${plural(b.goal, 'day')}`, plates: `Earn ${plural(b.goal, 'plate badge')}`,
-  quests: `Finish daily quests on ${plural(b.goal, 'day')}`, points: `Score ${b.goal} points in Peck Patch`
+  quests: `Finish daily quests on ${plural(b.goal, 'day')}`, points: `Score ${b.goal} points in Peck Patch`,
+  planpts: `Earn ${b.goal} Flight Plan points`, study: `Do homework or read for ${plural(b.goal, 'hour')}`, active: `Be active for ${plural(b.goal, 'hour')}`
 }[b.type] || '');
 // ── Peck Patch (the Game tab) ──
 const GROUP_INFO = {
@@ -1692,6 +1919,273 @@ const GUIDES = {
     tap: 'Tap a grass tuft and I’ll pounce on it!', junkSay: 'Grr, not that one!', gold: 'Golden star', cheers: ['Nice!', 'Great pounce!', 'You got it!', 'Roar-some!'], perfect: 'Perfect pounce!' }
 };
 const guideOf = lv => GUIDES[unitOf(lv).guide];
+// ── Flight Plan (the Plan tab): after-school activities from 3:00 to 10:00 PM in half-hour slots ──
+// pts = points for each finished half hour. kind: learn | move | make | help | life | rest | screen | other
+const ACT_KIND = {
+  learn: { tile: '#BFE0FA', card: '#E9F4FD' }, make: { tile: '#FFC9D6', card: '#FFEEF2' }, help: { tile: '#FFD9A8', card: '#FFF1DE' },
+  move: { tile: '#B8EBC9', card: '#E6F8EC' }, life: { tile: '#FFE9A8', card: '#FFF8DE' }, rest: { tile: '#D9C7F2', card: '#F1EAFB' },
+  screen: { tile: '#D5DAE1', card: '#EEF0F3' }, other: { tile: '#FFD6C7', card: '#FFF0EA' }
+};
+const ACTS = [
+  { id: 'study', name: 'Homework', kind: 'learn', pts: 10 }, { id: 'reading', name: 'Reading', kind: 'learn', pts: 10 },
+  { id: 'music', name: 'Music', kind: 'make', pts: 10, cheer: 'Enjoy your music practice! 🎵' }, { id: 'drawing', name: 'Drawing', kind: 'make', pts: 10, cheer: 'Can’t wait to see your drawing! 🎨' },
+  { id: 'chores', name: 'Chores', kind: 'help', pts: 10 },
+  { id: 'tennis', name: 'Tennis', kind: 'move', pts: 10, cheer: 'Have fun at tennis! 🎾' }, { id: 'swimming', name: 'Swimming', kind: 'move', pts: 10, cheer: 'Have a great swim! 🏊' },
+  { id: 'football', name: 'Football', kind: 'move', pts: 10, cheer: 'Have fun at football! 🏈' }, { id: 'soccer', name: 'Soccer', kind: 'move', pts: 10, cheer: 'Have fun at soccer! ⚽' },
+  { id: 'basketball', name: 'Basketball', kind: 'move', pts: 10, cheer: 'Have fun at basketball! 🏀' }, { id: 'baseball', name: 'Baseball', kind: 'move', pts: 10, cheer: 'Have fun at baseball! ⚾' },
+  { id: 'running', name: 'Running', kind: 'move', pts: 10, cheer: 'Have a great run! 👟' }, { id: 'biking', name: 'Biking', kind: 'move', pts: 10, cheer: 'Enjoy your bike ride! 🚲' },
+  { id: 'outdoor', name: 'Play outside', kind: 'move', pts: 10, cheer: 'Have fun playing outside! 🌳' },
+  { id: 'friends', name: 'Friends', kind: 'life', pts: 5 }, { id: 'snack', name: 'Snack', kind: 'life', pts: 5 },
+  { id: 'dinner', name: 'Family dinner', kind: 'life', pts: 5 }, { id: 'shower', name: 'Shower', kind: 'life', pts: 5 },
+  { id: 'rest', name: 'Rest', kind: 'rest', pts: 5 }, { id: 'bedtime', name: 'Bedtime', kind: 'rest', pts: 5 },
+  { id: 'other', name: 'Something else', kind: 'other', pts: 5 },
+  { id: 'gaming', name: 'Gaming', kind: 'screen', pts: 0 }, { id: 'tv', name: 'TV & videos', kind: 'screen', pts: 0 }
+];
+const ACT = Object.fromEntries(ACTS.map(a => [a.id, a]));
+const ACT_DRAW = (() => {
+  const ink = '#3B2A20', S = { stroke: ink, strokeWidth: 2.2, strokeLinejoin: 'round', strokeLinecap: 'round' };
+  const pt = (cx, cy, r, deg) => `${(cx + r * Math.cos(deg * Math.PI / 180)).toFixed(1)} ${(cy + r * Math.sin(deg * Math.PI / 180)).toFixed(1)}`;
+  const star = (cx, cy, R, r) => 'M' + Array.from({ length: 10 }, (_, i) => pt(cx, cy, i % 2 ? r : R, -90 + i * 36)).join(' L') + ' Z';
+  const tw = (h, x, y, r, fill) => h('path', { d: `M${x} ${y - r} Q${x} ${y} ${x + r} ${y} Q${x} ${y} ${x} ${y + r} Q${x} ${y} ${x - r} ${y} Q${x} ${y} ${x} ${y - r} Z`, fill });
+  const drop = (x, y) => `M${x} ${y} C${x + 2.3} ${y + 3} ${x + 2.3} ${y + 5.4} ${x} ${y + 5.4} C${x - 2.3} ${y + 5.4} ${x - 2.3} ${y + 3} ${x} ${y} Z`;
+  // Soccer ball: a center patch, spokes and five patches around the rim.
+  const ang = [-90, -18, 54, 126, 198];
+  const soc = {
+    mid: 'M' + ang.map(a => pt(24, 24, 5.8, a)).join(' L') + ' Z',
+    spokes: ang.map(a => `M${pt(24, 24, 5.8, a)} L${pt(24, 24, 10.6, a)}`).join(' '),
+    rim: ang.map(a => `M${pt(24, 24, 10.6, a)} L${pt(24, 24, 14.9, a - 19)} A14.9 14.9 0 0 1 ${pt(24, 24, 14.9, a + 19)} Z`).join(' ')
+  };
+  // Baseball stitches: little ticks across each seam.
+  const bz = (p, t) => { const u = 1 - t; return [0, 1].map(k => u * u * u * p[0][k] + 3 * u * u * t * p[1][k] + 3 * u * t * t * p[2][k] + t * t * t * p[3][k]); };
+  const seamL = [[14.5, 12.5], [20, 18], [20, 30], [14.5, 35.5]], seamR = seamL.map(([x, y]) => [48 - x, y]);
+  const ticks = [seamL, seamR].map((sm, side) => [0.14, 0.32, 0.5, 0.68, 0.86].map(t => {
+    const [x, y] = bz(sm, t), [x2, y2] = bz(sm, t + 0.01), dx = x2 - x, dy = y2 - y, L = Math.hypot(dx, dy) || 1, nx = -dy / L * 1.9, ny = dx / L * 1.9;
+    return `M${(x - nx).toFixed(1)} ${(y - ny).toFixed(1)} L${(x + nx).toFixed(1)} ${(y + ny).toFixed(1)}`;
+  }).join(' ')).join(' ');
+  return {
+    study: h => [
+      h('rect', { x: 9, y: 9, width: 21, height: 30, rx: 3, fill: '#fff', ...S }),
+      h('path', { d: 'M14 17 H25 M14 22.5 H25 M14 28 H21', stroke: '#7FB3E0', strokeWidth: 2.2, strokeLinecap: 'round' }),
+      h('path', { d: 'M9 14 H6.5 M9 20 H6.5 M9 26 H6.5 M9 32 H6.5', ...S }),
+      h('g', { transform: 'rotate(35 33 25)' },
+        h('rect', { x: 29.5, y: 13, width: 7, height: 17, fill: '#FFD166', ...S }),
+        h('rect', { x: 29.5, y: 9, width: 7, height: 4.5, rx: 1.5, fill: '#FF8FA3', ...S }),
+        h('path', { d: 'M29.5 30 L33 36.5 L36.5 30 Z', fill: '#FFE6BF', ...S }),
+        h('path', { d: 'M32 34.6 L33 36.5 L34 34.6 Z', fill: ink }))
+    ],
+    reading: h => [
+      h('path', { d: 'M7 35 V38.5 C12 36.5 19 36.5 24 40 C29 36.5 36 36.5 41 38.5 V35', fill: 'none', ...S }),
+      h('path', { d: 'M24 14 C19 10.5 12 10.5 7 12.5 V35 C12 33 19 33 24 36.5 C29 33 36 33 41 35 V12.5 C36 10.5 29 10.5 24 14 Z', fill: '#fff', ...S }),
+      h('path', { d: 'M24 14 V36.5', ...S }),
+      h('path', { d: 'M11 18 Q15.5 16.8 20 18 M11 23 Q15.5 21.8 20 23 M11 28 Q15.5 26.8 20 28 M28 23 Q32.5 21.8 37 23 M28 28 Q32.5 26.8 37 28', fill: 'none', stroke: '#7FB3E0', strokeWidth: 2, strokeLinecap: 'round' }),
+      h('path', { d: 'M30 11.6 V20.5 L32.5 18.5 L35 20.5 V11.2', fill: '#FF6B57', ...S, strokeWidth: 1.9 })
+    ],
+    music: h => [
+      h('path', { d: 'M20 31.5 V14.5 L37 10.5 V27.5', fill: 'none', ...S, strokeWidth: 2.6 }),
+      h('path', { d: 'M20 14.5 L37 10.5 V16 L20 20 Z', fill: ink, ...S }),
+      h('ellipse', { cx: 15.5, cy: 32.5, rx: 5.6, ry: 4.4, transform: 'rotate(-20 15.5 32.5)', fill: '#FF6B8A', ...S }),
+      h('ellipse', { cx: 32.5, cy: 28.5, rx: 5.6, ry: 4.4, transform: 'rotate(-20 32.5 28.5)', fill: '#FF6B8A', ...S }),
+      tw(h, 9.5, 14, 3.4, '#fff'), tw(h, 40, 38, 2.6, '#fff')
+    ],
+    drawing: (h, bg) => [
+      h('path', { d: 'M24 8.5 C35 8.5 41.5 15 41.5 22.5 C41.5 28.5 37 30 33.5 29 C30.5 28.2 28.5 30 29.5 33.2 C30.5 37 27.5 40 22.5 39.5 C13.5 38.8 6.5 32 6.5 23.5 C6.5 14.5 14 8.5 24 8.5 Z', fill: '#FFE6BF', ...S }),
+      h('circle', { cx: 15, cy: 19.5, r: 3.3, fill: '#FF6B57', ...S, strokeWidth: 1.8 }),
+      h('circle', { cx: 23.5, cy: 14.5, r: 3.3, fill: '#FFD166', ...S, strokeWidth: 1.8 }),
+      h('circle', { cx: 32.5, cy: 17, r: 3.3, fill: '#5AA9E6', ...S, strokeWidth: 1.8 }),
+      h('circle', { cx: 13.5, cy: 28.5, r: 3.3, fill: '#3DBE8B', ...S, strokeWidth: 1.8 }),
+      h('circle', { cx: 21.5, cy: 31.5, r: 2.5, fill: bg, ...S, strokeWidth: 1.8 }),
+      h('g', { transform: 'rotate(38 37 33)' },
+        h('rect', { x: 35.5, y: 21, width: 3.2, height: 13, rx: 1.6, fill: '#C98A4B', ...S, strokeWidth: 1.8 }),
+        h('path', { d: 'M34.6 34 H39.6 L38.8 38 Q37.1 42.5 35.4 38 Z', fill: '#C9487A', ...S, strokeWidth: 1.8 }))
+    ],
+    chores: h => [
+      h('path', { d: 'M36 6.5 L25 25', stroke: ink, strokeWidth: 5.6, strokeLinecap: 'round' }),
+      h('path', { d: 'M36 6.5 L25 25', stroke: '#C98A4B', strokeWidth: 2.6, strokeLinecap: 'round' }),
+      h('path', { d: 'M18.5 23 L30.5 29.5 L26.5 40 C20.5 41 13 38.5 9.5 33.5 Z', fill: '#FFD166', ...S }),
+      h('path', { d: 'M15.5 30 L12.8 35.2 M19.5 32 L17.6 37.8 M23.5 34 L22.6 39.6', stroke: '#C9971F', strokeWidth: 1.7, strokeLinecap: 'round' }),
+      h('path', { d: 'M18.5 23 L30.5 29.5 L28.8 33.4 L16.8 26.9 Z', fill: '#E2553F', ...S, strokeWidth: 2 }),
+      tw(h, 38, 35, 3.6, '#fff'), tw(h, 33.5, 41, 2.2, '#fff'), tw(h, 41.5, 27, 2.2, '#fff')
+    ],
+    tennis: h => [
+      h('g', { transform: 'rotate(40 20 21)' },
+        h('rect', { x: 18, y: 31, width: 4.4, height: 12, rx: 2, fill: '#FF6B57', ...S }),
+        h('path', { d: 'M17.4 29.6 L20.2 33 L23 29.6', fill: 'none', ...S }),
+        h('ellipse', { cx: 20.2, cy: 19, rx: 9, ry: 11.5, fill: '#FFF7EC' }),
+        h('path', { d: 'M16 9.5 V28.5 M20.2 8 V30 M24.4 9.5 V28.5 M12 14.5 H28.4 M11.3 19 H29 M12 23.5 H28.4', stroke: '#C2AA92', strokeWidth: 1.3 }),
+        h('ellipse', { cx: 20.2, cy: 19, rx: 9, ry: 11.5, fill: 'none', ...S, strokeWidth: 2.5 })),
+      h('circle', { cx: 35.5, cy: 35, r: 6.2, fill: '#DDEB4F', ...S }),
+      h('path', { d: 'M30.6 31.6 C33.4 33.5 33.4 36.5 30.8 38.4 M40.4 31.6 C37.6 33.5 37.6 36.5 40.2 38.4', fill: 'none', stroke: '#fff', strokeWidth: 1.8, strokeLinecap: 'round' })
+    ],
+    swimming: h => [
+      h('circle', { cx: 24, cy: 20, r: 8.4, fill: '#FFE0C2', ...S }),
+      h('path', { d: 'M15.6 19.5 C15.6 13.4 19.4 11.6 24 11.6 C28.6 11.6 32.4 13.4 32.4 19.5 Z', fill: '#FF6B57', ...S }),
+      h('path', { d: 'M15.7 21.5 H32.3', ...S, strokeWidth: 1.8 }),
+      h('circle', { cx: 20.6, cy: 22, r: 2.8, fill: '#BFE6FF', ...S, strokeWidth: 1.8 }),
+      h('circle', { cx: 27.4, cy: 22, r: 2.8, fill: '#BFE6FF', ...S, strokeWidth: 1.8 }),
+      h('path', { d: 'M6.5 28 Q10.75 24.5 15 28 T23.5 28 T32 28 T40.5 28 Q41.8 27.2 41.5 28 V35.5 Q41.5 40 37 40 H11 Q6.5 40 6.5 35.5 Z', fill: '#5AA9E6', ...S }),
+      h('path', { d: 'M11 34 Q14 32 17 34 M27 35 Q30 33 33 35', fill: 'none', stroke: '#fff', strokeWidth: 1.8, strokeLinecap: 'round' }),
+      h('path', { d: drop(9.5, 14) + drop(38.5, 12.5) + drop(42, 19.5), fill: '#fff', ...S, strokeWidth: 1.4 })
+    ],
+    football: h => [
+      h('g', { transform: 'rotate(-35 24 24)' },
+        h('path', { d: 'M6.5 24 C12 12 36 12 41.5 24 C36 36 12 36 6.5 24 Z', fill: '#B5651D', ...S, strokeWidth: 2.4 }),
+        h('path', { d: 'M13.5 17.6 C12.4 21.5 12.4 26.5 13.5 30.4 M34.5 17.6 C35.6 21.5 35.6 26.5 34.5 30.4', fill: 'none', stroke: '#fff', strokeWidth: 2, strokeLinecap: 'round' }),
+        h('path', { d: 'M18.5 24 H29.5 M20.2 21.4 V26.6 M22.8 21.4 V26.6 M25.4 21.4 V26.6 M28 21.4 V26.6', stroke: '#fff', strokeWidth: 2, strokeLinecap: 'round' }))
+    ],
+    soccer: h => [
+      h('circle', { cx: 24, cy: 24, r: 15, fill: '#fff' }),
+      h('path', { d: soc.rim, fill: ink }),
+      h('path', { d: soc.spokes, stroke: ink, strokeWidth: 1.8 }),
+      h('path', { d: soc.mid, fill: ink, ...S, strokeWidth: 1 }),
+      h('circle', { cx: 24, cy: 24, r: 15, fill: 'none', ...S, strokeWidth: 2.4 })
+    ],
+    basketball: h => [
+      h('circle', { cx: 24, cy: 24, r: 15, fill: '#F28C38', ...S, strokeWidth: 2.4 }),
+      h('path', { d: 'M24 9 V39 M9 24 H39 M13.6 13.2 C19 18.5 19 29.5 13.6 34.8 M34.4 13.2 C29 18.5 29 29.5 34.4 34.8', fill: 'none', stroke: ink, strokeWidth: 2, strokeLinecap: 'round' }),
+      h('path', { d: 'M15.5 15 Q17 13 19.5 12.2', fill: 'none', stroke: '#FFC08A', strokeWidth: 2, strokeLinecap: 'round' })
+    ],
+    baseball: h => [
+      h('circle', { cx: 24, cy: 24, r: 15, fill: '#fff', ...S, strokeWidth: 2.4 }),
+      h('path', { d: 'M14.5 12.5 C20 18 20 30 14.5 35.5 M33.5 12.5 C28 18 28 30 33.5 35.5', fill: 'none', stroke: '#E2553F', strokeWidth: 1.9, strokeLinecap: 'round' }),
+      h('path', { d: ticks, stroke: '#E2553F', strokeWidth: 1.5, strokeLinecap: 'round' })
+    ],
+    running: h => [
+      h('path', { d: 'M3.5 20 H8.5 M2.5 25 H7.5 M4 30 H8', stroke: '#fff', strokeWidth: 2.4, strokeLinecap: 'round' }),
+      h('path', { d: 'M11 33 L12.5 17.5 C14.5 16 18 16.5 19.5 18.5 C21 21 23.5 22.5 27 23.5 L36 25.5 C40 26.5 42 29 42 33 Z', fill: '#FF6B57', ...S }),
+      h('path', { d: 'M19.5 23.6 L23 21.6 M22.6 26.6 L26.1 24.6', stroke: '#fff', strokeWidth: 2, strokeLinecap: 'round' }),
+      h('path', { d: 'M30.5 26.8 L29 31 M34.5 27.6 L33 31', stroke: '#FFD166', strokeWidth: 2.2, strokeLinecap: 'round' }),
+      h('path', { d: 'M10 33 H43 V35 C43 37 41.5 38.5 39.5 38.5 H12.5 C11 38.5 10 37.5 10 36 Z', fill: '#fff', ...S })
+    ],
+    biking: h => [
+      h('circle', { cx: 13.5, cy: 31, r: 7.5, fill: '#fff', ...S, strokeWidth: 2.4 }),
+      h('circle', { cx: 34.5, cy: 31, r: 7.5, fill: '#fff', ...S, strokeWidth: 2.4 }),
+      h('circle', { cx: 13.5, cy: 31, r: 1.6, fill: ink }), h('circle', { cx: 34.5, cy: 31, r: 1.6, fill: ink }),
+      h('path', { d: 'M13.5 31 L19.5 20 H31 L24 31 Z M31 20 L34.5 31 M19.5 20 L18.4 16.5', fill: 'none', stroke: '#2F7FC1', strokeWidth: 2.6, strokeLinejoin: 'round', strokeLinecap: 'round' }),
+      h('path', { d: 'M15 15.8 H21.5', stroke: ink, strokeWidth: 2.8, strokeLinecap: 'round' }),
+      h('path', { d: 'M31 20 L29.6 14.5 H34', fill: 'none', ...S, strokeWidth: 2.4 }),
+      h('circle', { cx: 24, cy: 31, r: 2.3, fill: '#FFD166', ...S, strokeWidth: 1.6 })
+    ],
+    outdoor: h => [
+      h('path', { d: 'M34 5 V7 M34 21 V23 M25 14 H27 M41 14 H43 M27.6 7.6 L29 9 M39 19 L40.4 20.4 M40.4 7.6 L39 9 M29 19 L27.6 20.4', stroke: ink, strokeWidth: 1.8, strokeLinecap: 'round' }),
+      h('circle', { cx: 34, cy: 14, r: 5.2, fill: '#FFD166', ...S, strokeWidth: 2 }),
+      h('path', { d: 'M5.5 38.5 C14 34.5 34 34.5 42.5 38.5', fill: 'none', stroke: '#2E8A5E', strokeWidth: 2.4, strokeLinecap: 'round' }),
+      h('rect', { x: 15, y: 25, width: 4.5, height: 11.5, rx: 1, fill: '#B5651D', ...S, strokeWidth: 2 }),
+      h('path', { d: 'M9 23.5 C5.5 22.5 5.8 17 9.5 16.2 C9.5 11.5 14 10 16.5 12 C18.5 9 24 9.5 24.5 14 C28 14.3 28.5 19.5 26 21.5 C26.3 24.8 22 26 20 24.3 C18 26.4 13 26.3 12 24.2 C11 24.6 10 24.3 9 23.5 Z', fill: '#3DBE8B', ...S }),
+      h('path', { d: 'M13 17 Q15 15 17.5 15.5', fill: 'none', stroke: '#9BE3B8', strokeWidth: 2, strokeLinecap: 'round' })
+    ],
+    friends: h => [
+      h('circle', { cx: 18, cy: 22, r: 8.6, fill: '#FFD166', ...S }),
+      h('circle', { cx: 30.5, cy: 26.5, r: 8.6, fill: '#FF9F80', ...S }),
+      h('circle', { cx: 15.3, cy: 21, r: 1.3, fill: ink }), h('circle', { cx: 20.7, cy: 21, r: 1.3, fill: ink }),
+      h('circle', { cx: 27.8, cy: 25.5, r: 1.3, fill: ink }), h('circle', { cx: 33.2, cy: 25.5, r: 1.3, fill: ink }),
+      h('path', { d: 'M15 24.5 Q18 27.6 21 24.5 M27.5 29 Q30.5 32.1 33.5 29', fill: 'none', ...S, strokeWidth: 1.8 }),
+      h('path', { d: 'M36.5 12.5 C36.5 10.4 39 9.8 40.2 11.7 C41.4 9.8 43.9 10.4 43.9 12.5 C43.9 15.1 40.2 17.2 40.2 17.2 C40.2 17.2 36.5 15.1 36.5 12.5 Z', fill: '#FF6B8A', ...S, strokeWidth: 1.6 })
+    ],
+    snack: h => [
+      h('path', { d: 'M24 17 C20 13 11 14 11 24 C11 33 18 39.5 24 37.5 C30 39.5 37 33 37 24 C37 14 28 13 24 17 Z', fill: '#FF6B57', ...S }),
+      h('path', { d: 'M24 17 C24 14.5 24.6 12.5 25.8 10.5', fill: 'none', stroke: '#8A5A2B', strokeWidth: 2.4, strokeLinecap: 'round' }),
+      h('path', { d: 'M25.5 12.5 C27.5 8 33 7.6 34.5 9.4 C32.8 13.3 28.6 14 25.5 12.5 Z', fill: '#3DBE8B', ...S, strokeWidth: 1.8 }),
+      h('ellipse', { cx: 17, cy: 22.5, rx: 2, ry: 3.4, transform: 'rotate(20 17 22.5)', fill: '#FFB4A2' })
+    ],
+    dinner: h => [
+      h('circle', { cx: 24, cy: 25, r: 10.6, fill: '#fff', ...S }),
+      h('circle', { cx: 24, cy: 25, r: 6.6, fill: 'none', stroke: '#E5D3C0', strokeWidth: 1.8 }),
+      h('circle', { cx: 22, cy: 23.6, r: 2.5, fill: '#3DBE8B' }), h('circle', { cx: 26.6, cy: 26.6, r: 2.3, fill: '#FF6B57' }), h('circle', { cx: 21.6, cy: 28, r: 1.6, fill: '#FFD166' }),
+      h('path', { d: 'M6.6 10 V17.5 M9.3 10 V17.5 M12 10 V17.5 M6.6 17.5 C6.6 20.6 12 20.6 12 17.5 M9.3 20 V39', fill: 'none', ...S, strokeWidth: 2 }),
+      h('path', { d: 'M38.6 9.6 C42.6 12.6 42.8 19.6 40.2 22.4 H38.6 Z', fill: '#fff', ...S, strokeWidth: 2 }),
+      h('path', { d: 'M39.4 22.4 V39', ...S, strokeWidth: 2.6 })
+    ],
+    shower: h => [
+      h('path', { d: 'M9 33 V10 Q9 7.5 11.5 7.5 H23.5 Q26 7.5 26 10 V14', fill: 'none', ...S, strokeWidth: 2.6 }),
+      h('path', { d: 'M18 20 C18 14.6 34 14.6 34 20 Z', fill: '#C9CED6', ...S }),
+      h('path', { d: [drop(20.5, 23.5), drop(26, 25), drop(31.5, 23.5), drop(23, 31.5), drop(29, 31.5), drop(26, 38) ].join(' '), fill: '#5AA9E6', ...S, strokeWidth: 1.5 })
+    ],
+    rest: h => [
+      h('path', { d: 'M8.5 19 Q24 22.5 39.5 19 Q42 26 39.5 34 Q24 30.5 8.5 34 Q6 26 8.5 19 Z', fill: '#fff', ...S }),
+      h('path', { d: 'M15 26.5 Q24 24.5 33 26.5', fill: 'none', stroke: '#E5D3C0', strokeWidth: 2, strokeLinecap: 'round' }),
+      h('path', { d: 'M24 6.5 H30 L24 12.5 H30', fill: 'none', ...S }),
+      h('path', { d: 'M33 9.5 H37 L33 13.5 H37', fill: 'none', ...S, strokeWidth: 1.8 })
+    ],
+    bedtime: h => [
+      h('path', { d: 'M27 8 C18.5 9.5 12.5 16.5 12.5 25 C12.5 33.5 19.5 40.5 28 40.5 C33.5 40.5 38 37.5 40.5 33 C38.5 33.8 36.5 34 34.5 34 C26 34 19.5 27.5 19.5 19 C19.5 14.5 22 10.5 27 8 Z', fill: '#FFD166', ...S }),
+      h('path', { d: 'M15.6 25.5 Q17.6 27.7 19.6 25.5', fill: 'none', ...S, strokeWidth: 1.8 }),
+      h('circle', { cx: 18.5, cy: 30.8, r: 1.9, fill: '#FFB4A2' }),
+      tw(h, 34, 14, 4.2, '#fff'), tw(h, 40.5, 22.5, 2.6, '#fff'), tw(h, 29.5, 22, 2.2, '#fff')
+    ],
+    other: h => [
+      h('path', { d: star(24, 25.5, 15.5, 6.6), fill: '#FFD166', ...S }),
+      h('path', { d: 'M24 21.5 V29.5 M20 25.5 H28', ...S, strokeWidth: 2.6 })
+    ],
+    gaming: h => [
+      h('path', { d: 'M14.5 16 H33.5 C38.5 16 41.5 20 42 26 C42.5 32 40.5 35.5 37.5 35.5 C34.5 35.5 33.5 31 30.5 30.5 H17.5 C14.5 31 13.5 35.5 10.5 35.5 C7.5 35.5 5.5 32 6 26 C6.5 20 9.5 16 14.5 16 Z', fill: '#fff', ...S }),
+      h('path', { d: 'M11.6 23.5 H18.4 M15 20.1 V26.9', stroke: ink, strokeWidth: 2.6, strokeLinecap: 'round' }),
+      h('circle', { cx: 32.5, cy: 20.6, r: 1.9, fill: '#FF6B57' }), h('circle', { cx: 36, cy: 24, r: 1.9, fill: '#5AA9E6' }),
+      h('circle', { cx: 32.5, cy: 27.4, r: 1.9, fill: '#3DBE8B' }), h('circle', { cx: 29, cy: 24, r: 1.9, fill: '#FFD166' })
+    ],
+    tv: h => [
+      h('path', { d: 'M20 14.5 L15 7.5 M28 14.5 L33 7.5', ...S }),
+      h('rect', { x: 7, y: 14, width: 34, height: 22.5, rx: 5, fill: '#fff', ...S }),
+      h('rect', { x: 11, y: 18, width: 26, height: 14.5, rx: 3, fill: '#5AA9E6', ...S, strokeWidth: 1.8 }),
+      h('path', { d: 'M21.5 21.6 L28.5 25.2 L21.5 28.8 Z', fill: '#fff', ...S, strokeWidth: 1.6 }),
+      h('path', { d: 'M14 36.5 L12.6 40.4 M34 36.5 L35.4 40.4', ...S })
+    ]
+  };
+})();
+// An activity's icon: a little sticker tile. size in px.
+const actIcon = (id, size) => {
+  const h = React.createElement, a = ACT[id] || ACT.other, bg = ACT_KIND[a.kind].tile, draw = ACT_DRAW[a.id] || ACT_DRAW.other;
+  return h('svg', { viewBox: '0 0 48 48', width: size, height: size, 'aria-hidden': 'true', style: { display: 'block' } },
+    h('rect', { x: 1.25, y: 1.25, width: 45.5, height: 45.5, rx: 13, fill: bg, stroke: '#3B2A20', strokeWidth: 2.5 }),
+    ...draw(h, bg));
+};
+// A day's plan is a list of blocks: { s: first half-hour slot (0 = 3:00 PM), n: how many slots, a: activity id,
+// t: its name (for "Something else" only), d: 1 once it's done }. Finished blocks earn points for the Nest.
+const FP_SLOTS = 14, FP_START = 15 * 60, FP_ROW = 56, FP_PAST = 2, BAL_BONUS = 20;
+const FDAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+const FDAYSL = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+const PDIRTY = 'lunchbuddy-plan-dirty';   // days whose plan still needs sharing with the family
+const FP_LEN = { 1: '30 min', 2: '1 hr', 3: '1½ hr', 4: '2 hr', 5: '2½ hr', 6: '3 hr' };
+const monOf = d => { const x = new Date(d.getFullYear(), d.getMonth(), d.getDate()); return add(x, -((x.getDay() + 6) % 7)); };
+const slotMin = i => FP_START + i * 30;
+const clock = m => `${Math.floor(m / 60) - 12}:${pad(m % 60)}`;
+const fpRange = (s, n) => `${clock(slotMin(s))}–${clock(slotMin(s + n))} PM`;
+const hrs = n => n <= 0 ? '0 min' : n === 1 ? '30 min' : `${n / 2} hr`;   // n half hours
+const cleanBlocks = list => {
+  const used = Array(FP_SLOTS).fill(false), out = [];
+  (Array.isArray(list) ? list : []).forEach(b => {
+    if (!isObj(b) || !ACT[b.a]) return;
+    const s = Math.floor(Number(b.s)), n = Math.floor(Number(b.n));
+    if (!(s >= 0 && n >= 1 && s + n <= FP_SLOTS)) return;
+    for (let i = s; i < s + n; i++) if (used[i]) return;
+    for (let i = s; i < s + n; i++) used[i] = true;
+    const t = b.a === 'other' && typeof b.t === 'string' ? b.t.slice(0, 24) : '';
+    out.push({ s, n, a: b.a, ...(t ? { t } : {}), d: b.d ? 1 : 0 });
+  });
+  return out.sort((x, y) => x.s - y.s);
+};
+const cleanSched = o => {
+  const r = {};
+  Object.entries(isObj(o) ? o : {}).forEach(([k, v]) => { if (/^\d{4}-\d{2}-\d{2}$/.test(k)) { const c = cleanBlocks(v); if (c.length) r[k] = c; } });
+  return r;
+};
+// Points and balance for one day. A balanced afternoon = some learning and some moving done, and an hour of screens or less.
+const fpDay = blocks => {
+  const x = { pts: 0, base: 0, bal: false, learn: 0, move: 0, screen: 0, planned: 0, done: 0, read: 0, study: 0 };
+  (blocks || []).forEach(b => {
+    const a = ACT[b.a] || ACT.other;
+    x.planned += b.n;
+    if (a.kind === 'screen') x.screen += b.n;
+    if (!b.d) return;
+    x.done++; x.base += a.pts * b.n;
+    if (a.kind === 'learn') x.learn += b.n;
+    if (a.kind === 'move') x.move += b.n;
+    if (b.a === 'reading') x.read += b.n;
+    if (b.a === 'study') x.study += b.n;
+  });
+  x.bal = x.learn > 0 && x.move > 0 && x.screen <= 2;
+  x.pts = x.base + (x.bal ? BAL_BONUS : 0);
+  return x;
+};
 
 class Component extends DCLogic {
   constructor(p) {
@@ -1711,6 +2205,8 @@ class Component extends DCLogic {
       stickers: Object.fromEntries(Object.entries(saved.stickers || {}).map(([d, id]) => [d, LEGACY_Q[id] || id])),
       peck: { pts: 0, best: {}, log: {}, plays: 0, ...migratePeck(saved.peck) }, myBadges: saved.myBadges || [],
       nestView: 'quests', bSheet: false, bDraft: { ...MB_BLANK }, game: null,
+      sched: cleanSched(saved.sched), fpWs: monOf(now), fpIdx: (wd + 6) % 7, fpSheet: null, fpKid: null, fpKidSched: {}, fpNotes: [], fpTag: '',
+      fpNoteDraft: '', fpNoteEdit: false, fpReplyFor: null, fpReplyDraft: '', fpReplyEdit: null, fpBusy: false, tick: 0,
       famOk: false, fam: null, famBusy: false, famErr: '', famEvents: [], famLastSeen: 0, famPlans: [], pushState: 'unknown',
       backupAt: ((lsGet(FKEY, {}) || {}).token ? (lsGet(FKEY, {}) || {}).bAt : (lsGet(VKEY, {}) || {}).bAt) || 0, moveCode: null,
       famForm: { familyName: '', startName: '', code: '', joinName: '', role: 'kid', moveCode: '' }
@@ -1719,7 +2215,11 @@ class Component extends DCLogic {
     // so nobody opens the update to a pile of pop-ups.
     if (saved.v !== 2) this.state.seenMs = [...new Set([...(this.state.seenMs || []), ...this.unlocked(this.state)])];
   }
-  componentDidMount() { this.load(); this.famInit(); }
+  componentDidMount() {
+    this.load(); this.famInit();
+    // Keeps the "now" line on today's Flight Plan moving.
+    this._fpClock = setInterval(() => { if (this.state.tab === 'plan' && document.visibilityState === 'visible') this.setState({ tick: Date.now() }); }, 60000);
+  }
 
   // ── Family sharing ──
   famSession() { return lsGet(FKEY, {}) || {}; }
@@ -1749,8 +2249,8 @@ class Component extends DCLogic {
   }
   famFail(e, quiet) {
     if (e && e.code === 'no_session') {
-      lsSet(FKEY, null); lsSet(FDIRTY, null);
-      this.setState({ fam: null, famEvents: [], famPlans: [], backupAt: this.vSession().bAt || 0, moveCode: null, famErr: quiet ? '' : e.message }, () => this.backupSoon());
+      lsSet(FKEY, null); lsSet(FDIRTY, null); lsSet(PDIRTY, null);
+      this.setState({ fam: null, famEvents: [], famPlans: [], fpNotes: [], fpKidSched: {}, backupAt: this.vSession().bAt || 0, moveCode: null, famErr: quiet ? '' : e.message }, () => this.backupSoon());
       return;
     }
     if (!quiet) this.setState({ famErr: (e && e.message) || 'Something went wrong.' });
@@ -1765,7 +2265,7 @@ class Component extends DCLogic {
     let q = null; try { q = new URLSearchParams(location.search); } catch (e) {}
     const join = q && q.get('join'), tab = q && q.get('tab');
     if (join) this.setState(s => ({ tab: 'family', famForm: { ...s.famForm, code: join.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 6) } }));
-    else if (tab === 'family') this.setState({ tab: 'family' });
+    else if (tab === 'family' || tab === 'plan') this.setState({ tab });
     if (join || tab) { try { history.replaceState(null, '', location.pathname); } catch (e) {} }
     let ok = false;
     try { const r = await fetch('/api/health', { cache: 'no-store' }); const j = await r.json(); ok = !!(r.ok && j && j.family); } catch (e) {}
@@ -1773,7 +2273,11 @@ class Component extends DCLogic {
     this.setState({ famOk: true });
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('/sw.js').catch(() => {});
-      navigator.serviceWorker.addEventListener('message', e => { if (e.data && e.data.type === 'lb-open') this.goTab('family'); });
+      navigator.serviceWorker.addEventListener('message', e => {
+        if (!e.data || e.data.type !== 'lb-open') return;
+        let t = null; try { t = new URL(e.data.url).searchParams.get('tab'); } catch (err) {}
+        this.goTab(t === 'plan' ? 'plan' : 'family');
+      });
     }
     document.addEventListener('visibilitychange', () => {
       if (document.visibilityState === 'visible') this.famRefresh();
@@ -1798,9 +2302,11 @@ class Component extends DCLogic {
       if (fam.me.status === 'active') {
         if (!this.famSession().synced) await this.famInitialSync();
         await this.famFlush();
+        await this.fpFlush();
         const ses = this.famSession();
         if (ses.bDirty || !ses.bAt) await this.backupNow();
         if (this.state.tab === 'family') { this.famLoadEvents(true); this.famLoadPlans(); }
+        if (this.state.tab === 'plan') this.fpLoad();
       } else {
         const v = this.vSession();
         if (v.bDirty || !v.bAt) await this.backupNow();
@@ -1811,7 +2317,11 @@ class Component extends DCLogic {
   }
   goTab(id) {
     if (id !== this.state.tab) this._famSeenBase = null;
-    this.setState({ tab: id }, () => { if (id === 'family') this.famRefresh(); });
+    // Opening the Plan tab with unread notes (or replies) jumps to the first day that has one.
+    const f = this.state.fam, n = id === 'plan' && f && f.notesNew > 0 && f.notesDay ? new Date(f.notesDay + 'T12:00') : null;
+    const jump = n ? { fpWs: monOf(n), fpIdx: (n.getDay() + 6) % 7, ...(f.notesKid ? { fpKid: f.notesKid } : {}) } : {};
+    this.setState(s => ({ tab: id, ...jump, ...(id === 'plan' && s.tab !== 'plan' ? { fpNotes: s.fpNotes.map(x => ({ ...x, wasNew: false })), fpNoteEdit: false } : {}) }),
+      () => { if (id === 'family') this.famRefresh(); if (id === 'plan') this.fpLoad(); });
     window.scrollTo(0, 0);
   }
   async createFamily() {
@@ -1849,8 +2359,8 @@ class Component extends DCLogic {
     await this.famDo(async () => {
       await this.pushDisable(true);
       await this.api('POST', 'family/leave', {});
-      lsSet(FKEY, null); lsSet(FDIRTY, null);
-      this.setState({ fam: null, famEvents: [], famPlans: [], backupAt: this.vSession().bAt || 0, moveCode: null }, () => this.backupSoon());
+      lsSet(FKEY, null); lsSet(FDIRTY, null); lsSet(PDIRTY, null);
+      this.setState({ fam: null, famEvents: [], famPlans: [], fpNotes: [], fpKidSched: {}, backupAt: this.vSession().bAt || 0, moveCode: null }, () => this.backupSoon());
       this.flash(lastParent ? 'Family deleted' : pending ? 'Request cancelled' : 'You left the family');
     });
   }
@@ -1992,8 +2502,8 @@ class Component extends DCLogic {
     return { emoji, text, when: ago(e.at), isNew, bg: isNew ? '#FFF1C2' : '#FFF7EC' };
   }
   saveData() {
-    const { favs, eaten, badges, myIdeas, seenMs, questDone, stickers, holos, peck, myBadges } = this.state;
-    return { v: 2, favs, eaten, badges, myIdeas, seenMs, questDone, stickers, holos, peck, myBadges };
+    const { favs, eaten, badges, myIdeas, seenMs, questDone, stickers, holos, peck, myBadges, sched } = this.state;
+    return { v: 2, favs, eaten, badges, myIdeas, seenMs, questDone, stickers, holos, peck, myBadges, sched };
   }
   persist() {
     try { localStorage.setItem(KEY, JSON.stringify(this.saveData())); } catch (e) {}
@@ -2228,7 +2738,13 @@ class Component extends DCLogic {
       const exp = prev ? iso(add(prev, prev.getDay() === 5 ? 3 : 1)) : null;
       run = exp === d ? run + 1 : 1; best = Math.max(best, run); prev = dt;
     });
+    const fp = { planPts: 0, planDone: 0, readHrs: 0, studyHrs: 0, moveHrs: 0, balDays: 0 };
+    Object.values(st.sched || {}).forEach(bl => {
+      const x = fpDay(bl);
+      fp.planPts += x.pts; fp.planDone += x.done; fp.readHrs += x.read / 2; fp.studyHrs += x.study / 2; fp.moveHrs += x.move / 2; if (x.bal) fp.balDays++;
+    });
     return {
+      ...fp,
       total: vals.length, mine: st.myIdeas.length, best, golden: c.golden || 0, distinct: Object.keys(c).length,
       water: eat.filter(e => e.includes('water')).length, fruit: eat.filter(e => e.includes('fruit')).length, veggie: eat.filter(e => e.includes('veggie')).length,
       birds: Object.values(st.questDone).filter(l => l.includes('m_bird')).length, questDays: Object.keys(st.stickers).length,
@@ -2277,6 +2793,7 @@ class Component extends DCLogic {
       case 'questweek': return wk.filter(d => s.stickers[d]).length;
       case 'rainbowweek': return wk.filter(d => (s.eaten[d] || []).filter(g => g !== 'water').length >= 5).length;
       case 'peckweek': return [0, 1, 2, 3, 4, 5, 6].reduce((n, i) => n + ((s.peck.log || {})[iso(add(ws, i))] || 0), 0);
+      case 'balanceweek': return [0, 1, 2, 3, 4, 5, 6].filter(i => fpDay(s.sched[iso(add(ws, i))]).bal).length;
     }
     return 0;
   }
@@ -2294,6 +2811,9 @@ class Component extends DCLogic {
       case 'plates': return from(st.badges).length;
       case 'quests': return from(st.stickers).length;
       case 'points': return from(st.peck.log).reduce((n, d) => n + (st.peck.log[d] || 0), 0);
+      case 'planpts': return from(st.sched).reduce((n, d) => n + fpDay(st.sched[d]).pts, 0);
+      case 'study': return from(st.sched).reduce((n, d) => n + fpDay(st.sched[d]).learn / 2, 0);
+      case 'active': return from(st.sched).reduce((n, d) => n + fpDay(st.sched[d]).move / 2, 0);
       default: return from(st.eaten).filter(d => (st.eaten[d] || []).includes(b.type)).length;
     }
   }
@@ -2317,6 +2837,152 @@ class Component extends DCLogic {
     const had = (b.log || []).includes(day);
     this.setState(s => ({ myBadges: s.myBadges.map(x => x.id !== id ? x : { ...x, log: had ? (x.log || []).filter(d => d !== day) : [...(x.log || []), day] }) }),
       () => { this.persist(); this.flash(had ? 'Took back today’s check' : `✅ ${b.name}: logged for today`); this.checkMilestones(); });
+  }
+  // ── Flight Plan ──
+  fpKey() { return iso(add(this.state.fpWs, this.state.fpIdx)); }
+  // How many free half hours there are from slot s on (not counting block `skip`, the one being edited).
+  fpFree(day, s, skip) {
+    const used = Array(FP_SLOTS).fill(false);
+    (this.state.sched[day] || []).forEach((b, i) => { if (i !== skip) for (let j = b.s; j < b.s + b.n; j++) used[j] = true; });
+    let n = 0; while (s + n < FP_SLOTS && !used[s + n]) n++;
+    return n;
+  }
+  // Can block b be checked off now? Days more than FP_PAST days ago are locked; future activities wait until they start.
+  fpWhen(day, b) {
+    const now = new Date(), t = iso(now);
+    if (day < iso(add(now, -FP_PAST))) return 'locked';
+    if (day > t || (day === t && now.getHours() * 60 + now.getMinutes() < slotMin(b.s))) return 'later';
+    return 'ok';
+  }
+  setSched(day, blocks, then) {
+    this.setState(s => { const sched = { ...s.sched }, c = cleanBlocks(blocks); if (c.length) sched[day] = c; else delete sched[day]; return { sched }; },
+      () => { this.persist(); this.fpMark(day); this.checkMilestones(); if (then) then(); });
+  }
+  setFpSheet(p) { this.setState(s => s.fpSheet ? { fpSheet: { ...s.fpSheet, ...p } } : null); }
+  fpOpen(day, s, idx) {
+    const b = idx >= 0 ? (this.state.sched[day] || [])[idx] : null, max = this.fpFree(day, s, idx);
+    if (!max) return;
+    this.setState({ fpSheet: { day, s, idx, a: b ? b.a : null, n: Math.min(b ? b.n : 2, max), t: (b && b.t) || '' } });
+  }
+  fpSave() {
+    const f = this.state.fpSheet; if (!f) return;
+    if (!f.a) { this.flash('👆 Pick an activity first'); return; }
+    const t = f.t.trim();
+    if (f.a === 'other' && !t) { this.flash('✏️ Type what you’ll do'); return; }
+    const list = [...(this.state.sched[f.day] || [])], old = f.idx >= 0 ? list[f.idx] : null;
+    const b = { s: f.s, n: Math.max(1, Math.min(f.n, this.fpFree(f.day, f.s, f.idx))), a: f.a, ...(f.a === 'other' ? { t: t.slice(0, 24) } : {}), d: old && old.a === f.a ? old.d : 0 };
+    if (old) list[f.idx] = b; else list.push(b);
+    const name = f.a === 'other' ? t : ACT[f.a].name;
+    this.setState({ fpSheet: null });
+    this.setSched(f.day, list, () => this.flash(old ? `✏️ ${name} updated` : `🗓️ ${name} added at ${clock(slotMin(b.s))}`));
+  }
+  fpRemove() {
+    const f = this.state.fpSheet; if (!f || f.idx < 0) return;
+    this.setState({ fpSheet: null });
+    this.setSched(f.day, (this.state.sched[f.day] || []).filter((_, i) => i !== f.idx), () => this.flash('🗑️ Removed from your plan'));
+  }
+  fpToggle(day, i) {
+    const list = this.state.sched[day] || [], b = list[i]; if (!b) return;
+    const when = this.fpWhen(day, b);
+    if (when === 'locked') { this.flash('🔒 That day is locked'); return; }
+    if (!b.d && when === 'later') { this.flash('⏰ Check it off once it starts'); return; }
+    const next = list.map((x, j) => j === i ? { ...x, d: x.d ? 0 : 1 } : x), before = fpDay(list), after = fpDay(next), gain = after.pts - before.pts;
+    this.setSched(day, next, () => this.flash(
+      gain > 0 ? (after.bal && !before.bal ? `⚖️ Balanced afternoon! +${gain} ⭐` : `✅ +${gain} ⭐ to your Nest`)
+        : b.d ? 'Took back that check' : ACT[b.a].kind === 'screen' ? '✅ Done. Screen time earns no points' : '✅ Done'));
+  }
+  fpCopyLast(day) {
+    const src = (this.state.sched[iso(add(new Date(day + 'T12:00'), -7))] || []).map(b => ({ ...b, d: 0 }));
+    if (src.length) this.setSched(day, src, () => this.flash('↻ Copied last week’s plan'));
+  }
+  fpPick(i) { this.setState({ fpIdx: i, fpNoteEdit: false, fpReplyFor: null, fpReplyEdit: null }, () => this.fpSeen()); }
+  fpShiftWeek(n) { this.setState(s => ({ fpWs: add(s.fpWs, 7 * n), fpNoteEdit: false, fpReplyFor: null, fpReplyEdit: null }), () => this.fpLoad()); }
+  // Kids share their plan with their family's parents, a moment after each change.
+  fpIsKid() { return this.famActive() && this.state.fam.me.role === 'kid'; }
+  fpMark(day) {
+    if (!this.fpIsKid()) return;
+    const d = lsGet(PDIRTY, {}) || {}; d[day] = 1; lsSet(PDIRTY, d);
+    clearTimeout(this._fpT); this._fpT = setTimeout(() => this.fpFlush(), 1500);
+  }
+  async fpFlush() {
+    if (!this.fpIsKid() || this._fpFlushing) return;
+    const ses = this.famSession();
+    if (!ses.planSynced) {   // first time in the family (or on a new phone): share the last week and everything ahead
+      const from = iso(add(new Date(), -7)), d = lsGet(PDIRTY, {}) || {};
+      Object.keys(this.state.sched).forEach(k => { if (k >= from) d[k] = 1; });
+      lsSet(PDIRTY, d); lsSet(FKEY, { ...ses, planSynced: true });
+    }
+    const days = Object.keys(lsGet(PDIRTY, {}) || {}).sort().slice(0, 40);
+    if (!days.length) return;
+    this._fpFlushing = true;
+    try {
+      for (const day of days) {
+        await this.api('PUT', 'plans', { day, blocks: this.state.sched[day] || [] });
+        const d = lsGet(PDIRTY, {}) || {}; delete d[day]; lsSet(PDIRTY, d);
+      }
+    } catch (e) { this.famFail(e, true); }
+    finally { this._fpFlushing = false; }
+  }
+  // Notes for the week on screen, and (for parents) the kid's plan.
+  async fpLoad() {
+    if (!this.famActive() || this.state.tab !== 'plan') return;
+    const f = this.state.fam, parent = f.me.role === 'parent';
+    const kids = (f.members || []).filter(m => m.role === 'kid' && m.status === 'active');
+    const kid = parent ? (kids.find(k => k.id === this.state.fpKid) || kids[0]) : f.me;
+    if (!kid) return;
+    const ws = this.state.fpWs, start = iso(ws), end = iso(add(ws, 6)), tag = `${kid.id}|${start}`, q = `&start=${start}&end=${end}`;
+    try {
+      const [n, p] = await Promise.all([
+        this.api('GET', `notes?kid=${encodeURIComponent(kid.id)}${q}`),
+        parent ? this.api('GET', `plans?member=${encodeURIComponent(kid.id)}${q}`) : null
+      ]);
+      const cur = parent ? (this.state.fpKid || kid.id) : kid.id;
+      if (`${cur}|${iso(this.state.fpWs)}` !== tag) return;   // they moved on while this loaded
+      this.setState(s => {
+        const o = { fpTag: tag, fpNotes: n.notes.map(x => { const was = s.fpNotes.find(y => y.id === x.id); return was && was.wasNew ? { ...x, wasNew: true } : x; }) };
+        if (parent) {
+          const days = {}; for (let i = 0; i < 7; i++) days[iso(add(ws, i))] = [];
+          p.plans.forEach(r => { days[r.day] = cleanBlocks(r.blocks); });
+          o.fpKid = kid.id; o.fpKidSched = { ...s.fpKidSched, [kid.id]: { ...(s.fpKidSched[kid.id] || {}), ...days } };
+        }
+        return o;
+      }, () => this.fpSeen());
+    } catch (e) { this.famFail(e, true); }
+  }
+  // Notes (for kids) or replies (for parents) on the day on screen count as read. They keep a "New" tag for this visit.
+  fpSeen() {
+    if (this.state.tab !== 'plan' || !this.famActive()) return;
+    const day = this.fpKey(), ids = this.state.fpNotes.filter(n => n.day === day && n.isNew).map(n => n.id);
+    if (!ids.length) return;
+    this.setState(s => ({
+      fpNotes: s.fpNotes.map(n => ids.includes(n.id) ? { ...n, isNew: false, wasNew: true } : n),
+      fam: s.fam ? { ...s.fam, notesNew: Math.max(0, (s.fam.notesNew || 0) - ids.length) } : s.fam
+    }));
+    this.api('POST', 'notes/seen', { ids }).catch(() => {});
+  }
+  async fpDo(fn) {
+    if (this._fpBusy) return;
+    this._fpBusy = true; this.setState({ fpBusy: true });
+    try { await fn(); } catch (e) { if (e && e.code === 'no_session') this.famFail(e, true); this.flash(`⚠️ ${(e && e.message) || 'Something went wrong'}`); }
+    finally { this._fpBusy = false; this.setState({ fpBusy: false }); }
+  }
+  fpSendNote() {
+    const kids = ((this.state.fam && this.state.fam.members) || []).filter(m => m.role === 'kid' && m.status === 'active');
+    const k = kids.find(m => m.id === this.state.fpKid) || kids[0], kid = k && k.id;
+    const text = this.state.fpNoteDraft.trim(), day = this.fpKey();
+    if (!text) { this.flash('✏️ Write a few words first'); return; }
+    if (!kid) return;
+    this.fpDo(async () => { await this.api('PUT', 'notes', { kid, day, text }); this.setState({ fpNoteDraft: '', fpNoteEdit: false }); await this.fpLoad(); this.flash('💌 Note sent'); });
+  }
+  fpDeleteNote(n) {
+    let ok = true; try { ok = window.confirm('Delete this note?'); } catch (e) {}
+    if (!ok) return;
+    this.fpDo(async () => { await this.api('POST', 'notes/delete', { id: n.id }); this.setState({ fpNoteEdit: false, fpNoteDraft: '' }); await this.fpLoad(); this.flash('🗑️ Note deleted'); });
+  }
+  fpReply(n, text) {
+    text = String(text || '').trim();
+    if (!text) { this.flash('✏️ Write a reply first'); return; }
+    this.fpDo(async () => { await this.api('POST', 'notes/reply', { id: n.id, reply: text }); this.setState({ fpReplyFor: null, fpReplyDraft: '', fpReplyEdit: null }); await this.fpLoad(); this.flash('💬 Reply sent'); });
   }
   // ── Peck Patch ──
   setGame(p) { this.setState(s => s.game ? { game: { ...s.game, ...(typeof p === 'function' ? p(s.game) : p) } } : null); }
@@ -2458,7 +3124,7 @@ class Component extends DCLogic {
     const counts = {}; Object.values(s.badges).forEach(b => counts[b] = (counts[b] || 0) + 1);
     const total = Object.keys(s.badges).length;
     const yum = ['🥄', '🍴', '🍽️', '😋', '🤩'];
-    const tabs = [['menu', '🍽️', 'Menu'], ['ideas', '💡', 'Ideas'], ['nest', '🐣', 'Nest'], ['game', '🎮', 'Game']];
+    const tabs = [['menu', '🍽️', 'Menu'], ['ideas', '💡', 'Ideas'], ['nest', '🐣', 'Nest'], ['plan', '🗓️', 'Plan'], ['game', '🎮', 'Game']];
     if (s.famOk) tabs.push(['family', '👪', 'Family']);
     // Family view values
     const fam = s.fam, famIn = !!(fam && fam.me), famAct = famIn && fam.me.status === 'active';
@@ -2474,12 +3140,119 @@ class Component extends DCLogic {
       if (planDays.includes(p.day)) g.days.push({ label: DOW[planDays.indexOf(p.day)], text: p.items.map(t => `${this.itemEmoji(t)} ${t}`).join(' · ') });
     });
     const famPlansView = plansBy.filter(g => g.days.length);
+    // ── Flight Plan ──
+    const famKid = famAct && fam.me.role === 'kid', notesNew = famAct ? fam.notesNew || 0 : 0;
+    const fpKids = famParent ? famMembersAll.filter(m => m.role === 'kid' && m.status === 'active') : [];
+    const viewKid = famParent ? (fpKids.find(m => m.id === s.fpKid) || fpKids[0] || null) : null;
+    const nowD = new Date(), tIso = iso(nowD), nowMin = nowD.getHours() * 60 + nowD.getMinutes();
+    const fpD = add(s.fpWs, s.fpIdx), fk = iso(fpD), fpWe = add(s.fpWs, 6);
+    const kidLoaded = !!(viewKid && s.fpKidSched[viewKid.id] && s.fpKidSched[viewKid.id][fk]);
+    const fpSrc = famParent ? ((viewKid && s.fpKidSched[viewKid.id]) || {}) : s.sched;
+    const fpBl = fpSrc[fk] || [], fpX = fpDay(fpBl);
+    const fpEdit = !famParent && fk >= iso(add(nowD, -FP_PAST));
+    const lastWk = s.sched[iso(add(fpD, -7))] || [];
+    const kidName = viewKid ? viewKid.nickname : '';
+    const covered = Array(FP_SLOTS).fill(false); fpBl.forEach(b => { for (let j = b.s; j < b.s + b.n; j++) covered[j] = true; });
+    const freeSlots = [...Array(FP_SLOTS).keys()].filter(i => !covered[i]);
+    const dayNotes = s.fpNotes.filter(n => n.day === fk);
+    const ownNote = famParent ? dayNotes.find(n => n.mine) : null;
+    const wkOff = Math.round((s.fpWs - monOf(nowD)) / 6048e5);
+    const firstFun = fpBl.map(b => ACT[b.a]).find(a => a && a.cheer);
+    const fpSuggest = [firstFun ? firstFun.cheer : 'Have a great afternoon! 🌤️', fpBl.some(b => b.a === 'study') ? 'Homework first, then fun. You’ve got this! 📚' : 'You’ve got this! 💪', 'So proud of you! 🌟'];
+    const sh = s.fpSheet, shMax = sh ? this.fpFree(sh.day, sh.s, sh.idx) : 0;
+    const fpView = {
+      isPlan: s.tab === 'plan', goPlan: () => this.goTab('plan'),
+      fpHasNewNotes: notesNew > 0 && s.tab === 'menu',
+      fpNewNotesText: famParent ? `${notesNew} new ${notesNew === 1 ? 'reply' : 'replies'} to your notes` : `${notesNew} new ${notesNew === 1 ? 'note' : 'notes'} from home`,
+      fpSubtitle: famParent ? (viewKid ? `See ${kidName}’s afternoon plan and leave a word of encouragement.` : 'When your kids join the family, their after-school plans show up here.')
+        : 'Plan your afternoon from 3 to 10 PM. Finished activities earn points for your Nest.',
+      fpHasKidChips: fpKids.length > 1,
+      fpKids: fpKids.map(m => ({ label: `🧒 ${m.nickname}`, sel: viewKid && m.id === viewKid.id ? 'true' : 'false', bg: viewKid && m.id === viewKid.id ? '#3B2A20' : '#fff', fg: viewKid && m.id === viewKid.id ? '#FFD166' : '#3B2A20',
+        onClick: () => this.setState({ fpKid: m.id, fpNotes: [], fpNoteEdit: false, fpNoteDraft: '' }, () => this.fpLoad()) })),
+      fpBannerTitle: famParent ? (viewKid ? `A word for ${kidName}` : 'Words of encouragement') : 'Notes from home',
+      fpBannerDay: `${FDAYS[s.fpIdx]}, ${MON[fpD.getMonth()]} ${fpD.getDate()}`,
+      fpBannerEmpty: !dayNotes.length && !(famParent && viewKid),
+      fpBannerEmptyText: famParent ? 'When your kids join the family, you can leave them notes of encouragement here.'
+        : famKid ? `No note for ${FDAYSL[s.fpIdx]} yet. Words of encouragement from your parents show up here, and you can reply.`
+        : s.famOk ? 'Join your family on the 👪 Family tab, and your parents can leave you notes of encouragement here.' : 'Notes from your parents show up here once your family is set up.',
+      fpNoteCards: dayNotes.filter(n => !(n.mine && s.fpNoteEdit)).map(n => ({
+        emoji: n.mine ? '✍️' : '🧑', from: famParent ? (n.mine ? 'You wrote' : `${n.parent} wrote`) : `From ${n.parent}`, text: n.text, isNew: !!(n.isNew || n.wasNew), newLabel: famParent ? 'New reply' : 'New',
+        hasReply: !!n.reply, reply: n.reply || '', replyWho: famParent ? `${kidName} replied` : 'You replied',
+        canReply: famKid && (!n.reply || s.fpReplyEdit === n.id), canChangeReply: famKid && !!n.reply && s.fpReplyEdit !== n.id,
+        onChangeReply: () => this.setState({ fpReplyEdit: n.id, fpReplyFor: n.id, fpReplyDraft: n.reply || '' }),
+        quick: ['Thank you! ❤️', 'I got this! 💪', 'Love you! 🥰'].map(q => ({ label: q, onClick: () => this.fpReply(n, q) })),
+        draft: s.fpReplyFor === n.id ? s.fpReplyDraft : '', onDraft: e => this.setState({ fpReplyFor: n.id, fpReplyDraft: e.target.value.slice(0, 80) }),
+        onSend: () => this.fpReply(n, s.fpReplyFor === n.id ? s.fpReplyDraft : ''),
+        canEdit: famParent && n.mine, onEdit: () => this.setState({ fpNoteEdit: true, fpNoteDraft: n.text }), onDelete: () => this.fpDeleteNote(n)
+      })),
+      fpCanCompose: !!(famParent && viewKid && (!ownNote || s.fpNoteEdit)), fpNoteEditing: !!(ownNote && s.fpNoteEdit),
+      fpSuggest: fpSuggest.map(t => ({ label: t, onClick: () => this.setState({ fpNoteDraft: t }) })),
+      fpNoteDraft: s.fpNoteDraft, onFpNote: e => this.setState({ fpNoteDraft: e.target.value.slice(0, 140) }), fpNoteAria: `Note for ${kidName}`,
+      fpSendNote: () => this.fpSendNote(), fpCancelEdit: () => this.setState({ fpNoteEdit: false, fpNoteDraft: '' }),
+      fpSendLabel: s.fpBusy ? 'Sending…' : ownNote ? '💌 Update note' : `💌 Send to ${kidName}`, fpBusyOp: s.fpBusy ? 0.6 : 1,
+      fpPrevWeek: () => this.fpShiftWeek(-1), fpNextWeek: () => this.fpShiftWeek(1),
+      fpWeekLabel: `${MON[s.fpWs.getMonth()]} ${s.fpWs.getDate()} – ${MON[fpWe.getMonth()]} ${fpWe.getDate()}`,
+      fpWeekNote: wkOff === 0 ? 'This week' : wkOff === 1 ? 'Next week' : wkOff === -1 ? 'Last week' : wkOff > 0 ? `In ${wkOff} weeks` : `${-wkOff} weeks ago`,
+      fpDays: FDAYS.map((label, i) => {
+        const dd = add(s.fpWs, i), dk = iso(dd), bl = fpSrc[dk] || [], x = fpDay(bl), sel = i === s.fpIdx, today = dk === tIso;
+        return {
+          label: today ? 'Today' : label, date: dd.getDate(), mark: x.pts ? `⭐${x.pts}` : bl.length ? '•'.repeat(Math.min(3, bl.length)) : '',
+          bg: sel ? '#FF6B57' : today ? '#FFF1C2' : i >= 5 ? '#FFF7EC' : '#fff', fg: sel ? '#fff' : '#3B2A20', shadow: sel ? '0 4px 0 #3B2A20' : 'none',
+          pressed: sel ? 'true' : 'false', aria: `${FDAYSL[i]} ${MON[dd.getMonth()]} ${dd.getDate()}${x.pts ? `, ${x.pts} points` : ''}`,
+          hasNote: s.fpNotes.some(n => n.day === dk), onClick: () => this.fpPick(i)
+        };
+      }),
+      fpDayTitle: famParent ? (viewKid ? `${kidName}’s ${FDAYSL[s.fpIdx]}` : FDAYSL[s.fpIdx]) : `${FDAYSL[s.fpIdx]}, ${MON[fpD.getMonth()]} ${fpD.getDate()}`,
+      fpPts: fpX.pts,
+      fpTimeLine: fpBl.length ? `🕒 ${hrs(fpX.planned)} planned · ${hrs(FP_SLOTS - fpX.planned)} free · ${fpX.done} of ${fpBl.length} done`
+        : famParent ? `🕒 Nothing planned for this day yet.` : fpEdit ? '🕒 Nothing planned yet. Tap a time below to add an activity.' : '🕒 Nothing was planned this day.',
+      fpBal: [
+        { e: '📚', label: 'Learn', ok: fpX.learn > 0, text: fpX.learn ? `${hrs(fpX.learn)} done` : 'Homework or reading' },
+        { e: '⚽', label: 'Move', ok: fpX.move > 0, text: fpX.move ? `${hrs(fpX.move)} done` : 'A sport or playing outside' },
+        { e: '🎮', label: 'Screens', ok: fpX.screen <= 2, text: fpX.screen ? `${hrs(fpX.screen)} planned` : 'None planned' }
+      ].map(c => ({ ...c, mark: c.ok ? '✓' : '', bg: c.ok ? '#DDF5E8' : '#FFF7EC', border: c.ok ? '#3DBE8B' : '#E8D3BC' })),
+      fpBalLine: fpX.bal ? `⚖️ Balanced afternoon! +${BAL_BONUS} ⭐ bonus` : fpX.screen > 2 ? `More than 1 hour of screens, so no balance bonus today.`
+        : `Finish some learning and some moving, with 1 hour of screens or less, for a +${BAL_BONUS} ⭐ balance bonus.`,
+      fpBalColor: fpX.bal ? '#1F7A50' : fpX.screen > 2 ? '#B23A50' : '#8A6E5A',
+      fpCanCopy: fpEdit && !fpBl.length && lastWk.length > 0, fpCopyLabel: `↻ Copy last ${FDAYSL[s.fpIdx]}’s plan`, fpCopy: () => this.fpCopyLast(fk),
+      fpHasLockNote: !famParent && !fpEdit, fpLockNote: `🔒 This day is locked. You can add and check off activities for today, the days ahead, and the last ${FP_PAST} days.`,
+      fpShowGrid: !famParent || (!!viewKid && kidLoaded), fpLoadingKid: !!(famParent && viewKid && !kidLoaded), fpKidName: kidName,
+      fpTimes: Array.from({ length: FP_SLOTS + 1 }, (_, i) => { const m = slotMin(i), half = m % 60 !== 0; return { row: String(i + 1), label: half ? clock(m) : `${Math.floor(m / 60) - 12} PM`, color: half ? '#B49A86' : '#5A4334', fs: half ? '11px' : '12px' }; }),
+      fpEmpty: fpEdit ? freeSlots.map(i => ({ row: String(i + 1), label: i === freeSlots[0] ? 'Add an activity' : '', aria: `Add an activity at ${clock(slotMin(i))} PM`, onClick: () => this.fpOpen(fk, i, -1) })) : [],
+      fpGaps: fpEdit ? [] : freeSlots.map(i => ({ row: String(i + 1) })),
+      fpBlocks: fpBl.map((b, i) => {
+        const a = ACT[b.a] || ACT.other, name = b.a === 'other' ? (b.t || a.name) : a.name, p = a.pts * b.n, range = fpRange(b.s, b.n);
+        return {
+          row: `${b.s + 1} / span ${b.n}`, bg: ACT_KIND[a.kind].card, icon: actIcon(a.id, 38), name,
+          sub: a.kind === 'screen' ? `${range} · screen` : `${range} · ${b.d ? '+' : ''}${p} ⭐`,
+          aria: famParent ? `${name}, ${range}` : `Change ${name}, ${range}`,
+          onOpen: () => famParent ? null : !fpEdit ? this.flash('🔒 That day is locked') : this.fpOpen(fk, b.s, i),
+          checkAria: famParent ? (b.d ? `${name} is done` : `${name} is not done yet`) : (b.d ? `Mark ${name} not done` : `Mark ${name} done`), pressed: b.d ? 'true' : 'false',
+          checkBg: b.d ? '#3DBE8B' : '#fff', dotBg: b.d ? '#fff' : '#FFF7EC', check: b.d ? '✓' : '',
+          onCheck: () => famParent ? this.flash(`✓ marks appear when ${kidName} finishes`) : this.fpToggle(fk, i)
+        };
+      }),
+      fpHasNow: fk === tIso && nowMin >= FP_START && nowMin <= slotMin(FP_SLOTS) && (!famParent || kidLoaded), fpNowTop: `${(nowMin - FP_START) / 30 * FP_ROW}px`,
+      fpHasSheet: !!sh, fpClose: () => this.setState({ fpSheet: null }),
+      fpSh: sh ? { title: sh.idx >= 0 ? 'Change activity' : 'Add an activity', sub: `${FDAYS[(new Date(sh.day + 'T12:00').getDay() + 6) % 7]} · ${fpRange(sh.s, sh.n)}` } : {},
+      fpShOther: !!(sh && sh.a === 'other'), fpShT: sh ? sh.t : '', onFpT: e => this.setFpSheet({ t: e.target.value.slice(0, 24) }),
+      fpLens: sh ? [1, 2, 3, 4, 5, 6].filter(n => n <= shMax).map(n => ({ label: FP_LEN[n], pressed: sh.n === n ? 'true' : 'false', bg: sh.n === n ? '#3B2A20' : '#fff', fg: sh.n === n ? '#FFD166' : '#3B2A20', onClick: () => this.setFpSheet({ n }) })) : [],
+      fpGroups: sh ? [['Learn, move & make', '⭐ 10 per half hour', 10], ['Recharge', '⭐ 5 per half hour', 5], ['Screens', 'No points · keep it to 1 hr', 0]].map(([title, pts, v]) => ({
+        title, pts, acts: ACTS.filter(a => a.pts === v).map(a => {
+          const on = sh.a === a.id;
+          return { name: a.name, icon: actIcon(a.id, 44), pressed: on ? 'true' : 'false', bg: on ? '#FFD166' : '#fff', border: on ? '#3B2A20' : '#E8D3BC', shadow: on ? '0 3px 0 #3B2A20' : 'none', onClick: () => this.setFpSheet({ a: a.id }) };
+        })
+      })) : [],
+      fpShEditing: !!(sh && sh.idx >= 0), fpSave: () => this.fpSave(), fpRemove: () => this.fpRemove(),
+      fpSaveLabel: !sh || !sh.a ? 'Pick an activity' : `${sh.idx >= 0 ? 'Save' : 'Add'} ${sh.a === 'other' ? (sh.t.trim() || 'it') : ACT[sh.a].name} · ${FP_LEN[sh.n] || ''}`,
+      fpSaveBg: sh && sh.a ? '#FFD166' : '#F3E6D3', fpSaveOp: sh && sh.a ? 1 : 0.7
+    };
     const pushTexts = {
       unknown: 'Checking this device…',
       'needs-install': 'On iPhone, add Lunch Buddy to your Home Screen first: tap Share, then “Add to Home Screen”, and open it from there. Then come back here to turn on alerts.',
       unsupported: 'This browser can’t show phone alerts. You’ll still see updates here and on the Family tab.',
       denied: 'Alerts are blocked for Lunch Buddy. Allow notifications for this app in your phone’s settings, then reopen it.',
-      off: 'Get an alert on this phone when your kids plan a lunch add-on or ask to join.',
+      off: 'Get an alert on this phone when your kids plan a lunch add-on, reply to your notes, or ask to join.',
       on: '✅ Phone alerts are on for this device.'
     };
     const qs = this.questsFor(k), qDone = qs.filter(q => q.done).length, todaySticker = this.stickerFor(k), hasSticker = !!s.stickers[k];
@@ -2707,11 +3480,12 @@ class Component extends DCLogic {
       pipHero: s.tab === 'game' ? (curLv >= 0 ? guideOf(curLv) : GUIDES.pip).el('happy', 68, 'lb-bob 2.2s ease-in-out infinite') : null,
       peckPts: pk.pts || 0, peckStars: Object.values(pbest).reduce((a, b) => a + b, 0), peckStarsMax: LEVELS.length * 3,
       peckToday: (pk.log || {})[today] || 0, peckAllDone: curLv < 0, units,
-      ...gv,
+      ...gv, ...fpView, planPts: st.planPts,
       nav: tabs.map(([id, e, label]) => {
-        const badge = id === 'family' ? famUnread : 0;
+        const badge = id === 'family' ? famUnread : id === 'plan' ? notesNew : 0;
         return { e, label, bg: s.tab === id ? '#FFD166' : 'transparent', fg: s.tab === id ? '#3B2A20' : '#FFF7EC', onClick: () => this.goTab(id),
-          hasBadge: badge > 0, badge: badge > 9 ? '9+' : String(badge), badgeLabel: `${badge} new family update${badge === 1 ? '' : 's'}` };
+          hasBadge: badge > 0, badge: badge > 9 ? '9+' : String(badge),
+          badgeLabel: id === 'plan' ? `${badge} new note${badge === 1 ? '' : 's'}` : `${badge} new family update${badge === 1 ? '' : 's'}` };
       }),
       navCols: tabs.length,
       isFamily: s.tab === 'family' && s.famOk,

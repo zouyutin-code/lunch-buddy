@@ -1,6 +1,6 @@
 -- Lunch Buddy family sharing. Apply with:
 --   npx wrangler d1 execute lunch-buddy --remote --file schema.sql
--- Stored: nicknames, lunch add-on picks, push subscriptions, each member's own app backup
+-- Stored: nicknames, lunch add-on picks, kids' after-school plans, parents' notes and kids' replies, push subscriptions, each member's own app backup
 -- (ideas, badges, game points), and personal backups for phones not in a family (no name,
 -- just a random key). The API also creates the backup tables on first use.
 
@@ -91,6 +91,36 @@ CREATE TABLE IF NOT EXISTS vault_codes (
   expires_at INTEGER NOT NULL
 );
 CREATE INDEX IF NOT EXISTS vault_codes_vault ON vault_codes(vault_id);
+
+-- Kids' after-school plans (Flight Plan tab), shared with their family's parents. Kept 120 days.
+CREATE TABLE IF NOT EXISTS plans (
+  member_id TEXT NOT NULL REFERENCES members(id) ON DELETE CASCADE,
+  family_id TEXT NOT NULL,
+  day TEXT NOT NULL,
+  blocks TEXT NOT NULL,
+  updated_at INTEGER NOT NULL,
+  PRIMARY KEY (member_id, day)
+);
+CREATE INDEX IF NOT EXISTS plans_family_day ON plans(family_id, day);
+
+-- A parent's note of encouragement to a kid for one day, and the kid's reply. Kept 120 days.
+CREATE TABLE IF NOT EXISTS notes (
+  id TEXT PRIMARY KEY,
+  family_id TEXT NOT NULL,
+  kid_id TEXT NOT NULL REFERENCES members(id) ON DELETE CASCADE,
+  parent_id TEXT NOT NULL REFERENCES members(id) ON DELETE CASCADE,
+  day TEXT NOT NULL,
+  text TEXT NOT NULL,
+  reply TEXT,
+  reply_at INTEGER,
+  kid_seen INTEGER NOT NULL DEFAULT 0,
+  parent_seen INTEGER NOT NULL DEFAULT 1,
+  created_at INTEGER NOT NULL,
+  updated_at INTEGER NOT NULL,
+  UNIQUE (kid_id, parent_id, day)
+);
+CREATE INDEX IF NOT EXISTS notes_kid_day ON notes(kid_id, day);
+CREATE INDEX IF NOT EXISTS notes_parent ON notes(parent_id, parent_seen);
 
 -- Simple rate limiting for create/join attempts and backups.
 CREATE TABLE IF NOT EXISTS rate (
