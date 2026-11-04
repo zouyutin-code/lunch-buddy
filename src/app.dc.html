@@ -773,7 +773,7 @@ input::placeholder{color:#B49A86}
         <div style="width:68px;height:68px;flex:none">{{ pipHero }}</div>
         <div style="min-width:0">
           <h2 style="font-family:'Baloo 2',sans-serif;font-size:26px;margin:0;font-weight:800;line-height:1.1">🎮 Peck Patch</h2>
-          <div style="font-size:14px;font-weight:600;color:#8A6E5A">Help Pip peck for healthy food. Peek first, and remember where the sometimes foods hide!</div>
+          <div style="font-size:14px;font-weight:600;color:#8A6E5A">Explore with Pip, Nami and Rory. Peek first, dodge the sometimes foods, and learn what each healthy food does for you!</div>
         </div>
       </div>
       <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px">
@@ -786,10 +786,13 @@ input::placeholder{color:#B49A86}
       </sc-if>
       <sc-for list="{{ units }}" as="u" hint-placeholder-count="3">
         <section style="display:flex;flex-direction:column;align-items:center;gap:22px;padding-bottom:8px">
-          <div style="align-self:stretch;background:{{ u.color }};border:2px solid #3B2A20;border-radius:20px;padding:12px 14px;box-shadow:0 4px 0 #3B2A20;color:#1E140E">
-            <div style="font-size:11px;font-weight:800;letter-spacing:.1em;text-transform:uppercase">Unit {{ u.n }}</div>
-            <div style="font-family:'Baloo 2',sans-serif;font-size:21px;font-weight:800;line-height:1.1">{{ u.icon }} {{ u.title }}</div>
-            <div style="font-size:13px;font-weight:700">{{ u.sub }}</div>
+          <div style="align-self:stretch;background:{{ u.color }};border:2px solid #3B2A20;border-radius:20px;padding:12px 14px;box-shadow:0 4px 0 #3B2A20;color:#1E140E;display:flex;align-items:center;gap:10px">
+            <div style="flex:1;min-width:0">
+              <div style="font-size:11px;font-weight:800;letter-spacing:.1em;text-transform:uppercase">Unit {{ u.n }}</div>
+              <div style="font-family:'Baloo 2',sans-serif;font-size:21px;font-weight:800;line-height:1.1">{{ u.icon }} {{ u.title }}</div>
+              <div style="font-size:13px;font-weight:700;text-wrap:pretty">{{ u.sub }}</div>
+            </div>
+            <div style="width:54px;height:54px;flex:none">{{ u.guideImg }}</div>
           </div>
           <sc-for list="{{ u.levels }}" as="lv" hint-placeholder-count="4">
             <div style="position:relative;transform:translateX({{ lv.dx }});display:flex;flex-direction:column;align-items:center;gap:4px">
@@ -801,7 +804,7 @@ input::placeholder{color:#B49A86}
                 <sc-for list="{{ lv.starList }}" as="sx" hint-placeholder-count="3"><span style="color:{{ sx.c }}">★</span></sc-for>
               </div>
               <sc-if value="{{ lv.hasPip }}" hint-placeholder-val="{{ false }}">
-                <div style="position:absolute;top:0;left:{{ lv.pipLeft }};right:{{ lv.pipRight }};width:66px;height:66px;pointer-events:none">{{ pipMap }}</div>
+                <div style="position:absolute;top:0;left:{{ lv.pipLeft }};right:{{ lv.pipRight }};width:66px;height:66px;pointer-events:none">{{ lv.pipEl }}</div>
               </sc-if>
             </div>
           </sc-for>
@@ -1098,7 +1101,12 @@ input::placeholder{color:#B49A86}
             <div style="display:grid;grid-template-columns:repeat({{ gCols }},minmax(0,1fr));gap:10px;max-width:{{ gGridMax }};margin:0 auto">
               <sc-for list="{{ gTiles }}" as="t" hint-placeholder-count="9">
                 <button aria-label="{{ t.aria }}" sc-camel-on-click="{{ t.onClick }}" style="position:relative;aspect-ratio:1/1;border-radius:18px;border:2px solid #3B2A20;background:{{ t.bg }};box-shadow:0 5px 0 {{ t.shadow }};font-size:{{ t.fs }};line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0;animation:{{ t.anim }}">
-                  <span>{{ t.face }}</span>
+                  <span style="display:flex;flex-direction:column;align-items:center;gap:3px;max-width:100%;padding:0 3px;box-sizing:border-box">
+                    <span>{{ t.face }}</span>
+                    <sc-if value="{{ t.hasLabel }}" hint-placeholder-val="{{ false }}">
+                      <span style="font-size:10px;font-weight:800;line-height:1.05;color:#3B2A20;text-align:center;max-width:100%;overflow-wrap:anywhere">{{ t.label }}</span>
+                    </sc-if>
+                  </span>
                   <sc-if value="{{ t.pecking }}" hint-placeholder-val="{{ false }}">
                     <span style="position:absolute;left:50%;top:-22px;margin-left:-28px;width:56px;height:56px;pointer-events:none">{{ pipPeck }}</span>
                   </sc-if>
@@ -1121,12 +1129,38 @@ input::placeholder{color:#B49A86}
             </div>
           </sc-if>
           <sc-if value="{{ gFeedback }}" hint-placeholder-val="{{ false }}">
-            <div role="status" style="position:absolute;left:0;right:0;bottom:0;background:{{ gFb.bg }};border-top:2px solid {{ gFb.line }};padding:16px 16px 24px;display:flex;flex-direction:column;gap:12px;animation:lb-rise .25s ease-out">
+            <div role="status" style="position:absolute;left:0;right:0;bottom:0;max-height:88%;overflow-y:auto;box-sizing:border-box;background:{{ gFb.bg }};border-top:2px solid {{ gFb.line }};padding:16px 16px 24px;display:flex;flex-direction:column;gap:12px;animation:lb-rise .25s ease-out">
               <div style="display:flex;align-items:center;gap:12px">
                 <span style="width:52px;height:52px;border-radius:50%;background:#fff;border:2px solid {{ gFb.line }};display:flex;align-items:center;justify-content:center;font-size:30px;flex:none">{{ gFb.icon }}</span>
                 <div style="min-width:0"><div style="font-family:'Baloo 2',sans-serif;font-size:23px;font-weight:800;line-height:1.1;color:{{ gFb.fg }}">{{ gFb.title }}</div><div style="font-size:14px;font-weight:700;color:{{ gFb.fg }};text-wrap:pretty">{{ gFb.sub }}</div></div>
               </div>
-              <button sc-camel-on-click="{{ gContinue }}" style="height:54px;border-radius:16px;border:none;background:{{ gFb.btn }};box-shadow:0 4px 0 {{ gFb.btnShadow }};color:{{ gFb.btnFg }};font-family:'Baloo 2',sans-serif;font-size:19px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;cursor:pointer">Continue</button>
+              <sc-if value="{{ gHasProf }}" hint-placeholder-val="{{ false }}">
+                <section aria-label="Nutrition profile" style="background:#fff;border:2px solid {{ gFb.line }};border-radius:18px;padding:12px 14px;display:flex;flex-direction:column;gap:8px;color:#3B2A20">
+                  <div style="display:flex;align-items:baseline;justify-content:space-between;gap:8px;flex-wrap:wrap">
+                    <div style="font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#8A6E5A">🔎 Nutrition profile</div>
+                    <div style="font-size:12px;font-weight:700;color:#8A6E5A">in {{ gPf.sv }}</div>
+                  </div>
+                  <div style="font-family:'Baloo 2',sans-serif;font-size:20px;font-weight:800;line-height:1.1">{{ gPf.e }} {{ gPf.name }}<sc-if value="{{ gPf.hasJp }}" hint-placeholder-val="{{ false }}"><span style="font-size:14px;font-weight:700;color:#8A6E5A"> · {{ gPf.jp }}</span></sc-if></div>
+                  <div role="list" style="display:flex;flex-wrap:wrap;gap:6px">
+                    <sc-for list="{{ gPf.chips }}" as="c" hint-placeholder-count="3">
+                      <span role="listitem" aria-label="{{ c.aria }}" style="display:inline-flex;align-items:center;gap:6px;border:2px solid {{ c.line }};background:{{ c.bg }};border-radius:999px;padding:3px 10px;font-size:13px;font-weight:800;white-space:nowrap">
+                        <span aria-hidden="true">{{ c.label }}</span>
+                        <span aria-hidden="true" style="display:inline-flex;gap:2px"><sc-for list="{{ c.dots }}" as="dt" hint-placeholder-count="3"><span style="width:7px;height:7px;border-radius:50%;background:{{ dt.c }}"></span></sc-for></span>
+                        <span aria-hidden="true" style="font-size:11px;color:#6B5444">{{ c.word }}</span>
+                      </span>
+                    </sc-for>
+                  </div>
+                  <div style="font-size:14px;font-weight:700;line-height:1.35;text-wrap:pretty">💪 {{ gPf.why }}</div>
+                  <sc-if value="{{ gPf.hasEco }}" hint-placeholder-val="{{ false }}">
+                    <div style="background:#E1F0FB;border-radius:12px;padding:8px 10px;font-size:13px;font-weight:700;line-height:1.35;color:#1F4E79;text-wrap:pretty">🌊 <span style="font-weight:800">Ocean-friendly:</span> {{ gPf.eco }}</div>
+                  </sc-if>
+                  <sc-if value="{{ gPf.hasTip }}" hint-placeholder-val="{{ false }}">
+                    <div style="background:#FFF1C2;border-radius:12px;padding:8px 10px;font-size:13px;font-weight:700;line-height:1.35;color:#6B4210;text-wrap:pretty">💡 {{ gPf.tip }}</div>
+                  </sc-if>
+                  <div style="font-size:11px;font-weight:700;color:#8A6E5A">Lots ≈ 40%+ of what you need in a day · Good ≈ 15–40% · Some ≈ 5–15%</div>
+                </section>
+              </sc-if>
+              <button sc-camel-on-click="{{ gContinue }}" style="position:sticky;bottom:0;height:54px;flex:none;border-radius:16px;border:none;background:{{ gFb.btn }};box-shadow:0 4px 0 {{ gFb.btnShadow }};color:{{ gFb.btnFg }};font-family:'Baloo 2',sans-serif;font-size:19px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;cursor:pointer">Continue</button>
             </div>
           </sc-if>
         </sc-if>
@@ -1395,7 +1429,7 @@ function mergeSaved(loc, rem) {
     l.log = unionList(l.log, r.log);
     if (r.earned && (!l.earned || r.earned < l.earned)) l.earned = r.earned;
   });
-  const lp = isObj(loc.peck) ? loc.peck : {}, rp = isObj(rem.peck) ? rem.peck : {}, log = maxMap(lp.log, rp.log);
+  const lp = migratePeck(loc.peck), rp = migratePeck(rem.peck), log = maxMap(lp.log, rp.log);
   const peck = { ...rp, ...lp, best: maxMap(lp.best, rp.best), log,
     pts: Math.max(Number(lp.pts) || 0, Number(rp.pts) || 0, Object.values(log).reduce((n, x) => n + (Number(x) || 0), 0)),
     plays: Math.max(Number(lp.plays) || 0, Number(rp.plays) || 0) };
@@ -1437,21 +1471,87 @@ const GROUP_INFO = {
   protein: { label: 'Protein', phrase: 'is a protein', plural: 'are a protein' }, grain: { label: 'Grain', phrase: 'is a grain', plural: 'are a grain' },
   dairy: { label: 'Dairy', phrase: 'is dairy', plural: 'are dairy' }
 };
-const PLURAL_FOODS = ['Grapes', 'Blueberries', 'Cherries', 'Beans', 'Peanuts'];
 const GROUP_IDS = Object.keys(GROUP_INFO);
-// alt: a group the food could also count as, so the quiz never offers it as a wrong answer.
-const FOODS = [
-  ['🍎', 'Apple', 'fruit'], ['🍌', 'Banana', 'fruit'], ['🍇', 'Grapes', 'fruit'], ['🍓', 'Strawberry', 'fruit'], ['🍊', 'Orange', 'fruit'], ['🍐', 'Pear', 'fruit'],
-  ['🍑', 'Peach', 'fruit'], ['🍉', 'Watermelon', 'fruit'], ['🍍', 'Pineapple', 'fruit'], ['🫐', 'Blueberries', 'fruit'], ['🥝', 'Kiwi', 'fruit'], ['🍒', 'Cherries', 'fruit'],
-  ['🥦', 'Broccoli', 'veggie'], ['🥕', 'Carrot', 'veggie'], ['🌽', 'Corn', 'veggie', 'grain'], ['🥒', 'Cucumber', 'veggie'], ['🫑', 'Bell pepper', 'veggie'],
-  ['🥬', 'Lettuce', 'veggie'], ['🍆', 'Eggplant', 'veggie'], ['🍠', 'Sweet potato', 'veggie'], ['🧅', 'Onion', 'veggie'], ['🥔', 'Potato', 'veggie'],
-  ['🍗', 'Chicken', 'protein'], ['🥚', 'Egg', 'protein'], ['🐟', 'Fish', 'protein'], ['🫘', 'Beans', 'protein', 'veggie'], ['🥜', 'Peanuts', 'protein'], ['🍤', 'Shrimp', 'protein'],
-  ['🍞', 'Bread', 'grain'], ['🍚', 'Rice', 'grain'], ['🥯', 'Bagel', 'grain'], ['🫓', 'Pita', 'grain'], ['🍝', 'Pasta', 'grain'], ['🍙', 'Rice ball', 'grain'],
-  ['🥛', 'Milk', 'dairy'], ['🧀', 'Cheese', 'dairy'], ['🥣', 'Yogurt', 'dairy']
-].map(([e, name, g, alt]) => ({ e, name, g, alt }));
+// Each healthy food carries a nutrition profile for one serving (sv). n: [nutrient, level], where
+// 3 = Lots (about 40% or more of a day's needs), 2 = Good (about 15–40%), 1 = Some (about 5–15%).
+// why = what it does for you; eco = ocean-friendly note; tip = a smart-choice tip; jp = Japanese name;
+// alt = a group the food could also count as (never offered as a wrong answer); pl = plural name; short = tile label.
+const food = (e, name, g, sv, n, why, x = {}) => ({ e, name, g, sv, n, why, ...x });
+const GARDEN_FOODS = [
+  food('🍎', 'Apple', 'fruit', '1 apple', [['Fiber', 2], ['Vitamin C', 1]], 'About half the fiber is in the skin. Fiber keeps your tummy happy and helps you feel full.'),
+  food('🍌', 'Banana', 'fruit', '1 banana', [['Vitamin B6', 2], ['Potassium', 1], ['Fiber', 1]], 'Quick energy for your brain and muscles, plus potassium that helps your heart keep a steady beat.'),
+  food('🍇', 'Grapes', 'fruit', '1 cup', [['Vitamin K', 2], ['Copper', 2]], 'Vitamin K helps a cut stop bleeding, and copper helps your body use iron.', { pl: true }),
+  food('🍓', 'Strawberry', 'fruit', '1 cup', [['Vitamin C', 3], ['Manganese', 2], ['Fiber', 1]], 'A cup of strawberries has about a whole day’s vitamin C, which helps you heal and fight germs.'),
+  food('🍊', 'Orange', 'fruit', '1 orange', [['Vitamin C', 3], ['Fiber', 1], ['Folate', 1]], 'Vitamin C helps your body heal cuts and keeps your gums healthy.'),
+  food('🍐', 'Pear', 'fruit', '1 pear', [['Fiber', 2], ['Vitamin C', 1], ['Vitamin K', 1]], 'One of the top fruits for fiber. Leave the skin on to get the most.'),
+  food('🍑', 'Peach', 'fruit', '1 peach', [['Vitamin C', 1], ['Fiber', 1], ['Potassium', 1]], 'Sweet and juicy, with vitamin C and fiber and no added sugar.'),
+  food('🍉', 'Watermelon', 'fruit', '1 cup', [['Water', 3], ['Vitamin C', 1], ['Vitamin A', 1]], 'It’s about 92% water, so it helps you stay hydrated on hot days.'),
+  food('🍍', 'Pineapple', 'fruit', '1 cup', [['Vitamin C', 3], ['Manganese', 3]], 'Loads of vitamin C, plus manganese, which helps build strong bones.'),
+  food('🫐', 'Blueberries', 'fruit', '1 cup', [['Vitamin K', 2], ['Vitamin C', 2], ['Fiber', 1]], 'Their blue color comes from antioxidants that help protect your cells.', { pl: true }),
+  food('🥝', 'Kiwi', 'fruit', '1 kiwi', [['Vitamin C', 3], ['Vitamin K', 2], ['Fiber', 1]], 'One little kiwi has about two-thirds of a day’s vitamin C.'),
+  food('🍒', 'Cherries', 'fruit', '1 cup', [['Vitamin C', 1], ['Fiber', 1], ['Potassium', 1]], 'Their deep red color comes from antioxidants that help protect your cells.', { pl: true }),
+  food('🥦', 'Broccoli', 'veggie', '1 cup', [['Vitamin C', 3], ['Vitamin K', 3], ['Folate', 1]], 'One cup has almost a full day’s vitamin C, plus vitamin K for strong bones.'),
+  food('🥕', 'Carrot', 'veggie', '1 carrot', [['Vitamin A', 3], ['Fiber', 1], ['Vitamin K', 1]], 'The orange color is beta-carotene, which your body turns into vitamin A to help your eyes see in dim light.'),
+  food('🌽', 'Corn', 'veggie', '1 ear', [['Fiber', 1], ['B vitamins', 1]], 'Corn counts as a starchy veggie or a whole grain. Its yellow color has lutein, which is good for your eyes.', { alt: 'grain' }),
+  food('🥒', 'Cucumber', 'veggie', '1 cup of slices', [['Water', 3], ['Vitamin K', 1]], 'About 95% water, so it’s a crunchy way to stay hydrated.'),
+  food('🫑', 'Bell pepper', 'veggie', '1 pepper', [['Vitamin C', 3], ['Vitamin B6', 2], ['Fiber', 1]], 'One green pepper has more vitamin C than an orange, and red ones have even more.'),
+  food('🥬', 'Lettuce', 'veggie', '2 cups of romaine', [['Vitamin K', 3], ['Vitamin A', 3], ['Folate', 2]], 'Dark leaves like romaine have far more vitamins than pale ones.'),
+  food('🍆', 'Eggplant', 'veggie', '1 cup, cooked', [['Fiber', 1], ['Manganese', 1]], 'Its purple skin has nasunin, an antioxidant that helps protect your cells.'),
+  food('🍠', 'Sweet potato', 'veggie', '1 sweet potato', [['Vitamin A', 3], ['Vitamin C', 2], ['Manganese', 2], ['Fiber', 1]], 'One sweet potato has more than a whole day’s vitamin A.'),
+  food('🧅', 'Onion', 'veggie', '1 onion', [['Vitamin C', 1], ['Vitamin B6', 1], ['Fiber', 1]], 'Onions have a special fiber that feeds the good bacteria in your gut.'),
+  food('🥔', 'Potato', 'veggie', '1 potato, baked with skin', [['Potassium', 2], ['Vitamin B6', 2], ['Vitamin C', 2]], 'Bake it with the skin on: one potato has about twice the potassium of a banana.')
+];
+const SEA_FOODS = [
+  food('🍣', 'Salmon', 'protein', '3 oz, cooked', [['Omega-3', 3], ['Vitamin D', 3], ['Vitamin B12', 3]], 'Omega-3 fats help your brain and heart, and vitamin D helps build strong bones.',
+    { jp: 'sake · さけ', eco: 'Choose wild salmon from well-run fisheries, or farmed salmon with an eco label.' }),
+  food('🐟', 'Tuna', 'protein', '3 oz, cooked', [['Protein', 3], ['Niacin', 3], ['Selenium', 3]], 'Lots of protein for your muscles, plus niacin, a B vitamin that turns food into energy.',
+    { jp: 'maguro · まぐろ', eco: 'Bluefin tuna were badly overfished and are still recovering. Skipjack (katsuo) caught one at a time by pole and line is a kinder pick.', tip: 'Big fish like tuna carry more mercury, so mix in smaller fish like salmon and sardines.' }),
+  food('🐟', 'Mackerel', 'protein', '3 oz, cooked', [['Omega-3', 3], ['Vitamin B12', 3], ['Protein', 3]], 'One of the richest fish in omega-3 fats, which help your brain and heart.',
+    { jp: 'saba · さば', eco: 'Mackerel grow fast and swim in huge schools. Look for fish from well-managed fisheries.' }),
+  food('🥫', 'Sardines', 'protein', '1 small can', [['Omega-3', 3], ['Vitamin B12', 3], ['Calcium', 2]], 'Eat them bones and all: the soft bones give you calcium for strong bones and teeth.',
+    { pl: true, jp: 'iwashi · いわし', eco: 'Small fish low on the food chain grow back fast, which makes sardines one of the most planet-friendly seafoods.' }),
+  food('🐚', 'Clams', 'protein', '3 oz, cooked', [['Vitamin B12', 3], ['Protein', 3], ['Selenium', 3]], 'One of the richest foods in vitamin B12, which keeps your blood and nerves healthy. Yummy in miso soup!',
+    { pl: true, jp: 'asari · あさり', eco: 'Clams clean the water as they eat, and farming them needs no feed.' }),
+  food('🐚', 'Scallops', 'protein', '3 oz, cooked', [['Vitamin B12', 3], ['Protein', 2], ['Selenium', 2]], 'Sweet and tender, with lean protein and vitamin B12.',
+    { pl: true, jp: 'hotate · ほたて', eco: 'In Japan, many scallops grow hanging from ropes in the sea. They filter the water and need no feed.' }),
+  food('🦪', 'Oysters', 'protein', '3 oz, cooked', [['Zinc', 3], ['Vitamin B12', 3], ['Protein', 2]], 'Oysters have more zinc than almost any other food. Zinc helps you grow and heal.',
+    { pl: true, jp: 'kaki · かき', eco: 'Oysters clean the water as they eat, and oyster reefs give other sea life a home.' }),
+  food('🦐', 'Shrimp', 'protein', '3 oz, cooked', [['Protein', 3], ['Selenium', 3], ['Vitamin B12', 3]], 'Lean protein plus selenium, which helps protect your cells.',
+    { jp: 'ebi · えび', eco: 'Some shrimp farms cut down mangrove forests. Look for shrimp with an eco label.' }),
+  food('🦑', 'Squid', 'protein', '3 oz', [['Copper', 3], ['Selenium', 3], ['Protein', 2]], 'Copper helps your body make red blood cells and use iron.',
+    { jp: 'ika · いか', eco: 'Squid grow fast and live about a year, so their numbers can bounce back when fishing is managed well.' }),
+  food('🦀', 'Crab', 'protein', '3 oz, cooked', [['Vitamin B12', 3], ['Protein', 2], ['Zinc', 2]], 'Lean protein with vitamin B12 for healthy blood.',
+    { jp: 'kani · かに', eco: 'Japan sets short crab seasons and size limits, so young crabs have time to grow.' }),
+  food('🍙', 'Nori seaweed', 'veggie', '1 sheet', [['Iodine', 2]], 'Nori is the crispy wrap on rice balls and sushi. Its iodine helps your thyroid, which helps you grow.',
+    { short: 'Nori', jp: 'のり', fact: 'Seaweed is a sea veggie', eco: 'Seaweed grows with no fresh water, no fertilizer and no feed.' }),
+  food('🥬', 'Wakame seaweed', 'veggie', '¼ cup, soaked', [['Iodine', 3], ['Folate', 1], ['Manganese', 1]], 'The silky seaweed in miso soup. Iodine helps your body use energy.',
+    { short: 'Wakame', jp: 'わかめ', fact: 'Seaweed is a sea veggie', eco: 'Seaweed takes in carbon dioxide as it grows, and seaweed farms give little fish a place to hide.' }),
+  food('🌿', 'Kombu kelp', 'veggie', '1 piece for broth', [['Iodine', 3]], 'Kombu gives dashi broth its savory umami taste. A Japanese scientist discovered umami by studying kombu!',
+    { short: 'Kombu', jp: 'こんぶ', fact: 'Kelp is a sea veggie', eco: 'Kelp grows super fast with no fresh water or fertilizer. Wild kelp forests are home to fish, crabs and sea otters.', tip: 'Kombu has so much iodine that one piece flavoring a whole pot of broth is plenty.' })
+];
+const SAVANNA_FOODS = [
+  food('🥚', 'Eggs', 'protein', '2 eggs', [['Choline', 3], ['Selenium', 3], ['Protein', 2]], 'Eggs have choline, which helps your brain and memory, plus protein to keep you going.', { pl: true }),
+  food('🍗', 'Chicken', 'protein', '3 oz, roasted', [['Protein', 3], ['Niacin', 3], ['Vitamin B6', 2]], 'Lean protein builds and repairs your muscles, and niacin helps turn food into energy.'),
+  food('🦃', 'Turkey', 'protein', '3 oz, roasted', [['Protein', 3], ['Selenium', 3], ['Vitamin B6', 2]], 'Lean protein for strong muscles, plus selenium, which helps protect your cells.'),
+  food('🥩', 'Lean beef', 'protein', '3 oz, cooked', [['Protein', 3], ['Vitamin B12', 3], ['Zinc', 3], ['Iron', 1]], 'Zinc helps you grow, and the iron in meat is easy for your body to absorb.',
+    { tip: 'Lean cuts are best. Processed meats like hot dogs and bacon are sometimes foods.' }),
+  food('🫘', 'Beans', 'protein', '1 cup, cooked', [['Fiber', 3], ['Folate', 3], ['Protein', 2]], 'Plant protein plus lots of fiber, so beans keep you full for a long time.', { pl: true, alt: 'veggie' }),
+  food('🥘', 'Lentils', 'protein', '1 cup, cooked', [['Fiber', 3], ['Folate', 3], ['Protein', 2], ['Iron', 2]], 'A cup of lentils has about as much protein as three eggs.', { pl: true, alt: 'veggie' }),
+  food('🧆', 'Chickpeas', 'protein', '1 cup, cooked', [['Fiber', 3], ['Folate', 3], ['Protein', 2]], 'Blend them into hummus, toss them on a salad, or roast them for a crunchy snack.', { pl: true, alt: 'veggie' }),
+  food('🍲', 'Tofu', 'protein', '½ cup, firm', [['Protein', 3], ['Calcium', 2], ['Iron', 2]], 'Made from soybeans. Tofu made with calcium helps build strong bones, too.'),
+  food('🫛', 'Edamame', 'protein', '1 cup, shelled', [['Folate', 3], ['Protein', 2], ['Fiber', 2]], 'Young soybeans with complete protein, which means all the building blocks your body needs.', { pl: true, alt: 'veggie' }),
+  food('🥜', 'Peanut butter', 'protein', '2 tablespoons', [['Healthy fats', 2], ['Vitamin E', 2], ['Niacin', 2], ['Protein', 1]], 'Protein plus healthy fats that keep you full.',
+    { tip: 'Pick one made with just peanuts (and maybe salt), with no added sugar.' }),
+  food('🌰', 'Almonds', 'protein', '1 oz (about 23)', [['Vitamin E', 3], ['Magnesium', 2], ['Protein', 1]], 'Vitamin E protects your cells, and magnesium helps your muscles relax.', { pl: true }),
+  food('🎃', 'Pumpkin seeds', 'protein', '1 oz', [['Magnesium', 2], ['Zinc', 2], ['Protein', 2]], 'A crunchy snack with zinc and magnesium for growing bodies.', { pl: true }),
+  food('🥣', 'Greek yogurt', 'dairy', '¾ cup, plain', [['Vitamin B12', 3], ['Protein', 2], ['Calcium', 1]], 'Straining makes it thick, with about twice the protein of regular yogurt.', { tip: 'Plain is best. Add fruit to sweeten it.' }),
+  food('🥛', 'Milk', 'dairy', '1 cup', [['Protein', 2], ['Calcium', 2], ['Vitamin D', 2]], 'Calcium and vitamin D work together to build strong bones.'),
+  food('🧀', 'Cheese', 'dairy', '1½ oz', [['Calcium', 2], ['Protein', 2]], 'A tasty way to get calcium and protein.', { tip: 'Cheese can be salty, so a little goes a long way.' }),
+  food('🍚', 'Quinoa', 'grain', '1 cup, cooked', [['Manganese', 3], ['Magnesium', 2], ['Protein', 2], ['Fiber', 2]], 'A seed you cook like a grain, with complete protein and fiber.')
+];
 const JUNK = [['🍩', 'Donut'], ['🍭', 'Lollipop'], ['🍬', 'Candy'], ['🥤', 'Soda'], ['🧁', 'Cupcake'], ['🍫', 'Candy bar'], ['🍪', 'Cookie'], ['🍰', 'Cake'], ['🍦', 'Ice cream'], ['🍟', 'Fries']]
   .map(([e, name]) => ({ e, name }));
-// c×r leaf piles; junk = sometimes foods (cost a heart), gold = golden seeds; goal = healthy finds to clear; peek in ms.
+// c×r covered tiles; junk = sometimes foods (cost a heart), gold = golden finds; goal = healthy finds to clear; peek in ms.
 const LEVELS = [
   { c: 3, r: 3, junk: 1, gold: 1, goal: 4, pecks: 6, peek: 3200 }, { c: 3, r: 3, junk: 2, gold: 1, goal: 4, pecks: 6, peek: 3000 },
   { c: 3, r: 4, junk: 2, gold: 1, goal: 5, pecks: 7, peek: 3000 }, { c: 3, r: 4, junk: 3, gold: 1, goal: 5, pecks: 7, peek: 2800 },
@@ -1460,17 +1560,26 @@ const LEVELS = [
   { c: 4, r: 5, junk: 5, gold: 1, goal: 8, pecks: 10, peek: 2400 }, { c: 4, r: 5, junk: 6, gold: 1, goal: 8, pecks: 10, peek: 2200 },
   { c: 4, r: 5, junk: 7, gold: 1, goal: 9, pecks: 11, peek: 2000 }, { c: 4, r: 5, junk: 8, gold: 1, goal: 9, pecks: 11, peek: 1800 }
 ];
+// Each unit has its own guide, food pool and extra sometimes foods.
 const UNITS = [
-  { title: 'Veggie Garden', sub: 'Crunchy veggies grow in this patch.', icon: '🥦', color: '#7FD6A8', shadow: '#2E8A5E', focus: 'veggie' },
-  { title: 'Fruit Orchard', sub: 'Sweet fruit, and sneaky sweets too.', icon: '🍎', color: '#FFA594', shadow: '#C8473A', focus: 'fruit' },
-  { title: 'Farm Market', sub: 'Every food group. Faster peeks!', icon: '🧺', color: '#9CCBF2', shadow: '#3A7DB3', focus: null }
+  { title: 'Rainbow Garden', sub: 'Pip pecks for fruits and veggies in every color.', icon: '🌈', color: '#7FD6A8', shadow: '#2E8A5E', guide: 'pip', foods: GARDEN_FOODS, junk: [] },
+  { title: 'Tokyo Seafood Market', sub: 'Nami the sky whale tours Tokyo’s giant fish market: seafood, seaweed and ocean-friendly picks.', icon: '🍣', color: '#9CCBF2', shadow: '#3A7DB3', guide: 'nami', foods: SEA_FOODS, junk: [{ e: '🍤', name: 'Fried shrimp' }] },
+  { title: 'Savanna Strong', sub: 'Rory the lion hunts for protein that builds strong muscles.', icon: '🦁', color: '#F2A65A', shadow: '#B5651D', guide: 'rory', foods: SAVANNA_FOODS, junk: [{ e: '🌭', name: 'Hot dog' }, { e: '🥓', name: 'Bacon' }] }
 ];
+const unitOf = lv => UNITS[Math.floor(lv / 4)] || UNITS[0];
 const shuffle = a => { a = [...a]; for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
-const drawFoods = (focus, k) => {
-  const out = focus ? shuffle(FOODS.filter(f => f.g === focus)).slice(0, Math.ceil(k / 2)) : [];
-  for (const f of shuffle(FOODS)) { if (out.length >= k) break; if (!out.includes(f)) out.push(f); }
-  return out;
+const drawFoods = (pool, k) => shuffle(pool).slice(0, k);
+// Saved stars from before the units changed (veggie 1–4, fruit 5–8, market 9–12): the best of the
+// old veggie and fruit levels carries over to Rainbow Garden; Tokyo and Savanna start fresh.
+const PECK_MAP = 2;
+const migratePeck = p => {
+  p = isObj(p) ? p : {};
+  if (p.map === PECK_MAP) return p;
+  const old = isObj(p.best) ? p.best : {}, best = {};
+  [0, 1, 2, 3].forEach(j => { const v = Math.max(Number(old[j]) || 0, Number(old[j + 4]) || 0); if (v) best[j] = v; });
+  return { ...p, best, map: PECK_MAP };
 };
+const NUT_LEVEL = { 3: { word: 'Lots', bg: '#DDF5E8', line: '#3DBE8B', dot: '#2E8A5E' }, 2: { word: 'Good', bg: '#FFF1C2', line: '#E2A11B', dot: '#C9971F' }, 1: { word: 'Some', bg: '#F6EEE6', line: '#D8C2AC', dot: '#8A6E5A' } };
 // Pip, the Peck Patch bird (an original drawing). mood: normal | happy | sad.
 const pipEl = (mood, size, anim) => {
   const h = React.createElement, ink = '#3B2A20';
@@ -1490,6 +1599,71 @@ const pipEl = (mood, size, anim) => {
     h('path', { d: mood === 'happy' ? 'M78 49 L96 53 L79 62 Z' : 'M78 50 L95 56 L78 62 Z', fill: '#FFD166', stroke: ink, strokeWidth: 3.5, strokeLinejoin: 'round' })
   );
 };
+// Nami, the Tokyo-market sky whale (an original drawing). mood: normal | happy | sad.
+const sparkle = (h, x, y, r, fill) => h('path', { d: `M${x} ${y - r} Q${x} ${y} ${x + r} ${y} Q${x} ${y} ${x} ${y + r} Q${x} ${y} ${x - r} ${y} Q${x} ${y} ${x} ${y - r} Z`, fill });
+const whaleEl = (mood, size, anim) => {
+  const h = React.createElement, ink = '#3B2A20';
+  const eye = mood === 'happy'
+    ? h('path', { d: 'M62 52 Q68 45 74 52', fill: 'none', stroke: ink, strokeWidth: 4.5, strokeLinecap: 'round' })
+    : h('g', null, h('circle', { cx: 68, cy: 52, r: 7.5, fill: '#fff', stroke: ink, strokeWidth: 3 }), h('circle', { cx: mood === 'sad' ? 67 : 70.5, cy: mood === 'sad' ? 55 : 52, r: 3.5, fill: ink }));
+  return h('svg', { viewBox: '0 0 100 100', width: size, height: size, 'aria-hidden': 'true', style: { display: 'block', overflow: 'visible', animation: anim || 'none', transformOrigin: '50% 85%' } },
+    h('path', { d: mood === 'sad' ? 'M60 33 Q59 28 56 25 M60 33 Q61 28 64 25' : 'M60 33 Q57 22 48 18 M60 33 Q63 22 72 17 M60 33 L60 14', fill: 'none', stroke: '#5AA9E6', strokeWidth: 3.5, strokeLinecap: 'round' }),
+    mood === 'sad' ? null : sparkle(h, 46, 13, 4, '#FFD166'),
+    h('path', { d: 'M26 64 Q16 62 12 50 Q6 49 2 42 Q11 39 16 46 Q16 37 22 32 Q26 42 24 52 Q28 58 32 60 Z', fill: '#7CC4F0', stroke: ink, strokeWidth: 3.5, strokeLinejoin: 'round' }),
+    h('path', { d: 'M20 64 Q20 37 55 36 Q91 36 93 64 Q91 88 57 88 Q24 88 20 64 Z', fill: '#7CC4F0', stroke: ink, strokeWidth: 4 }),
+    h('path', { d: 'M30 72 Q60 82 89 70 Q83 86 57 86 Q38 86 30 72 Z', fill: '#D9F1FF' }),
+    h('path', { d: 'M46 78 L47 84 M56 79 L56.5 85 M66 78.5 L66 84.5 M76 75.5 L75.5 81', stroke: '#9FD3F2', strokeWidth: 2.2, strokeLinecap: 'round' }),
+    sparkle(h, 38, 48, 4.5, '#FFF6B0'), sparkle(h, 48, 43, 3, '#FFF6B0'), sparkle(h, 30, 56, 3, '#FFF6B0'),
+    h('path', { d: mood === 'happy' ? 'M46 66 Q36 52 24 54 Q30 68 42 74 Z' : 'M47 68 Q41 82 29 84 Q35 74 39 66 Z', fill: '#5AA9E6', stroke: ink, strokeWidth: 3.5, strokeLinejoin: 'round' }),
+    h('circle', { cx: 81, cy: 64, r: 4.5, fill: '#FFB4C8' }),
+    eye,
+    mood === 'sad' ? h('path', { d: 'M60 42 L75 45', stroke: ink, strokeWidth: 3.5, strokeLinecap: 'round' }) : null,
+    h('path', { d: mood === 'sad' ? 'M75 75 Q81 71 87 74' : mood === 'happy' ? 'M74 70 Q81 79 88 69' : 'M75 71 Q81 76 87 70', fill: 'none', stroke: ink, strokeWidth: 3.5, strokeLinecap: 'round' })
+  );
+};
+// Rory, the Savanna lion (an original drawing). mood: normal | happy | sad.
+const MANE_D = (() => {
+  let d = ''; const n = 12, R = 33, cx = 50, cy = 51;
+  for (let i = 0; i <= n; i++) {
+    const a = i / n * Math.PI * 2 - Math.PI / 2, x = (cx + R * Math.cos(a)).toFixed(1), y = (cy + R * Math.sin(a)).toFixed(1);
+    if (!i) { d = `M${x} ${y}`; continue; }
+    const m = (i - 0.5) / n * Math.PI * 2 - Math.PI / 2;
+    d += ` Q${(cx + (R + 12) * Math.cos(m)).toFixed(1)} ${(cy + (R + 12) * Math.sin(m)).toFixed(1)} ${x} ${y}`;
+  }
+  return d + ' Z';
+})();
+const lionEl = (mood, size, anim) => {
+  const h = React.createElement, ink = '#3B2A20';
+  const eyes = mood === 'happy'
+    ? h('path', { d: 'M35 51 Q40 45 45 51 M55 51 Q60 45 65 51', fill: 'none', stroke: ink, strokeWidth: 4.5, strokeLinecap: 'round' })
+    : h('g', null,
+      h('circle', { cx: 40, cy: mood === 'sad' ? 52 : 50, r: 4.6, fill: ink }), h('circle', { cx: 60, cy: mood === 'sad' ? 52 : 50, r: 4.6, fill: ink }),
+      h('circle', { cx: 41.6, cy: mood === 'sad' ? 50.6 : 48.4, r: 1.5, fill: '#fff' }), h('circle', { cx: 61.6, cy: mood === 'sad' ? 50.6 : 48.4, r: 1.5, fill: '#fff' }));
+  return h('svg', { viewBox: '0 0 100 100', width: size, height: size, 'aria-hidden': 'true', style: { display: 'block', overflow: 'visible', animation: anim || 'none', transformOrigin: '50% 85%' } },
+    h('path', { d: MANE_D, fill: '#E8892B', stroke: ink, strokeWidth: 4, strokeLinejoin: 'round' }),
+    h('circle', { cx: 31, cy: 33, r: 8, fill: '#FFC46B', stroke: ink, strokeWidth: 3.5 }), h('circle', { cx: 31, cy: 33, r: 3.6, fill: '#FFB4A2' }),
+    h('circle', { cx: 69, cy: 33, r: 8, fill: '#FFC46B', stroke: ink, strokeWidth: 3.5 }), h('circle', { cx: 69, cy: 33, r: 3.6, fill: '#FFB4A2' }),
+    h('circle', { cx: 50, cy: 56, r: 25, fill: '#FFC46B', stroke: ink, strokeWidth: 4 }),
+    h('path', { d: 'M44 33 Q47 38 50 33 Q53 38 56 33', fill: 'none', stroke: '#E8892B', strokeWidth: 3, strokeLinecap: 'round' }),
+    h('ellipse', { cx: 50, cy: 67, rx: 13, ry: 9.5, fill: '#FFF1D6' }),
+    h('circle', { cx: 33.5, cy: 63, r: 4.2, fill: '#FFB4A2' }), h('circle', { cx: 66.5, cy: 63, r: 4.2, fill: '#FFB4A2' }),
+    eyes,
+    mood === 'sad' ? h('path', { d: 'M34 45.5 L44.5 42 M66 45.5 L55.5 42', stroke: ink, strokeWidth: 3.5, strokeLinecap: 'round' }) : null,
+    h('path', { d: 'M44.5 60 Q50 57.5 55.5 60 Q53.5 65 50 65.5 Q46.5 65 44.5 60 Z', fill: '#7A3E1C', stroke: ink, strokeWidth: 2, strokeLinejoin: 'round' }),
+    h('path', { d: mood === 'sad' ? 'M50 65.5 L50 68 M44 73 Q50 68.5 56 73' : mood === 'happy' ? 'M50 65.5 L50 68 M42.5 68 Q46 75 50 68 Q54 75 57.5 68' : 'M50 65.5 L50 68 M44 68 Q47 72 50 68 Q53 72 56 68', fill: 'none', stroke: ink, strokeWidth: 3, strokeLinecap: 'round', strokeLinejoin: 'round' }),
+    h('g', { fill: '#C9A27A' }, h('circle', { cx: 42, cy: 67, r: 1 }), h('circle', { cx: 39.5, cy: 70, r: 1 }), h('circle', { cx: 58, cy: 67, r: 1 }), h('circle', { cx: 60.5, cy: 70, r: 1 }))
+  );
+};
+// Who guides each unit, and the words that go with them.
+const GUIDES = {
+  pip: { name: 'Pip', el: pipEl, one: 'peck', many: 'pecks', cover: 'linear-gradient(180deg,#9AD77C,#5FB548)', coverShadow: '#3F8A2E', coverFace: '🍃', coverName: 'Leaf pile',
+    tap: 'Tap a leaf pile and I’ll peck it!', junkSay: 'Ew, sticky!', gold: 'Golden seed', cheers: ['Nice!', 'Great peck!', 'You got it!', 'Tweet-tastic!'], perfect: 'Perfect patch!' },
+  nami: { name: 'Nami', el: whaleEl, one: 'splash', many: 'splashes', cover: 'linear-gradient(180deg,#EAF8FF,#9FD8F5)', coverShadow: '#3A7DB3', coverFace: '🧊', coverName: 'Ice box',
+    tap: 'Tap an ice box and I’ll splash it open!', junkSay: 'Blub… not that one!', gold: 'Golden starfish', cheers: ['Nice!', 'Great splash!', 'You got it!', 'Whale done!'], perfect: 'Perfect splash!' },
+  rory: { name: 'Rory', el: lionEl, one: 'pounce', many: 'pounces', cover: 'linear-gradient(180deg,#F7DA7A,#D9A632)', coverShadow: '#9C7414', coverFace: '🌾', coverName: 'Grass tuft',
+    tap: 'Tap a grass tuft and I’ll pounce on it!', junkSay: 'Grr, not that one!', gold: 'Golden star', cheers: ['Nice!', 'Great pounce!', 'You got it!', 'Roar-some!'], perfect: 'Perfect pounce!' }
+};
+const guideOf = lv => GUIDES[unitOf(lv).guide];
 
 class Component extends DCLogic {
   constructor(p) {
@@ -1507,7 +1681,7 @@ class Component extends DCLogic {
       input: '', quickSeed: 0, filter: 'all', toast: '', celebrate: null, queue: [], seenMs: saved.seenMs || null,
       questDone: saved.questDone || {}, holos: saved.holos || {},
       stickers: Object.fromEntries(Object.entries(saved.stickers || {}).map(([d, id]) => [d, LEGACY_Q[id] || id])),
-      peck: { pts: 0, best: {}, log: {}, plays: 0, ...(saved.peck || {}) }, myBadges: saved.myBadges || [],
+      peck: { pts: 0, best: {}, log: {}, plays: 0, ...migratePeck(saved.peck) }, myBadges: saved.myBadges || [],
       nestView: 'quests', bSheet: false, bDraft: { ...MB_BLANK }, game: null,
       famOk: false, fam: null, famBusy: false, famErr: '', famEvents: [], famLastSeen: 0, famPlans: [], pushState: 'unknown',
       backupAt: (lsGet(FKEY, {}) || {}).bAt || 0, moveCode: null,
@@ -2062,10 +2236,10 @@ class Component extends DCLogic {
   setGame(p) { this.setState(s => s.game ? { game: { ...s.game, ...(typeof p === 'function' ? p(s.game) : p) } } : null); }
   startLevel(i) {
     clearTimeout(this._gt);
-    const L = LEVELS[i], u = UNITS[Math.floor(i / 4)];
-    const foods = drawFoods(u.focus, L.c * L.r - L.junk - L.gold).map(f => ({ kind: 'food', ...f }));
-    const junk = shuffle(JUNK).slice(0, L.junk).map(f => ({ kind: 'junk', ...f }));
-    const gold = Array.from({ length: L.gold }, () => ({ kind: 'gold', e: '🌟', name: 'Golden seed' }));
+    const L = LEVELS[i], u = unitOf(i), G = guideOf(i);
+    const foods = drawFoods(u.foods, L.c * L.r - L.junk - L.gold).map(f => ({ kind: 'food', ...f }));
+    const junk = shuffle([...JUNK, ...u.junk]).slice(0, L.junk).map(f => ({ kind: 'junk', ...f }));
+    const gold = Array.from({ length: L.gold }, () => ({ kind: 'gold', e: '🌟', name: G.gold }));
     const tiles = shuffle([...foods, ...junk, ...gold]).map(t => ({ ...t, open: false, ok: null }));
     this.setState({ game: { lv: i, tiles, phase: 'peek', hearts: 3, pecks: L.pecks, found: 0, pts: 0, right: 0, wrong: 0, junk: 0, last: -1, peckIdx: -1, quiz: null, fb: null, res: null, mood: 'normal' } });
     this._gt = setTimeout(() => this.setGame(g => g.phase === 'peek' ? { phase: 'play' } : {}), L.peek);
@@ -2077,13 +2251,13 @@ class Component extends DCLogic {
     clearTimeout(this._gt);
     this._gt = setTimeout(() => {
       const cur = this.state.game; if (!cur || cur.peckIdx !== i) return;
-      const tiles = cur.tiles.map((t, j) => j === i ? { ...t, open: true } : t), t = tiles[i];
+      const tiles = cur.tiles.map((t, j) => j === i ? { ...t, open: true } : t), t = tiles[i], G = guideOf(cur.lv);
       const base = { tiles, pecks: cur.pecks - 1, peckIdx: -1, last: i };
       if (t.kind === 'junk') {
         try { if (navigator.vibrate) navigator.vibrate(80); } catch (e) {}
-        this.setGame({ ...base, hearts: cur.hearts - 1, junk: cur.junk + 1, phase: 'fb', mood: 'sad', fb: { icon: t.e, say: 'Ew, sticky!', title: `${t.name}!`, sub: 'That’s a sometimes food, not an every-lunch food. −1 ❤️' } });
+        this.setGame({ ...base, hearts: cur.hearts - 1, junk: cur.junk + 1, phase: 'fb', mood: 'sad', fb: { icon: t.e, say: G.junkSay, title: `${t.name}!`, sub: 'That’s a sometimes food, not an every-lunch food. −1 ❤️' } });
       } else if (t.kind === 'gold') {
-        this.setGame({ ...base, found: cur.found + 1, pts: cur.pts + 25, phase: 'fb', mood: 'happy', fb: { gold: true, icon: '🌟', say: 'Shiny!', title: 'Golden seed!', sub: 'A lucky find. +25 ⭐' } });
+        this.setGame({ ...base, found: cur.found + 1, pts: cur.pts + 25, phase: 'fb', mood: 'happy', fb: { gold: true, icon: '🌟', say: 'Shiny!', title: `${G.gold}!`, sub: 'A lucky find. +25 ⭐' } });
       } else {
         const opts = shuffle([t.g, ...shuffle(GROUP_IDS.filter(x => x !== t.g && x !== t.alt)).slice(0, 2)]);
         this.setGame({ ...base, phase: 'quiz', mood: 'normal', quiz: { idx: i, opts } });
@@ -2093,13 +2267,12 @@ class Component extends DCLogic {
   answer(id) {
     const g = this.state.game; if (!g || g.phase !== 'quiz' || !g.quiz) return;
     const t = g.tiles[g.quiz.idx], ok = id === t.g, info = GROUP_INFO[t.g];
-    const fact = `${t.name} ${PLURAL_FOODS.includes(t.name) ? info.plural : info.phrase}`;
-    const cheers = ['Nice!', 'Great peck!', 'You got it!', 'Tweet-tastic!'];
+    const fact = t.fact || `${t.name} ${t.pl ? info.plural : info.phrase}`, cheers = guideOf(g.lv).cheers, prof = t.n ? t : null;
     this.setGame({
       phase: 'fb', found: g.found + 1, pts: g.pts + (ok ? 10 : 4), right: g.right + (ok ? 1 : 0), wrong: g.wrong + (ok ? 0 : 1), mood: ok ? 'happy' : 'sad',
       tiles: g.tiles.map((x, j) => j === g.quiz.idx ? { ...x, ok } : x), quiz: null,
-      fb: ok ? { ok: true, icon: t.e, say: 'Yum! 😋', title: cheers[g.found % cheers.length], sub: `${fact}. +10 ⭐` }
-        : { icon: t.e, say: 'Close one!', title: 'Not quite', sub: `${fact}. Still a healthy find: +4 ⭐` }
+      fb: ok ? { ok: true, icon: t.e, say: 'Yum! 😋', title: cheers[g.found % cheers.length], sub: `${fact}. +10 ⭐`, prof }
+        : { icon: t.e, say: 'Close one!', title: 'Not quite', sub: `${fact}. Still a healthy find: +4 ⭐`, prof }
     });
   }
   gContinue() {
@@ -2116,9 +2289,10 @@ class Component extends DCLogic {
     const mistakes = g.junk + g.wrong, stars = win ? (mistakes === 0 ? 3 : mistakes <= 2 ? 2 : 1) : 0;
     const bonus = stars * 10, total = g.pts + bonus, day = iso(new Date()), answered = g.right + g.wrong;
     const prevBest = this.state.peck.best[g.lv] || 0;
-    const title = win ? (stars === 3 ? 'Perfect patch!' : 'Level complete!') : why === 'hearts' ? 'Out of hearts!' : 'Out of pecks!';
+    const G = guideOf(g.lv), next = g.lv + 1 < LEVELS.length ? g.lv + 1 : -1, newUnit = next > 0 && next % 4 === 0;
+    const title = win ? (stars === 3 ? G.perfect : 'Level complete!') : why === 'hearts' ? 'Out of hearts!' : `Out of ${G.many}!`;
     const sub = win
-      ? `+${total} points${bonus ? `, with a ${bonus}-point star bonus` : ''}.${prevBest && stars > prevBest ? ' New best!' : ''}${!prevBest && g.lv + 1 < LEVELS.length ? ` Level ${g.lv + 2} is open.` : ''}`
+      ? `+${total} points${bonus ? `, with a ${bonus}-point star bonus` : ''}.${prevBest && stars > prevBest ? ' New best!' : ''}${!prevBest && next >= 0 ? (newUnit ? ` ${UNITS[next / 4].icon} ${UNITS[next / 4].title} is open!` : ` Level ${next + 1} is open.`) : ''}`
       : total ? `You still earned ${total} points. Peek carefully and try again!` : 'Peek carefully and try again. You’ve got this!';
     this.setState(s => {
       const p = s.peck, best = { ...p.best }; if (stars > (best[g.lv] || 0)) best[g.lv] = stars;
@@ -2243,11 +2417,11 @@ class Component extends DCLogic {
     const pk = s.peck, pbest = pk.best || {};
     const curLv = LEVELS.findIndex((_, i) => !((pbest[i] || 0) >= 1));
     const units = UNITS.map((u, ui) => ({
-      n: ui + 1, title: u.title, sub: u.sub, icon: u.icon, color: u.color,
+      n: ui + 1, title: u.title, sub: u.sub, icon: u.icon, color: u.color, guideImg: s.tab === 'game' ? GUIDES[u.guide].el('happy', 54) : null,
       levels: [0, 1, 2, 3].map(j => {
         const i = ui * 4 + j, b = pbest[i] || 0, open = i === 0 || (pbest[i - 1] || 0) >= 1, cur = i === curLv, dx = [0, 64, 0, -64][j];
         return {
-          dx: `${dx}px`, isCurrent: cur, hasPip: cur, pipLeft: dx >= 0 ? '-84px' : 'auto', pipRight: dx >= 0 ? 'auto' : '-84px',
+          dx: `${dx}px`, isCurrent: cur, hasPip: cur, pipEl: cur && s.tab === 'game' ? GUIDES[u.guide].el('normal', 66) : null, pipLeft: dx >= 0 ? '-84px' : 'auto', pipRight: dx >= 0 ? 'auto' : '-84px',
           bg: b ? '#FFD166' : cur ? u.color : open ? '#FFF7EC' : '#E5D9CC', shadow: b ? '#C9971F' : cur ? u.shadow : '#C4B5A5',
           icon: !open ? '🔒' : b === 3 ? '👑' : b ? '✓' : j === 3 ? '🏆' : u.icon,
           starList: [1, 2, 3].map(n => ({ c: n <= b ? '#F5B400' : '#DCCDBD' })),
@@ -2260,42 +2434,52 @@ class Component extends DCLogic {
     let gv = {
       hasGame: false, gPlaying: false, gDone: false, gPct: '0%', gHearts: '', gHeartsAria: '', gPip: null, gSay: '', gLevelLabel: '', gPecksLabel: '',
       gPeek: false, gPeekMs: '0ms', gCols: 3, gGridMax: '300px', gTiles: [], pipPeck: null, gQuiz: false, gQ: {}, gOptions: [], gFeedback: false, gFb: {},
-      gContinue: () => {}, gQuit: () => {}, gPipBig: null, gRes: { stars: [], tiles: [] }, gPrimary: () => {}, gSecondary: () => {}
+      gContinue: () => {}, gQuit: () => {}, gPipBig: null, gRes: { stars: [], tiles: [] }, gPrimary: () => {}, gSecondary: () => {},
+      gHasProf: false, gPf: { chips: [] }, gGuideName: 'Pip'
     };
     if (g) {
-      const GL = LEVELS[g.lv], phase = g.phase, fb = g.fb || {}, r = g.res || {}, qT = g.quiz ? g.tiles[g.quiz.idx] : null, left = GL.goal - g.found;
+      const GL = LEVELS[g.lv], G = guideOf(g.lv), phase = g.phase, fb = g.fb || {}, r = g.res || {}, qT = g.quiz ? g.tiles[g.quiz.idx] : null, left = GL.goal - g.found;
+      const pf = fb.prof;
       const FB = fb.gold ? { bg: '#FFF1C2', line: '#E2A11B', fg: '#6B4210', btn: '#FFD166', btnShadow: '#C9971F', btnFg: '#3B2A20' }
         : fb.ok ? { bg: '#DDF5E8', line: '#3DBE8B', fg: '#1F5E40', btn: '#2E8A5E', btnShadow: '#1F5E40', btnFg: '#fff' }
         : { bg: '#FFE3E6', line: '#E57C8D', fg: '#8E2436', btn: '#C9405A', btnShadow: '#8E2436', btnFg: '#fff' };
       const say = phase === 'peek' ? 'Peek time! Remember where the sometimes foods hide 👀'
         : phase === 'quiz' ? 'Ooh, what did I find?' : phase === 'fb' ? fb.say
-        : phase === 'done' ? '' : g.found ? `${left} more healthy ${left === 1 ? 'food' : 'foods'} to find!` : 'Tap a leaf pile and I’ll peck it!';
+        : phase === 'done' ? '' : g.found ? `${left} more healthy ${left === 1 ? 'food' : 'foods'} to find!` : G.tap;
       const hearts = Math.max(0, g.hearts);
       gv = {
         hasGame: true, gPlaying: phase !== 'done', gDone: phase === 'done',
         gPct: `${Math.min(100, g.found / GL.goal * 100)}%`, gHearts: '❤️'.repeat(hearts) + '🤍'.repeat(3 - hearts), gHeartsAria: `${hearts} of 3 hearts left`,
-        gPip: pipEl(g.mood, 72), gSay: say, gLevelLabel: `Level ${g.lv + 1} · ⭐ ${g.pts}`,
-        gPecksLabel: phase === 'peek' ? 'Get ready…' : `${g.pecks} peck${g.pecks === 1 ? '' : 's'} left`,
+        gPip: G.el(g.mood, 72), gSay: say, gLevelLabel: `Level ${g.lv + 1} · ⭐ ${g.pts}`, gGuideName: G.name,
+        gPecksLabel: phase === 'peek' ? 'Get ready…' : `${g.pecks} ${g.pecks === 1 ? G.one : G.many} left`,
         gPeek: phase === 'peek', gPeekMs: `${GL.peek}ms`, gCols: GL.c, gGridMax: GL.c >= 4 ? '100%' : '300px',
         gTiles: g.tiles.map((t, i) => {
           const show = phase === 'peek' || t.open, fresh = g.last === i && t.open;
-          let bg = 'linear-gradient(180deg,#9AD77C,#5FB548)', shadow = '#3F8A2E', face = '🍃';
+          let bg = G.cover, shadow = G.coverShadow, face = G.coverFace;
           if (show && t.kind === 'junk') { bg = '#FFD6DC'; shadow = '#C44A60'; face = t.e; }
           else if (show && t.kind === 'gold') { bg = '#FFE9A8'; shadow = '#D99A12'; face = '🌟'; }
           else if (show) { bg = t.open ? '#DDF5E8' : '#FFF7EC'; shadow = t.open ? '#2E8A5E' : '#D8C2AC'; face = t.e; }
           return {
-            bg, shadow, face, fs: GL.c >= 4 ? '32px' : '40px', pecking: g.peckIdx === i, aria: show ? t.name : `Leaf pile ${i + 1}`,
+            bg, shadow, face, fs: GL.c >= 4 ? '30px' : '38px', pecking: g.peckIdx === i, aria: show ? t.name : `${G.coverName} ${i + 1}`,
+            hasLabel: show, label: t.short || t.name,
             anim: fresh ? (t.kind === 'junk' ? 'lb-flip .3s ease-out, lb-shake .4s ease-in-out .3s' : 'lb-flip .3s ease-out') : 'none',
             mark: t.open && (t.kind === 'junk' || t.ok != null), markText: t.kind === 'junk' ? '✕' : t.ok ? '✓' : '!',
             markBg: t.kind === 'junk' ? '#C9405A' : t.ok ? '#2E8A5E' : '#C77A0A', onClick: () => this.peck(i)
           };
         }),
-        pipPeck: g.peckIdx >= 0 ? pipEl('normal', 56, 'lb-peck .42s ease-in-out') : null,
+        pipPeck: g.peckIdx >= 0 ? G.el('normal', 56, 'lb-peck .42s ease-in-out') : null,
         gQuiz: phase === 'quiz' && !!qT, gQ: qT ? { e: qT.e, name: qT.name } : {},
         gOptions: qT ? g.quiz.opts.map(id => ({ label: GROUP_INFO[id].label, onClick: () => this.answer(id) })) : [],
         gFeedback: phase === 'fb', gFb: { ...FB, icon: fb.icon, title: fb.title, sub: fb.sub },
+        gHasProf: phase === 'fb' && !!pf, gPf: pf ? {
+          e: pf.e, name: pf.name, sv: pf.sv, hasJp: !!pf.jp, jp: pf.jp || '', why: pf.why, hasEco: !!pf.eco, eco: pf.eco || '', hasTip: !!pf.tip, tip: pf.tip || '',
+          chips: pf.n.map(([label, lvl]) => {
+            const N = NUT_LEVEL[lvl] || NUT_LEVEL[1];
+            return { label, word: N.word, bg: N.bg, line: N.line, aria: `${label}: ${N.word.toLowerCase()}`, dots: [1, 2, 3].map(k => ({ c: k <= lvl ? N.dot : '#E5D9CC' })) };
+          })
+        } : { chips: [] },
         gContinue: () => this.gContinue(), gQuit: () => this.gQuit(),
-        gPipBig: phase === 'done' ? pipEl(r.win ? 'happy' : 'sad', 140, r.win ? 'lb-bob 1.6s ease-in-out infinite' : 'none') : null,
+        gPipBig: phase === 'done' ? G.el(r.win ? 'happy' : 'sad', 140, r.win ? 'lb-bob 1.6s ease-in-out infinite' : 'none') : null,
         gRes: phase === 'done' ? {
           color: r.win ? '#1F7A50' : '#B23A50', title: r.title, sub: r.sub, starsAria: `${r.stars} of 3 stars`,
           stars: [1, 2, 3].map(n => ({ c: n <= r.stars ? '#F5B400' : '#E5D9CC', delay: `${0.15 + n * 0.25}s` })),
@@ -2421,7 +2605,7 @@ class Component extends DCLogic {
       bHelp: bd.type === 'own' ? 'Tap “+1 today” in the Nest on each day you do it.' : 'Counts from today on, and fills in by itself as you use Lunch Buddy.',
       saveBadge: () => this.saveMyBadge(), bSaveBg: bdReady ? '#FFD166' : '#F3E6D3', bSaveOp: bdReady ? 1 : 0.7,
       goGame: () => this.goTab('game'),
-      pipHero: s.tab === 'game' ? pipEl('happy', 68, 'lb-bob 2.2s ease-in-out infinite') : null, pipMap: s.tab === 'game' ? pipEl('normal', 66) : null,
+      pipHero: s.tab === 'game' ? (curLv >= 0 ? guideOf(curLv) : GUIDES.pip).el('happy', 68, 'lb-bob 2.2s ease-in-out infinite') : null,
       peckPts: pk.pts || 0, peckStars: Object.values(pbest).reduce((a, b) => a + b, 0), peckStarsMax: LEVELS.length * 3,
       peckToday: (pk.log || {})[today] || 0, peckAllDone: curLv < 0, units,
       ...gv,
