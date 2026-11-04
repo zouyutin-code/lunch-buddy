@@ -1,0 +1,5 @@
+# Secrets: the push-alert private key lives here locally and as a Cloudflare secret.
+.dev.vars
+.wrangler/
+node_modules/
+.DS_Store

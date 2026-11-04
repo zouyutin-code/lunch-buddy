@@ -1,0 +1,14 @@
+name = "lunch-buddy"
+pages_build_output_dir = "public"
+compatibility_date = "2026-10-01"
+
+[vars]
+# Public half of the push-alert (VAPID) key pair. The private half is the
+# VAPID_PRIVATE_JWK secret: `wrangler pages secret put VAPID_PRIVATE_JWK`.
+VAPID_PUBLIC_KEY = "BGZQpJUkPTBQE26hiytVds8yZrSmp8jwIb9I1KyDM84_oD2bVKvm0DrwRQZOsZdNCr7uBf3xH_tKRTikdGTWdXo"
+VAPID_SUBJECT = "https://lunch-buddy.pages.dev"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "lunch-buddy"
+database_id = "0f8fc108-3d40-473d-98ef-cde9e795c939"
