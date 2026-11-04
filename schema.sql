@@ -1,7 +1,8 @@
 -- Lunch Buddy family sharing. Apply with:
 --   npx wrangler d1 execute lunch-buddy --remote --file schema.sql
--- Stored: nicknames, lunch add-on picks, push subscriptions, and each member's own
--- app backup (ideas, badges, game points). The API also creates the backup tables on first use.
+-- Stored: nicknames, lunch add-on picks, push subscriptions, each member's own app backup
+-- (ideas, badges, game points), and personal backups for phones not in a family (no name,
+-- just a random key). The API also creates the backup tables on first use.
 
 CREATE TABLE IF NOT EXISTS families (
   id TEXT PRIMARY KEY,
@@ -72,9 +73,29 @@ CREATE TABLE IF NOT EXISTS move_codes (
 );
 CREATE INDEX IF NOT EXISTS move_codes_member ON move_codes(member_id);
 
--- Simple rate limiting for create/join attempts.
+-- Personal backups for phones that aren't in a family. Deleted after 400 days without use.
+CREATE TABLE IF NOT EXISTS vaults (
+  id TEXT PRIMARY KEY,
+  token_hash TEXT NOT NULL UNIQUE,
+  data TEXT NOT NULL,
+  size INTEGER NOT NULL,
+  created_at INTEGER NOT NULL,
+  updated_at INTEGER NOT NULL
+);
+CREATE INDEX IF NOT EXISTS vaults_updated ON vaults(updated_at);
+
+-- One-time codes (stored hashed) that move a personal backup to a new phone.
+CREATE TABLE IF NOT EXISTS vault_codes (
+  code_hash TEXT PRIMARY KEY,
+  vault_id TEXT NOT NULL REFERENCES vaults(id) ON DELETE CASCADE,
+  expires_at INTEGER NOT NULL
+);
+CREATE INDEX IF NOT EXISTS vault_codes_vault ON vault_codes(vault_id);
+
+-- Simple rate limiting for create/join attempts and backups.
 CREATE TABLE IF NOT EXISTS rate (
   key TEXT NOT NULL,
   ts INTEGER NOT NULL
 );
 CREATE INDEX IF NOT EXISTS rate_key ON rate(key, ts);
+CREATE INDEX IF NOT EXISTS rate_ts ON rate(ts);

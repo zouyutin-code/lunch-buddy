@@ -827,7 +827,7 @@ input::placeholder{color:#B49A86}
       <sc-if value="{{ famNone }}" hint-placeholder-val="{{ true }}">
         <section style="background:#FFF1C2;border:2px solid #3B2A20;border-radius:24px;padding:16px;box-shadow:4px 4px 0 #3B2A20;display:flex;flex-direction:column;gap:10px">
           <h3 style="font-family:'Baloo 2',sans-serif;font-size:20px;margin:0;font-weight:800">🏡 Start a family</h3>
-          <div style="font-size:13px;font-weight:600;color:#7A4B12">For parents. You get a code to share with your kids, an alert when they plan a lunch add-on, and a backup of everyone’s ideas and badges.</div>
+          <div style="font-size:13px;font-weight:600;color:#7A4B12">For parents. You get a code to share with your kids, an alert when they plan a lunch add-on, and new-phone codes for everyone in the family.</div>
           <label style="display:flex;flex-direction:column;gap:4px">
             <span style="font-size:12px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:#7A4B12">Family name</span>
             <input value="{{ famForm.familyName }}" sc-camel-on-change="{{ onFamFamilyName }}" maxlength="40" placeholder="e.g. The Lees" style="height:48px;border-radius:16px;border:2px solid #3B2A20;padding:0 14px;font-family:inherit;font-size:16px;font-weight:700;color:#3B2A20;background:#fff;outline:none;min-width:0">
@@ -859,16 +859,31 @@ input::placeholder{color:#B49A86}
           <button sc-camel-on-click="{{ joinFamily }}" style="height:52px;border-radius:18px;border:2px solid #3B2A20;background:#5AA9E6;color:#fff;font-family:'Baloo 2',sans-serif;font-size:19px;font-weight:800;cursor:pointer;opacity:{{ famBusyOp }}">{{ joinLabel }}</button>
         </section>
 
+        <section style="background:#fff;border:2px solid #3B2A20;border-radius:24px;padding:16px;box-shadow:4px 4px 0 #3B2A20;display:flex;flex-direction:column;gap:10px">
+          <h3 style="font-family:'Baloo 2',sans-serif;font-size:20px;margin:0;font-weight:800">☁️ Your backup</h3>
+          <div style="font-size:13px;font-weight:700;color:#8A6E5A;line-height:1.4">Your ideas, favorites, badges, quests and game points are backed up automatically, so a new phone can get them back. No account needed.</div>
+          <div style="display:flex;align-items:center;gap:8px;font-size:14px;font-weight:800;color:#2E6B4F"><span aria-hidden="true">{{ backupIcon }}</span><span>{{ backupText }}</span></div>
+          <sc-if value="{{ hasMoveSelf }}" hint-placeholder-val="{{ false }}">
+            <div style="background:#FFF1C2;border:2px dashed #3B2A20;border-radius:18px;padding:12px;display:flex;flex-direction:column;gap:6px;text-align:center">
+              <div style="font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#7A4B12">{{ moveCodeFor }}</div>
+              <div style="font-family:ui-monospace,Menlo,monospace;font-size:30px;font-weight:800;letter-spacing:.12em;line-height:1.1;color:#3B2A20">{{ moveCodeText }}</div>
+              <div style="font-size:13px;font-weight:700;color:#7A4B12;line-height:1.4;text-wrap:pretty">{{ moveCodeHow }}</div>
+              <button sc-camel-on-click="{{ moveDone }}" style="align-self:center;height:40px;padding:0 18px;border-radius:14px;border:2px solid #3B2A20;background:#fff;font-family:inherit;font-weight:800;font-size:14px;color:#3B2A20;cursor:pointer">Done</button>
+            </div>
+          </sc-if>
+          <button sc-camel-on-click="{{ moveSelf }}" style="height:48px;border-radius:16px;border:2px solid #3B2A20;background:#E1F0FB;color:#3B2A20;font-family:inherit;font-weight:800;font-size:15px;cursor:pointer;opacity:{{ famBusyOp }}">{{ moveLabel }}</button>
+        </section>
+
         <section style="background:#DDF5E8;border:2px solid #3B2A20;border-radius:24px;padding:16px;box-shadow:4px 4px 0 #3B2A20;display:flex;flex-direction:column;gap:10px">
           <h3 style="font-family:'Baloo 2',sans-serif;font-size:20px;margin:0;font-weight:800">📲 Moving phones?</h3>
-          <div style="font-size:13px;font-weight:600;color:#2E6B4F">Got a move code from your old phone or a parent? Enter it to bring back your family, ideas and badges.</div>
+          <div style="font-size:13px;font-weight:600;color:#2E6B4F">Got a move code from your old phone or a parent? Enter it to bring back your ideas, badges and game points (and your family, if you’re in one).</div>
           <label style="display:flex;flex-direction:column;gap:4px">
             <span style="font-size:12px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:#2E6B4F">Move code</span>
             <input value="{{ famForm.moveCode }}" sc-camel-on-change="{{ onMoveCode }}" maxlength="9" autocapitalize="characters" autocomplete="off" spellcheck="false" placeholder="ABCD-2345" style="height:52px;border-radius:16px;border:2px solid #3B2A20;padding:0 14px;font-family:ui-monospace,Menlo,monospace;font-size:24px;font-weight:800;letter-spacing:.14em;color:#3B2A20;background:#fff;outline:none;min-width:0">
           </label>
           <button sc-camel-on-click="{{ redeemMove }}" style="height:52px;border-radius:18px;border:2px solid #3B2A20;background:#3DBE8B;color:#3B2A20;font-family:'Baloo 2',sans-serif;font-size:19px;font-weight:800;cursor:pointer;opacity:{{ famBusyOp }}">{{ redeemLabel }}</button>
         </section>
-        <div style="font-size:12px;font-weight:600;color:#8A6E5A;line-height:1.4;padding:0 4px">Lunch Buddy keeps nicknames, lunch add-on picks and a backup of each member’s ideas, badges and game points for your family. Use a first name or nickname, not a full name.</div>
+        <div style="font-size:12px;font-weight:600;color:#8A6E5A;line-height:1.4;padding:0 4px">Lunch Buddy backs up this phone’s ideas, badges and game points using a random key saved on this phone: no name, email or password. Families also share nicknames and lunch add-on picks. Use a first name or nickname, not a full name.</div>
       </sc-if>
 
       <sc-if value="{{ famPending }}" hint-placeholder-val="{{ false }}">
@@ -1117,6 +1132,16 @@ input::placeholder{color:#B49A86}
               </sc-for>
             </div>
           </div>
+          <sc-if value="{{ gReady }}" hint-placeholder-val="{{ false }}">
+            <div style="position:absolute;left:0;right:0;bottom:0;background:#fff;border-top:2px solid #E5D3C0;border-radius:24px 24px 0 0;padding:18px 16px 24px;display:flex;flex-direction:column;gap:10px;box-shadow:0 -8px 24px rgba(59,42,32,.15);animation:lb-rise .25s ease-out">
+              <div style="display:flex;align-items:center;gap:12px">
+                <span aria-hidden="true" style="width:56px;height:56px;border-radius:18px;background:#E1F0FB;border:2px solid #3B2A20;display:flex;align-items:center;justify-content:center;font-size:32px;flex:none">👀</span>
+                <div style="min-width:0"><div style="font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#8A6E5A">Memory round</div><div style="font-family:'Baloo 2',sans-serif;font-size:24px;font-weight:800;line-height:1.1">Peek, then pick!</div></div>
+              </div>
+              <div style="font-size:15px;font-weight:700;line-height:1.4;color:#5A4334;text-wrap:pretty">{{ gReadyText }}</div>
+              <button sc-camel-on-click="{{ gBeginPeek }}" style="height:54px;border-radius:16px;border:none;background:#5AA9E6;box-shadow:0 4px 0 #3A7DB3;color:#fff;font-family:'Baloo 2',sans-serif;font-size:19px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;cursor:pointer">👀 Start the peek</button>
+            </div>
+          </sc-if>
           <sc-if value="{{ gQuiz }}" hint-placeholder-val="{{ false }}">
             <div style="position:absolute;left:0;right:0;bottom:0;background:#fff;border-top:2px solid #E5D3C0;border-radius:24px 24px 0 0;padding:16px 16px 24px;display:flex;flex-direction:column;gap:10px;box-shadow:0 -8px 24px rgba(59,42,32,.15);animation:lb-rise .25s ease-out">
               <div style="display:flex;align-items:center;gap:12px">
@@ -1402,6 +1427,7 @@ const mondayOf = d => { const x = new Date(d.getFullYear(), d.getMonth(), d.getD
 // ── Family sharing (works where the /api backend exists, i.e. lunch-buddy.pages.dev) ──
 const FKEY = 'lunchbuddy-family';
 const FDIRTY = 'lunchbuddy-family-dirty';
+const VKEY = 'lunchbuddy-backup';   // personal backup for phones not in a family: { token, bAt, bDirty }
 const lsGet = (k, d) => { try { return JSON.parse(localStorage.getItem(k) || 'null') ?? d; } catch (e) { return d; } };
 const lsSet = (k, v) => { try { if (v == null) localStorage.removeItem(k); else localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} };
 const isStandalone = () => { try { return window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true; } catch (e) { return false; } };
@@ -1440,6 +1466,8 @@ function mergeSaved(loc, rem) {
     stickers, holos: mergeKeep(loc.holos, rem.holos), peck, myBadges
   };
 }
+const hasStuff = d => !!d && (['favs', 'eaten', 'badges', 'questDone', 'stickers', 'holos'].some(k => isObj(d[k]) && Object.keys(d[k]).length)
+  || ['myIdeas', 'myBadges'].some(k => Array.isArray(d[k]) && d[k].length) || (isObj(d.peck) && (Number(d.peck.pts) > 0 || Object.keys(d.peck.best || {}).length > 0)));
 const fmtMove = v => { const c = String(v || '').toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 8); return c.length > 4 ? c.slice(0, 4) + '-' + c.slice(4) : c; };
 // ── Badges kids design themselves ──
 const MB_MAX = 12;
@@ -1684,7 +1712,7 @@ class Component extends DCLogic {
       peck: { pts: 0, best: {}, log: {}, plays: 0, ...migratePeck(saved.peck) }, myBadges: saved.myBadges || [],
       nestView: 'quests', bSheet: false, bDraft: { ...MB_BLANK }, game: null,
       famOk: false, fam: null, famBusy: false, famErr: '', famEvents: [], famLastSeen: 0, famPlans: [], pushState: 'unknown',
-      backupAt: (lsGet(FKEY, {}) || {}).bAt || 0, moveCode: null,
+      backupAt: ((lsGet(FKEY, {}) || {}).token ? (lsGet(FKEY, {}) || {}).bAt : (lsGet(VKEY, {}) || {}).bAt) || 0, moveCode: null,
       famForm: { familyName: '', startName: '', code: '', joinName: '', role: 'kid', moveCode: '' }
     };
     // Version 2 merged Quests + Aviary into the Nest and added goal badges. Goals already met count as seen,
@@ -1697,9 +1725,18 @@ class Component extends DCLogic {
   famSession() { return lsGet(FKEY, {}) || {}; }
   famToken() { return this.famSession().token || null; }
   famActive() { const f = this.state.fam; return !!(f && f.me && f.me.status === 'active' && this.famToken()); }
+  vSession() { return lsGet(VKEY, {}) || {}; }
+  // Where this phone's backup goes: its family (active members), else its personal backup. null = not known yet.
+  backupMode() {
+    if (!this.state.famOk) return null;
+    if (!this.famToken()) return 'vault';
+    const f = this.state.fam;
+    return f && f.me ? (f.me.status === 'active' ? 'family' : 'vault') : null;
+  }
+  backupDirty() { const m = this.backupMode(); return m === 'family' ? !!this.famSession().bDirty : m === 'vault' ? !!this.vSession().bDirty : false; }
   famDirty() { return lsGet(FDIRTY, {}) || {}; }
-  async api(method, path, body, keepalive) {
-    const tok = this.famToken();
+  async api(method, path, body, keepalive, token) {
+    const tok = token !== undefined ? token : this.famToken();
     let r;
     try {
       r = await fetch('/api/' + path, { method, cache: 'no-store', keepalive: !!keepalive, headers: { 'content-type': 'application/json', ...(tok ? { authorization: 'Bearer ' + tok } : {}) }, body: body ? JSON.stringify(body) : undefined });
@@ -1713,7 +1750,7 @@ class Component extends DCLogic {
   famFail(e, quiet) {
     if (e && e.code === 'no_session') {
       lsSet(FKEY, null); lsSet(FDIRTY, null);
-      this.setState({ fam: null, famEvents: [], famPlans: [], backupAt: 0, moveCode: null, famErr: quiet ? '' : e.message });
+      this.setState({ fam: null, famEvents: [], famPlans: [], backupAt: this.vSession().bAt || 0, moveCode: null, famErr: quiet ? '' : e.message }, () => this.backupSoon());
       return;
     }
     if (!quiet) this.setState({ famErr: (e && e.message) || 'Something went wrong.' });
@@ -1740,13 +1777,19 @@ class Component extends DCLogic {
     }
     document.addEventListener('visibilitychange', () => {
       if (document.visibilityState === 'visible') this.famRefresh();
-      else if (this.famSession().bDirty) { clearTimeout(this._bT); this.backupNow(true); }
+      else if (this.backupDirty()) { clearTimeout(this._bT); this.backupNow(true); }
     });
     this._famTimer = setInterval(() => { if (document.visibilityState === 'visible') this.famRefresh(); }, 60000);
     await this.famRefresh();
   }
   async famRefresh() {
-    if (!this.famToken()) { if (this.state.fam) this.setState({ fam: null }); this.pushCheck(); return; }
+    if (!this.famToken()) {
+      if (this.state.fam) this.setState({ fam: null });
+      this.pushCheck();
+      const v = this.vSession();
+      if (v.bDirty || !v.bAt) await this.backupNow();
+      return;
+    }
     if (this._famRefreshing) return;
     this._famRefreshing = true;
     try {
@@ -1758,6 +1801,9 @@ class Component extends DCLogic {
         const ses = this.famSession();
         if (ses.bDirty || !ses.bAt) await this.backupNow();
         if (this.state.tab === 'family') { this.famLoadEvents(true); this.famLoadPlans(); }
+      } else {
+        const v = this.vSession();
+        if (v.bDirty || !v.bAt) await this.backupNow();
       }
       this.pushCheck();
     } catch (e) { this.famFail(e, true); }
@@ -1804,7 +1850,7 @@ class Component extends DCLogic {
       await this.pushDisable(true);
       await this.api('POST', 'family/leave', {});
       lsSet(FKEY, null); lsSet(FDIRTY, null);
-      this.setState({ fam: null, famEvents: [], famPlans: [], backupAt: 0, moveCode: null });
+      this.setState({ fam: null, famEvents: [], famPlans: [], backupAt: this.vSession().bAt || 0, moveCode: null }, () => this.backupSoon());
       this.flash(lastParent ? 'Family deleted' : pending ? 'Request cancelled' : 'You left the family');
     });
   }
@@ -1953,32 +1999,62 @@ class Component extends DCLogic {
     try { localStorage.setItem(KEY, JSON.stringify(this.saveData())); } catch (e) {}
     this.backupSoon();
   }
-  // ── Family backup: a copy of saveData() on the family server, a few seconds after each change ──
+  // ── Backup: a copy of saveData() on the server, a few seconds after each change. Family members
+  // back up to their family; everyone else to a personal backup (a random key kept on this phone). ──
   backupSoon() {
-    const ses = this.famSession();
-    if (!ses.token) return;
     this._bSeq = (this._bSeq || 0) + 1;
-    if (!ses.bDirty) lsSet(FKEY, { ...ses, bDirty: true });
-    if (!this.famActive()) return;
+    const f = this.famSession(), v = this.vSession();
+    if (f.token && !f.bDirty) lsSet(FKEY, { ...f, bDirty: true });
+    if ((!f.token || !this.famActive()) && !v.bDirty) lsSet(VKEY, { ...v, bDirty: true });
+    if (!this.backupMode()) return;   // famInit / famRefresh pick it up once the server answers
     clearTimeout(this._bT);
     this._bT = setTimeout(() => this.backupNow(), 3000);
   }
   async backupNow(keepalive) {
-    if (!this.famActive() || this._backingUp) return;
-    this._backingUp = true;
-    const seq = this._bSeq || 0;
+    const mode = this.backupMode();
+    if (!mode) return;
+    if (this._backingUp) { this._bAgain = true; return; }
+    this._backingUp = true; this._bAgain = false;
+    const seq = this._bSeq || 0, data = this.saveData(), clean = () => (this._bSeq || 0) === seq;
     try {
-      await this.api('PUT', 'backup', { data: this.saveData() }, keepalive);
-      const t = Date.now(), ses = this.famSession();
-      if (ses.token) lsSet(FKEY, { ...ses, bAt: t, bDirty: (this._bSeq || 0) !== seq });
-      this.setState({ backupAt: t });
-    } catch (e) { this.famFail(e, true); }
-    finally { this._backingUp = false; }
+      if (mode === 'family') {
+        await this.api('PUT', 'backup', { data }, keepalive);
+        const t = Date.now(), ses = this.famSession();
+        if (ses.token) lsSet(FKEY, { ...ses, bAt: t, bDirty: !clean() });
+        this.setState({ backupAt: t });
+        // The family backup has taken over from this phone's personal backup.
+        const v = this.vSession();
+        if (v.token) { lsSet(VKEY, null); this.api('POST', 'vault/delete', {}, keepalive, v.token).catch(() => {}); }
+      } else {
+        let v = this.vSession(), r = null;
+        if (v.token) {
+          try { r = await this.api('PUT', 'vault', { data }, keepalive, v.token); }
+          catch (e) { if (e.code !== 'no_vault') throw e; lsSet(VKEY, null); v = {}; }   // moved away or expired: start a new one
+        }
+        if (!r) {
+          if (!hasStuff(data)) { lsSet(VKEY, { bDirty: false }); return; }   // nothing to save yet
+          r = await this.api('POST', 'vault', { data }, keepalive, null);
+          v = { token: r.token };
+        }
+        lsSet(VKEY, { ...v, bAt: r.updatedAt, bDirty: !clean() });
+        this.setState({ backupAt: r.updatedAt });
+      }
+    } catch (e) { if (mode === 'family') this.famFail(e, true); }
+    finally {
+      this._backingUp = false;
+      if (this._bAgain) { this._bAgain = false; this.backupSoon(); }
+    }
   }
   // A one-time code to move to another phone: for this member (m = null) or, for parents, someone else.
   moveCreate(m) {
     this.famDo(async () => {
       if (!m) await this.backupNow();
+      if (!m && this.backupMode() === 'vault') {
+        const v = this.vSession();
+        if (!v.token) throw new Error(hasStuff(this.saveData()) ? 'Can’t reach Lunch Buddy right now. Check your internet and try again.' : 'There’s nothing to move yet. Save an idea, a badge or a game score first.');
+        this.setState({ moveCode: await this.api('POST', 'vault/move', {}, false, v.token) });
+        return;
+      }
       const r = await this.api('POST', 'move/create', m ? { memberId: m.id } : {});
       this.setState({ moveCode: r });
     });
@@ -1987,7 +2063,17 @@ class Component extends DCLogic {
     const code = this.state.famForm.moveCode.replace(/[^A-Z0-9]/g, '');
     if (code.length !== 8) { this.setState({ famErr: 'Move codes have 8 letters and numbers, like ABCD-2345.' }); return; }
     await this.famDo(async () => {
-      const { token, backup, ...fam } = await this.api('POST', 'move/redeem', { code });
+      const { token, backup, vault, ...fam } = await this.api('POST', 'move/redeem', { code });
+      if (vault) {
+        // A personal backup: this phone takes it over and merges it in. Its own old backup is dropped.
+        const old = this.vSession().token;
+        lsSet(VKEY, { token, bAt: backup && backup.updatedAt, bDirty: true });
+        if (old && old !== token) this.api('POST', 'vault/delete', {}, false, old).catch(() => {});
+        this.setState(s => ({ famForm: { ...s.famForm, moveCode: '' }, moveCode: null, backupAt: (backup && backup.updatedAt) || 0 }));
+        if (backup && backup.data) await this.restoreFrom(backup.data); else this.backupSoon();
+        this.flash('🎉 Your stuff is back!');
+        return;
+      }
       lsSet(FKEY, { token, synced: true }); lsSet(FDIRTY, null);
       this.setState(s => ({ fam, famForm: { ...s.famForm, moveCode: '' } }));
       const restored = !!(backup && backup.data);
@@ -2241,13 +2327,22 @@ class Component extends DCLogic {
     const junk = shuffle([...JUNK, ...u.junk]).slice(0, L.junk).map(f => ({ kind: 'junk', ...f }));
     const gold = Array.from({ length: L.gold }, () => ({ kind: 'gold', e: '🌟', name: G.gold }));
     const tiles = shuffle([...foods, ...junk, ...gold]).map(t => ({ ...t, open: false, ok: null }));
-    this.setState({ game: { lv: i, tiles, phase: 'peek', hearts: 3, pecks: L.pecks, found: 0, pts: 0, right: 0, wrong: 0, junk: 0, last: -1, peckIdx: -1, quiz: null, fb: null, res: null, mood: 'normal' } });
-    this._gt = setTimeout(() => this.setGame(g => g.phase === 'peek' ? { phase: 'play' } : {}), L.peek);
+    clearInterval(this._gc);
+    this.setState({ game: { lv: i, tiles, phase: 'ready', hearts: 3, pecks: L.pecks, found: 0, pts: 0, right: 0, wrong: 0, junk: 0, last: -1, peckIdx: -1, quiz: null, fb: null, res: null, mood: 'normal', peekLeft: 0, justHid: false } });
+  }
+  // The peek round: every tile shows for a few seconds with a countdown, then they all flip back over.
+  beginPeek() {
+    const g = this.state.game; if (!g || g.phase !== 'ready') return;
+    const ms = LEVELS[g.lv].peek, end = Date.now() + ms;
+    clearTimeout(this._gt); clearInterval(this._gc);
+    this.setGame({ phase: 'peek', peekLeft: Math.round(ms / 1000) });
+    this._gc = setInterval(() => this.setGame(x => x.phase === 'peek' ? { peekLeft: Math.max(1, Math.round((end - Date.now()) / 1000)) } : {}), 250);
+    this._gt = setTimeout(() => { clearInterval(this._gc); this.setGame(x => x.phase === 'peek' ? { phase: 'play', justHid: true } : {}); }, ms);
   }
   peck(i) {
     const g = this.state.game;
     if (!g || g.phase !== 'play' || g.peckIdx >= 0 || g.tiles[i].open) return;
-    this.setGame({ peckIdx: i, last: -1 });
+    this.setGame({ peckIdx: i, last: -1, justHid: false });
     clearTimeout(this._gt);
     this._gt = setTimeout(() => {
       const cur = this.state.game; if (!cur || cur.peckIdx !== i) return;
@@ -2284,7 +2379,7 @@ class Component extends DCLogic {
     this.setGame({ phase: 'play', fb: null, mood: 'normal', last: -1 });
   }
   endLevel(win, why) {
-    clearTimeout(this._gt);
+    clearTimeout(this._gt); clearInterval(this._gc);
     const g = this.state.game; if (!g) return;
     const mistakes = g.junk + g.wrong, stars = win ? (mistakes === 0 ? 3 : mistakes <= 2 ? 2 : 1) : 0;
     const bonus = stars * 10, total = g.pts + bonus, day = iso(new Date()), answered = g.right + g.wrong;
@@ -2302,7 +2397,7 @@ class Component extends DCLogic {
       };
     }, () => { this.persist(); this.checkMilestones(); });
   }
-  quitGame() { clearTimeout(this._gt); this.setState({ game: null }); window.scrollTo(0, 0); }
+  quitGame() { clearTimeout(this._gt); clearInterval(this._gc); this.setState({ game: null }); window.scrollTo(0, 0); }
   gQuit() {
     const g = this.state.game; if (!g) return;
     if (g.phase !== 'done' && g.tiles.some(t => t.open)) {
@@ -2434,7 +2529,7 @@ class Component extends DCLogic {
     let gv = {
       hasGame: false, gPlaying: false, gDone: false, gPct: '0%', gHearts: '', gHeartsAria: '', gPip: null, gSay: '', gLevelLabel: '', gPecksLabel: '',
       gPeek: false, gPeekMs: '0ms', gCols: 3, gGridMax: '300px', gTiles: [], pipPeck: null, gQuiz: false, gQ: {}, gOptions: [], gFeedback: false, gFb: {},
-      gContinue: () => {}, gQuit: () => {}, gPipBig: null, gRes: { stars: [], tiles: [] }, gPrimary: () => {}, gSecondary: () => {},
+      gContinue: () => {}, gQuit: () => {}, gPipBig: null, gReady: false, gBeginPeek: () => {}, gReadyText: '', gRes: { stars: [], tiles: [] }, gPrimary: () => {}, gSecondary: () => {},
       gHasProf: false, gPf: { chips: [] }, gGuideName: 'Pip'
     };
     if (g) {
@@ -2443,7 +2538,9 @@ class Component extends DCLogic {
       const FB = fb.gold ? { bg: '#FFF1C2', line: '#E2A11B', fg: '#6B4210', btn: '#FFD166', btnShadow: '#C9971F', btnFg: '#3B2A20' }
         : fb.ok ? { bg: '#DDF5E8', line: '#3DBE8B', fg: '#1F5E40', btn: '#2E8A5E', btnShadow: '#1F5E40', btnFg: '#fff' }
         : { bg: '#FFE3E6', line: '#E57C8D', fg: '#8E2436', btn: '#C9405A', btnShadow: '#8E2436', btnFg: '#fff' };
-      const say = phase === 'peek' ? 'Peek time! Remember where the sometimes foods hide 👀'
+      const say = phase === 'ready' ? `Get ready! I’ll flip every ${G.coverName.toLowerCase()} over for a quick peek.`
+        : phase === 'peek' ? `Remember where the sometimes foods hide! Hiding in ${g.peekLeft}…`
+        : phase === 'play' && g.justHid ? `They’re hidden! Find ${GL.goal} healthy foods. ${G.tap}`
         : phase === 'quiz' ? 'Ooh, what did I find?' : phase === 'fb' ? fb.say
         : phase === 'done' ? '' : g.found ? `${left} more healthy ${left === 1 ? 'food' : 'foods'} to find!` : G.tap;
       const hearts = Math.max(0, g.hearts);
@@ -2451,7 +2548,9 @@ class Component extends DCLogic {
         hasGame: true, gPlaying: phase !== 'done', gDone: phase === 'done',
         gPct: `${Math.min(100, g.found / GL.goal * 100)}%`, gHearts: '❤️'.repeat(hearts) + '🤍'.repeat(3 - hearts), gHeartsAria: `${hearts} of 3 hearts left`,
         gPip: G.el(g.mood, 72), gSay: say, gLevelLabel: `Level ${g.lv + 1} · ⭐ ${g.pts}`, gGuideName: G.name,
-        gPecksLabel: phase === 'peek' ? 'Get ready…' : `${g.pecks} ${g.pecks === 1 ? G.one : G.many} left`,
+        gPecksLabel: phase === 'peek' ? `👀 ${g.peekLeft}` : `${g.pecks} ${g.pecks === 1 ? G.one : G.many} left`,
+        gReady: phase === 'ready', gBeginPeek: () => this.beginPeek(),
+        gReadyText: `Every ${G.coverName.toLowerCase()} flips open for ${Math.round(GL.peek / 100) / 10} seconds. Remember where the sometimes foods hide, then find ${GL.goal} healthy foods in ${GL.pecks} ${G.many}.`,
         gPeek: phase === 'peek', gPeekMs: `${GL.peek}ms`, gCols: GL.c, gGridMax: GL.c >= 4 ? '100%' : '300px',
         gTiles: g.tiles.map((t, i) => {
           const show = phase === 'peek' || t.open, fresh = g.last === i && t.open;
@@ -2462,7 +2561,7 @@ class Component extends DCLogic {
           return {
             bg, shadow, face, fs: GL.c >= 4 ? '30px' : '38px', pecking: g.peckIdx === i, aria: show ? t.name : `${G.coverName} ${i + 1}`,
             hasLabel: show, label: t.short || t.name,
-            anim: fresh ? (t.kind === 'junk' ? 'lb-flip .3s ease-out, lb-shake .4s ease-in-out .3s' : 'lb-flip .3s ease-out') : 'none',
+            anim: fresh ? (t.kind === 'junk' ? 'lb-flip .3s ease-out, lb-shake .4s ease-in-out .3s' : 'lb-flip .3s ease-out') : g.justHid && !t.open ? 'lb-flip .35s ease-out' : 'none',
             mark: t.open && (t.kind === 'junk' || t.ok != null), markText: t.kind === 'junk' ? '✕' : t.ok ? '✓' : '!',
             markBg: t.kind === 'junk' ? '#C9405A' : t.ok ? '#2E8A5E' : '#C77A0A', onClick: () => this.peck(i)
           };
@@ -2619,7 +2718,7 @@ class Component extends DCLogic {
       goFamily: () => this.goTab('family'),
       famHasUnread: famUnread > 0 && s.tab === 'menu',
       famUnreadText: `${famUnread} new family update${famUnread === 1 ? '' : 's'}`,
-      famSubtitle: !famIn ? 'Share lunch add-on plans with your family.' : famAct ? 'Lunch add-on plans your family shares.' : 'Almost there!',
+      famSubtitle: !famIn ? 'Your backup, and lunch plans you can share with family.' : famAct ? 'Lunch add-on plans your family shares.' : 'Almost there!',
       famErr: s.famErr, famHasErr: !!s.famErr,
       famNone: !famIn, famPending: famIn && !famAct, famActive: famAct, famIsParent: famParent,
       famForm: s.famForm,
@@ -2652,12 +2751,12 @@ class Component extends DCLogic {
         moveAria: `Get a new-phone code for ${m.nickname}`, onMove: () => this.moveCreate(m)
       })),
       backupIcon: s.backupAt ? '✅' : '⏳',
-      backupText: s.backupAt ? `Backed up ${ago(s.backupAt)}` : 'Making your first backup…',
+      backupText: s.backupAt ? `Backed up ${ago(s.backupAt)}` : !famAct && !hasStuff(this.saveData()) ? 'Your first backup happens when you save something.' : 'Making your first backup…',
       moveSelf: () => this.moveCreate(null), moveLabel: s.famBusy ? 'Working…' : '📲 Move to a new phone',
       hasMoveSelf: !!(s.moveCode && s.moveCode.self), hasMoveOther: !!(s.moveCode && !s.moveCode.self),
       moveCodeText: s.moveCode ? s.moveCode.code : '',
       moveCodeFor: s.moveCode && !s.moveCode.self ? `New-phone code for ${s.moveCode.nickname}` : 'Your move code',
-      moveCodeHow: s.moveCode ? `${s.moveCode.self ? 'On your other phone' : `On ${s.moveCode.nickname}’s new phone`}, open Lunch Buddy’s Family tab and enter it under “Moving phones?”. It works once, until ${new Date(s.moveCode.expiresAt).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })}. The old phone then leaves the family but keeps what’s on it.` : '',
+      moveCodeHow: s.moveCode ? `${s.moveCode.self ? 'On your other phone' : `On ${s.moveCode.nickname}’s new phone`}, open Lunch Buddy’s Family tab and enter it under “Moving phones?”. It works once, until ${new Date(s.moveCode.expiresAt).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })}. ${s.moveCode.vault ? 'This phone keeps what’s on it and starts a new backup.' : 'The old phone then leaves the family but keeps what’s on it.'}` : '',
       moveDone: () => this.setState({ moveCode: null }),
       onMoveCode: e => this.setFamForm({ moveCode: fmtMove(e.target.value) }),
       redeemMove: () => this.redeemMove(), redeemLabel: s.famBusy ? 'Working…' : '📲 Bring my stuff back',

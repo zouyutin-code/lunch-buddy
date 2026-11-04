@@ -1,6 +1,7 @@
-// Lunch Buddy family API (Cloudflare Pages Function, D1 binding `DB`).
-// Each device holds a random member token (sent as `Authorization: Bearer ...`);
-// only its SHA-256 hash is stored. No emails or passwords: just nicknames.
+// Lunch Buddy API (Cloudflare Pages Function, D1 binding `DB`).
+// Family members hold a random member token (sent as `Authorization: Bearer ...`).
+// Phones that aren't in a family hold a random personal backup ("vault") token instead.
+// Only SHA-256 hashes of tokens are stored. No emails or passwords: just nicknames.
 import { sendPush, isPushEndpoint } from '../../lib/webpush.js';
 
 const MAX_MEMBERS = 12;
@@ -11,6 +12,7 @@ const DOW = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 const MON = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 const MAX_BACKUP = 300000;          // characters of JSON per member
 const MOVE_TTL = 15 * 60 * 1000;    // move codes work once, for 15 minutes
+const VAULT_IDLE = 400 * 86400000;  // personal backups untouched this long are deleted
 
 class HttpError extends Error {
   constructor(status, code, message) { super(message); this.status = status; this.code = code; }
@@ -41,10 +43,27 @@ function ensureBackupTables(env) {
     tablesReady = env.DB.batch([
       env.DB.prepare('CREATE TABLE IF NOT EXISTS backups (member_id TEXT PRIMARY KEY REFERENCES members(id) ON DELETE CASCADE, family_id TEXT NOT NULL, data TEXT NOT NULL, size INTEGER NOT NULL, updated_at INTEGER NOT NULL)'),
       env.DB.prepare('CREATE TABLE IF NOT EXISTS move_codes (code_hash TEXT PRIMARY KEY, member_id TEXT NOT NULL REFERENCES members(id) ON DELETE CASCADE, created_by TEXT NOT NULL, expires_at INTEGER NOT NULL)'),
-      env.DB.prepare('CREATE INDEX IF NOT EXISTS move_codes_member ON move_codes(member_id)')
+      env.DB.prepare('CREATE INDEX IF NOT EXISTS move_codes_member ON move_codes(member_id)'),
+      env.DB.prepare('CREATE TABLE IF NOT EXISTS vaults (id TEXT PRIMARY KEY, token_hash TEXT NOT NULL UNIQUE, data TEXT NOT NULL, size INTEGER NOT NULL, created_at INTEGER NOT NULL, updated_at INTEGER NOT NULL)'),
+      env.DB.prepare('CREATE INDEX IF NOT EXISTS vaults_updated ON vaults(updated_at)'),
+      env.DB.prepare('CREATE TABLE IF NOT EXISTS vault_codes (code_hash TEXT PRIMARY KEY, vault_id TEXT NOT NULL REFERENCES vaults(id) ON DELETE CASCADE, expires_at INTEGER NOT NULL)'),
+      env.DB.prepare('CREATE INDEX IF NOT EXISTS vault_codes_vault ON vault_codes(vault_id)'),
+      env.DB.prepare('CREATE INDEX IF NOT EXISTS rate_ts ON rate(ts)')
     ]).catch((e) => { tablesReady = null; throw e; });
   }
   return tablesReady;
+}
+function backupText(data) {
+  if (!data || typeof data !== 'object' || Array.isArray(data)) throw new HttpError(400, 'bad_backup', 'Bad backup');
+  const text = JSON.stringify(data);
+  if (text.length > MAX_BACKUP) throw new HttpError(413, 'too_big', 'This backup is too big to save.');
+  return text;
+}
+async function vaultAuth(env, request) {
+  const m = /^Bearer ([A-Za-z0-9_-]{20,100})$/.exec(request.headers.get('authorization') || '');
+  const v = m && await env.DB.prepare('SELECT id FROM vaults WHERE token_hash = ?').bind(await sha256hex(m[1])).first();
+  if (!v) throw new HttpError(401, 'no_vault', 'This backup was moved to another phone or has expired.');
+  return v;
 }
 // Trim, collapse whitespace, drop control characters; reject empty or too long.
 function clean(v, max, label) {
@@ -321,10 +340,7 @@ const ROUTES = {
   'PUT backup': async ({ env, request, body }) => {
     const me = await auth(env, request);
     await ensureBackupTables(env);
-    const data = body.data;
-    if (!data || typeof data !== 'object' || Array.isArray(data)) throw new HttpError(400, 'bad_backup', 'Bad backup');
-    const text = JSON.stringify(data);
-    if (text.length > MAX_BACKUP) throw new HttpError(413, 'too_big', 'This backup is too big to save.');
+    const text = backupText(body.data);
     await limit(env, 'backup:' + me.id, 120, 600);
     const t = now();
     await env.DB.prepare('INSERT INTO backups (member_id, family_id, data, size, updated_at) VALUES (?, ?, ?, ?, ?) ON CONFLICT (member_id) DO UPDATE SET data = excluded.data, size = excluded.size, updated_at = excluded.updated_at')
@@ -355,12 +371,26 @@ const ROUTES = {
 
   // Use a move code on the new phone: this phone becomes the member, the old phone is signed out.
   'POST move/redeem': async ({ env, request, body }) => {
-    await limit(env, 'redeem:' + ipOf(request), 10, 3600);
+    await limit(env, 'redeem:' + ipOf(request), 30, 3600);
     await ensureBackupTables(env);
     const code = String(body.code || '').toUpperCase().replace(/[^A-Z0-9]/g, '');
     if (code.length !== 8) throw new HttpError(400, 'bad_code', 'Move codes have 8 letters and numbers.');
-    const row = await env.DB.prepare('SELECT * FROM move_codes WHERE code_hash = ?').bind(await sha256hex(code)).first();
-    if (!row || row.expires_at < now()) throw new HttpError(404, 'bad_code', 'That code didn’t work. Codes work once, for 15 minutes. Ask for a new one.');
+    const hash = await sha256hex(code);
+    const row = await env.DB.prepare('SELECT * FROM move_codes WHERE code_hash = ?').bind(hash).first();
+    if (!row) {
+      // A personal backup's code: this phone takes over the backup; the old phone starts a new one.
+      const vc = await env.DB.prepare('SELECT * FROM vault_codes WHERE code_hash = ?').bind(hash).first();
+      if (!vc || vc.expires_at < now()) throw new HttpError(404, 'bad_code', 'That code didn’t work. Codes work once, for 15 minutes. Ask for a new one.');
+      const token = randomToken();
+      await env.DB.batch([
+        env.DB.prepare('UPDATE vaults SET token_hash = ? WHERE id = ?').bind(await sha256hex(token), vc.vault_id),
+        env.DB.prepare('DELETE FROM vault_codes WHERE vault_id = ?').bind(vc.vault_id)
+      ]);
+      const v = await env.DB.prepare('SELECT data, updated_at FROM vaults WHERE id = ?').bind(vc.vault_id).first();
+      if (!v) throw new HttpError(404, 'bad_code', 'That code didn’t work. Ask for a new one.');
+      return json({ vault: true, token, backup: { data: JSON.parse(v.data), updatedAt: v.updated_at } });
+    }
+    if (row.expires_at < now()) throw new HttpError(404, 'bad_code', 'That code didn’t work. Codes work once, for 15 minutes. Ask for a new one.');
     const who = await reload(env, row.member_id);
     if (!who || who.status !== 'active') throw new HttpError(404, 'bad_code', 'That code didn’t work. Ask for a new one.');
     const token = randomToken();
@@ -375,6 +405,49 @@ const ROUTES = {
       token, ...(await state(env, await reload(env, who.id))),
       backup: b ? { data: JSON.parse(b.data), updatedAt: b.updated_at } : null
     });
+  },
+
+  // ── Personal backups, for phones that aren't in a family. No name or account: just a random key. ──
+  'POST vault': async ({ env, request, body }) => {
+    await ensureBackupTables(env);
+    const text = backupText(body.data);
+    await limit(env, 'vault:' + ipOf(request), 600, 3600);
+    const id = uid(), token = randomToken(), t = now();
+    await env.DB.batch([
+      env.DB.prepare('INSERT INTO vaults (id, token_hash, data, size, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?)').bind(id, await sha256hex(token), text, text.length, t, t),
+      env.DB.prepare('DELETE FROM vaults WHERE updated_at < ?').bind(t - VAULT_IDLE)
+    ]);
+    return json({ token, updatedAt: t });
+  },
+
+  'PUT vault': async ({ env, request, body }) => {
+    await ensureBackupTables(env);
+    const v = await vaultAuth(env, request);
+    const text = backupText(body.data);
+    await limit(env, 'vbackup:' + v.id, 120, 600);
+    const t = now();
+    await env.DB.prepare('UPDATE vaults SET data = ?, size = ?, updated_at = ? WHERE id = ?').bind(text, text.length, t, v.id).run();
+    return json({ ok: true, updatedAt: t });
+  },
+
+  'POST vault/move': async ({ env, request }) => {
+    await ensureBackupTables(env);
+    const v = await vaultAuth(env, request);
+    await limit(env, 'vmove:' + v.id, 10, 3600);
+    const code = randomCode(8), expiresAt = now() + MOVE_TTL;
+    await env.DB.batch([
+      env.DB.prepare('DELETE FROM vault_codes WHERE vault_id = ? OR expires_at < ?').bind(v.id, now()),
+      env.DB.prepare('INSERT INTO vault_codes (code_hash, vault_id, expires_at) VALUES (?, ?, ?)').bind(await sha256hex(code), v.id, expiresAt)
+    ]);
+    return json({ code: code.slice(0, 4) + '-' + code.slice(4), expiresAt, self: true, vault: true });
+  },
+
+  // Used when the phone joins a family (its family backup takes over) or moves to another backup.
+  'POST vault/delete': async ({ env, request }) => {
+    await ensureBackupTables(env);
+    const v = await vaultAuth(env, request);
+    await env.DB.prepare('DELETE FROM vaults WHERE id = ?').bind(v.id).run();
+    return json({ ok: true });
   },
 
   'POST push/subscribe': async ({ env, request, body }) => {
