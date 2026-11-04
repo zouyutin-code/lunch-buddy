@@ -1,6 +1,7 @@
 -- Lunch Buddy family sharing. Apply with:
 --   npx wrangler d1 execute lunch-buddy --remote --file schema.sql
--- Only nicknames, lunch add-on picks and push subscriptions are stored.
+-- Stored: nicknames, lunch add-on picks, push subscriptions, and each member's own
+-- app backup (ideas, badges, game points). The API also creates the backup tables on first use.
 
 CREATE TABLE IF NOT EXISTS families (
   id TEXT PRIMARY KEY,
@@ -52,6 +53,24 @@ CREATE TABLE IF NOT EXISTS push_subs (
   created_at INTEGER NOT NULL
 );
 CREATE INDEX IF NOT EXISTS push_member ON push_subs(member_id);
+
+-- One backup per member: the app's saved data as JSON, replaced on each save.
+CREATE TABLE IF NOT EXISTS backups (
+  member_id TEXT PRIMARY KEY REFERENCES members(id) ON DELETE CASCADE,
+  family_id TEXT NOT NULL,
+  data TEXT NOT NULL,
+  size INTEGER NOT NULL,
+  updated_at INTEGER NOT NULL
+);
+
+-- One-time codes (stored hashed) that move a member to a new phone.
+CREATE TABLE IF NOT EXISTS move_codes (
+  code_hash TEXT PRIMARY KEY,
+  member_id TEXT NOT NULL REFERENCES members(id) ON DELETE CASCADE,
+  created_by TEXT NOT NULL,
+  expires_at INTEGER NOT NULL
+);
+CREATE INDEX IF NOT EXISTS move_codes_member ON move_codes(member_id);
 
 -- Simple rate limiting for create/join attempts.
 CREATE TABLE IF NOT EXISTS rate (

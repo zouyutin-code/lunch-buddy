@@ -824,7 +824,7 @@ input::placeholder{color:#B49A86}
       <sc-if value="{{ famNone }}" hint-placeholder-val="{{ true }}">
         <section style="background:#FFF1C2;border:2px solid #3B2A20;border-radius:24px;padding:16px;box-shadow:4px 4px 0 #3B2A20;display:flex;flex-direction:column;gap:10px">
           <h3 style="font-family:'Baloo 2',sans-serif;font-size:20px;margin:0;font-weight:800">🏡 Start a family</h3>
-          <div style="font-size:13px;font-weight:600;color:#7A4B12">For parents. You get a code to share with your kids, and an alert when they plan a lunch add-on.</div>
+          <div style="font-size:13px;font-weight:600;color:#7A4B12">For parents. You get a code to share with your kids, an alert when they plan a lunch add-on, and a backup of everyone’s ideas and badges.</div>
           <label style="display:flex;flex-direction:column;gap:4px">
             <span style="font-size:12px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:#7A4B12">Family name</span>
             <input value="{{ famForm.familyName }}" sc-camel-on-change="{{ onFamFamilyName }}" maxlength="40" placeholder="e.g. The Lees" style="height:48px;border-radius:16px;border:2px solid #3B2A20;padding:0 14px;font-family:inherit;font-size:16px;font-weight:700;color:#3B2A20;background:#fff;outline:none;min-width:0">
@@ -855,7 +855,17 @@ input::placeholder{color:#B49A86}
           </div>
           <button sc-camel-on-click="{{ joinFamily }}" style="height:52px;border-radius:18px;border:2px solid #3B2A20;background:#5AA9E6;color:#fff;font-family:'Baloo 2',sans-serif;font-size:19px;font-weight:800;cursor:pointer;opacity:{{ famBusyOp }}">{{ joinLabel }}</button>
         </section>
-        <div style="font-size:12px;font-weight:600;color:#8A6E5A;line-height:1.4;padding:0 4px">Lunch Buddy keeps only nicknames and lunch add-on picks for your family. Use a first name or nickname, not a full name.</div>
+
+        <section style="background:#DDF5E8;border:2px solid #3B2A20;border-radius:24px;padding:16px;box-shadow:4px 4px 0 #3B2A20;display:flex;flex-direction:column;gap:10px">
+          <h3 style="font-family:'Baloo 2',sans-serif;font-size:20px;margin:0;font-weight:800">📲 Moving phones?</h3>
+          <div style="font-size:13px;font-weight:600;color:#2E6B4F">Got a move code from your old phone or a parent? Enter it to bring back your family, ideas and badges.</div>
+          <label style="display:flex;flex-direction:column;gap:4px">
+            <span style="font-size:12px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:#2E6B4F">Move code</span>
+            <input value="{{ famForm.moveCode }}" sc-camel-on-change="{{ onMoveCode }}" maxlength="9" autocapitalize="characters" autocomplete="off" spellcheck="false" placeholder="ABCD-2345" style="height:52px;border-radius:16px;border:2px solid #3B2A20;padding:0 14px;font-family:ui-monospace,Menlo,monospace;font-size:24px;font-weight:800;letter-spacing:.14em;color:#3B2A20;background:#fff;outline:none;min-width:0">
+          </label>
+          <button sc-camel-on-click="{{ redeemMove }}" style="height:52px;border-radius:18px;border:2px solid #3B2A20;background:#3DBE8B;color:#3B2A20;font-family:'Baloo 2',sans-serif;font-size:19px;font-weight:800;cursor:pointer;opacity:{{ famBusyOp }}">{{ redeemLabel }}</button>
+        </section>
+        <div style="font-size:12px;font-weight:600;color:#8A6E5A;line-height:1.4;padding:0 4px">Lunch Buddy keeps nicknames, lunch add-on picks and a backup of each member’s ideas, badges and game points for your family. Use a first name or nickname, not a full name.</div>
       </sc-if>
 
       <sc-if value="{{ famPending }}" hint-placeholder-val="{{ false }}">
@@ -955,6 +965,21 @@ input::placeholder{color:#B49A86}
           </sc-for>
         </section>
 
+        <section style="background:#fff;border:2px solid #3B2A20;border-radius:24px;padding:16px;box-shadow:4px 4px 0 #3B2A20;display:flex;flex-direction:column;gap:10px">
+          <h3 style="font-family:'Baloo 2',sans-serif;font-size:20px;margin:0;font-weight:800">☁️ Backup</h3>
+          <div style="font-size:13px;font-weight:700;color:#8A6E5A;line-height:1.4">Your ideas, favorites, badges, quests and game points are copied to your family, so a new phone can get them back.</div>
+          <div style="display:flex;align-items:center;gap:8px;font-size:14px;font-weight:800;color:#2E6B4F"><span aria-hidden="true">{{ backupIcon }}</span><span>{{ backupText }}</span></div>
+          <sc-if value="{{ hasMoveSelf }}" hint-placeholder-val="{{ false }}">
+            <div style="background:#FFF1C2;border:2px dashed #3B2A20;border-radius:18px;padding:12px;display:flex;flex-direction:column;gap:6px;text-align:center">
+              <div style="font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#7A4B12">{{ moveCodeFor }}</div>
+              <div style="font-family:ui-monospace,Menlo,monospace;font-size:30px;font-weight:800;letter-spacing:.12em;line-height:1.1;color:#3B2A20">{{ moveCodeText }}</div>
+              <div style="font-size:13px;font-weight:700;color:#7A4B12;line-height:1.4;text-wrap:pretty">{{ moveCodeHow }}</div>
+              <button sc-camel-on-click="{{ moveDone }}" style="align-self:center;height:40px;padding:0 18px;border-radius:14px;border:2px solid #3B2A20;background:#fff;font-family:inherit;font-weight:800;font-size:14px;color:#3B2A20;cursor:pointer">Done</button>
+            </div>
+          </sc-if>
+          <button sc-camel-on-click="{{ moveSelf }}" style="height:48px;border-radius:16px;border:2px solid #3B2A20;background:#E1F0FB;color:#3B2A20;font-family:inherit;font-weight:800;font-size:15px;cursor:pointer;opacity:{{ famBusyOp }}">{{ moveLabel }}</button>
+        </section>
+
         <section style="background:#fff;border:2px solid #3B2A20;border-radius:24px;padding:16px;display:flex;flex-direction:column;gap:8px">
           <h3 style="font-family:'Baloo 2',sans-serif;font-size:20px;margin:0;font-weight:800">👥 Members</h3>
           <sc-for list="{{ famMembers }}" as="mb" hint-placeholder-count="2">
@@ -962,10 +987,19 @@ input::placeholder{color:#B49A86}
               <span style="font-size:24px;flex:none">{{ mb.emoji }}</span>
               <div style="flex:1;min-width:0"><span style="font-weight:800;font-size:15px">{{ mb.nickname }}</span> <span style="font-size:12px;font-weight:700;color:#8A6E5A">{{ mb.roleLabel }}</span></div>
               <sc-if value="{{ mb.canRemove }}" hint-placeholder-val="{{ false }}">
+                <button sc-camel-on-click="{{ mb.onMove }}" aria-label="{{ mb.moveAria }}" style="height:36px;padding:0 10px;border-radius:12px;border:2px solid #3B2A20;background:#E1F0FB;font-family:inherit;font-weight:800;font-size:13px;color:#3B2A20;cursor:pointer;flex:none">📲 New phone</button>
                 <button sc-camel-on-click="{{ mb.onRemove }}" aria-label="{{ mb.removeLabel }}" style="height:36px;padding:0 12px;border-radius:12px;border:2px solid #E8D3BC;background:#fff;font-family:inherit;font-weight:800;font-size:13px;color:#8A4A5E;cursor:pointer;flex:none">Remove</button>
               </sc-if>
             </div>
           </sc-for>
+          <sc-if value="{{ hasMoveOther }}" hint-placeholder-val="{{ false }}">
+            <div style="background:#FFF1C2;border:2px dashed #3B2A20;border-radius:18px;padding:12px;display:flex;flex-direction:column;gap:6px;text-align:center">
+              <div style="font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#7A4B12">{{ moveCodeFor }}</div>
+              <div style="font-family:ui-monospace,Menlo,monospace;font-size:30px;font-weight:800;letter-spacing:.12em;line-height:1.1;color:#3B2A20">{{ moveCodeText }}</div>
+              <div style="font-size:13px;font-weight:700;color:#7A4B12;line-height:1.4;text-wrap:pretty">{{ moveCodeHow }}</div>
+              <button sc-camel-on-click="{{ moveDone }}" style="align-self:center;height:40px;padding:0 18px;border-radius:14px;border:2px solid #3B2A20;background:#fff;font-family:inherit;font-weight:800;font-size:14px;color:#3B2A20;cursor:pointer">Done</button>
+            </div>
+          </sc-if>
         </section>
 
         <button sc-camel-on-click="{{ leaveFamily }}" style="height:46px;border:2px solid #E8D3BC;border-radius:16px;background:#fff;font-family:inherit;font-weight:800;font-size:14px;color:#8A4A5E;cursor:pointer">{{ leaveLabel }}</button>
@@ -1343,6 +1377,36 @@ const ago = t => { const s = Math.max(0, (Date.now() - t) / 1000); if (s < 60) r
 const dayLbl = k => { const d = new Date(k + 'T12:00'); return `${['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'][d.getDay()]}, ${MON[d.getMonth()]} ${d.getDate()}`; };
 const andList = a => a.length <= 2 ? a.join(' and ') : a.slice(0, -1).join(', ') + ' and ' + a[a.length - 1];
 const ROLE_EMO = { kid: '🧒', parent: '🧑' };
+// Family backup restore: merge a backup into what's already on this phone, keeping everything from both.
+const isObj = v => !!v && typeof v === 'object' && !Array.isArray(v);
+const unionList = (a, b) => [...new Set([...(Array.isArray(a) ? a : []), ...(Array.isArray(b) ? b : [])])];
+const mergeDays = (a, b) => { const o = { ...(isObj(b) ? b : {}) }; Object.entries(isObj(a) ? a : {}).forEach(([k, v]) => { o[k] = Array.isArray(v) ? unionList(v, o[k]) : v; }); return o; };
+const mergeKeep = (a, b) => ({ ...(isObj(b) ? b : {}), ...(isObj(a) ? a : {}) });
+const maxMap = (a, b) => { const o = { ...(isObj(b) ? b : {}) }; Object.entries(isObj(a) ? a : {}).forEach(([k, v]) => { o[k] = Math.max(Number(v) || 0, Number(o[k]) || 0); }); return o; };
+function mergeSaved(loc, rem) {
+  rem = isObj(rem) ? rem : {};
+  const titles = new Set((loc.myIdeas || []).map(i => i.title));
+  const myIdeas = [...(loc.myIdeas || []), ...(Array.isArray(rem.myIdeas) ? rem.myIdeas : []).filter(i => isObj(i) && typeof i.title === 'string' && !titles.has(i.title) && titles.add(i.title))];
+  const myBadges = (loc.myBadges || []).map(b => ({ ...b }));
+  (Array.isArray(rem.myBadges) ? rem.myBadges : []).forEach(r => {
+    if (!isObj(r) || !r.id) return;
+    const l = myBadges.find(b => b.id === r.id);
+    if (!l) { if (myBadges.length < MB_MAX) myBadges.push(r); return; }
+    l.log = unionList(l.log, r.log);
+    if (r.earned && (!l.earned || r.earned < l.earned)) l.earned = r.earned;
+  });
+  const lp = isObj(loc.peck) ? loc.peck : {}, rp = isObj(rem.peck) ? rem.peck : {}, log = maxMap(lp.log, rp.log);
+  const peck = { ...rp, ...lp, best: maxMap(lp.best, rp.best), log,
+    pts: Math.max(Number(lp.pts) || 0, Number(rp.pts) || 0, Object.values(log).reduce((n, x) => n + (Number(x) || 0), 0)),
+    plays: Math.max(Number(lp.plays) || 0, Number(rp.plays) || 0) };
+  const stickers = {}; Object.entries(mergeKeep(loc.stickers, rem.stickers)).forEach(([d, id]) => { stickers[d] = LEGACY_Q[id] || id; });
+  return {
+    favs: mergeDays(loc.favs, rem.favs), eaten: mergeDays(loc.eaten, rem.eaten), badges: mergeKeep(loc.badges, rem.badges),
+    myIdeas, seenMs: unionList(loc.seenMs, rem.seenMs), questDone: mergeDays(loc.questDone, rem.questDone),
+    stickers, holos: mergeKeep(loc.holos, rem.holos), peck, myBadges
+  };
+}
+const fmtMove = v => { const c = String(v || '').toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 8); return c.length > 4 ? c.slice(0, 4) + '-' + c.slice(4) : c; };
 // ── Badges kids design themselves ──
 const MB_MAX = 12;
 const MB_ICONS = ['🥕', '🍎', '🥦', '💧', '🥛', '🍳', '🥪', '🍱', '🏃', '🚲', '⚽', '🧘', '😴', '📚', '🎨', '🎵', '🦷', '🌱'];
@@ -1446,7 +1510,8 @@ class Component extends DCLogic {
       peck: { pts: 0, best: {}, log: {}, plays: 0, ...(saved.peck || {}) }, myBadges: saved.myBadges || [],
       nestView: 'quests', bSheet: false, bDraft: { ...MB_BLANK }, game: null,
       famOk: false, fam: null, famBusy: false, famErr: '', famEvents: [], famLastSeen: 0, famPlans: [], pushState: 'unknown',
-      famForm: { familyName: '', startName: '', code: '', joinName: '', role: 'kid' }
+      backupAt: (lsGet(FKEY, {}) || {}).bAt || 0, moveCode: null,
+      famForm: { familyName: '', startName: '', code: '', joinName: '', role: 'kid', moveCode: '' }
     };
     // Version 2 merged Quests + Aviary into the Nest and added goal badges. Goals already met count as seen,
     // so nobody opens the update to a pile of pop-ups.
@@ -1459,11 +1524,11 @@ class Component extends DCLogic {
   famToken() { return this.famSession().token || null; }
   famActive() { const f = this.state.fam; return !!(f && f.me && f.me.status === 'active' && this.famToken()); }
   famDirty() { return lsGet(FDIRTY, {}) || {}; }
-  async api(method, path, body) {
+  async api(method, path, body, keepalive) {
     const tok = this.famToken();
     let r;
     try {
-      r = await fetch('/api/' + path, { method, cache: 'no-store', headers: { 'content-type': 'application/json', ...(tok ? { authorization: 'Bearer ' + tok } : {}) }, body: body ? JSON.stringify(body) : undefined });
+      r = await fetch('/api/' + path, { method, cache: 'no-store', keepalive: !!keepalive, headers: { 'content-type': 'application/json', ...(tok ? { authorization: 'Bearer ' + tok } : {}) }, body: body ? JSON.stringify(body) : undefined });
     } catch (e) {
       const err = new Error('Can’t reach Lunch Buddy right now. Check your internet and try again.'); err.code = 'offline'; throw err;
     }
@@ -1474,7 +1539,7 @@ class Component extends DCLogic {
   famFail(e, quiet) {
     if (e && e.code === 'no_session') {
       lsSet(FKEY, null); lsSet(FDIRTY, null);
-      this.setState({ fam: null, famEvents: [], famPlans: [], famErr: quiet ? '' : e.message });
+      this.setState({ fam: null, famEvents: [], famPlans: [], backupAt: 0, moveCode: null, famErr: quiet ? '' : e.message });
       return;
     }
     if (!quiet) this.setState({ famErr: (e && e.message) || 'Something went wrong.' });
@@ -1499,7 +1564,10 @@ class Component extends DCLogic {
       navigator.serviceWorker.register('/sw.js').catch(() => {});
       navigator.serviceWorker.addEventListener('message', e => { if (e.data && e.data.type === 'lb-open') this.goTab('family'); });
     }
-    document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') this.famRefresh(); });
+    document.addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'visible') this.famRefresh();
+      else if (this.famSession().bDirty) { clearTimeout(this._bT); this.backupNow(true); }
+    });
     this._famTimer = setInterval(() => { if (document.visibilityState === 'visible') this.famRefresh(); }, 60000);
     await this.famRefresh();
   }
@@ -1513,6 +1581,8 @@ class Component extends DCLogic {
       if (fam.me.status === 'active') {
         if (!this.famSession().synced) await this.famInitialSync();
         await this.famFlush();
+        const ses = this.famSession();
+        if (ses.bDirty || !ses.bAt) await this.backupNow();
         if (this.state.tab === 'family') { this.famLoadEvents(true); this.famLoadPlans(); }
       }
       this.pushCheck();
@@ -1532,6 +1602,7 @@ class Component extends DCLogic {
       lsSet(FKEY, { token: r.token, synced: false }); lsSet(FDIRTY, null);
       this.setState({ fam: r });
       await this.famInitialSync();
+      this.backupNow();
       this.famLoadEvents(true); this.famLoadPlans(); this.pushCheck();
       this.flash('🏡 Family created!');
     });
@@ -1552,14 +1623,14 @@ class Component extends DCLogic {
     const pending = f.me.status !== 'active';
     const lastParent = !pending && f.me.role === 'parent' && !f.members.some(m => m.id !== f.me.id && m.role === 'parent' && m.status === 'active');
     const msg = pending ? 'Cancel your request to join?'
-      : lastParent ? `You’re the only parent in ${f.family.name}. Leaving deletes the family and its plans for everyone. Delete it?`
-      : `Leave ${f.family.name}? Your lunch plans stop being shared.`;
+      : lastParent ? `You’re the only parent in ${f.family.name}. Leaving deletes the family, its plans and everyone’s backups. Delete it?`
+      : `Leave ${f.family.name}? Your lunch plans stop being shared and your family backup is deleted. Everything stays on this phone.`;
     if (!window.confirm(msg)) return;
     await this.famDo(async () => {
       await this.pushDisable(true);
       await this.api('POST', 'family/leave', {});
       lsSet(FKEY, null); lsSet(FDIRTY, null);
-      this.setState({ fam: null, famEvents: [], famPlans: [] });
+      this.setState({ fam: null, famEvents: [], famPlans: [], backupAt: 0, moveCode: null });
       this.flash(lastParent ? 'Family deleted' : pending ? 'Request cancelled' : 'You left the family');
     });
   }
@@ -1572,7 +1643,7 @@ class Component extends DCLogic {
     });
   }
   removeMember(m) {
-    if (!window.confirm(`Remove ${m.nickname} from the family?`)) return;
+    if (!window.confirm(`Remove ${m.nickname} from the family? Their family backup is deleted too.`)) return;
     this.famDo(async () => { const r = await this.api('POST', 'family/remove', { memberId: m.id }); this.setState({ fam: r }); this.famLoadEvents(true); this.famLoadPlans(); });
   }
   async famLoadEvents(markSeen) {
@@ -1696,12 +1767,69 @@ class Component extends DCLogic {
     else if (e.kind === 'left') { emoji = '👋'; text = `${e.who} left the family`; }
     else if (e.kind === 'created') { emoji = '🏡'; text = `${who} started ${e.family}`; }
     else if (e.kind === 'synced') { emoji = '🔄'; text = `${who} shared ${e.days} day${e.days === 1 ? '' : 's'} of lunch plans`; }
+    else if (e.kind === 'moved') { emoji = '📲'; text = `${who} moved to a new phone`; }
     const isNew = !e.mine && e.id > lastSeen;
     return { emoji, text, when: ago(e.at), isNew, bg: isNew ? '#FFF1C2' : '#FFF7EC' };
   }
-  persist() {
+  saveData() {
     const { favs, eaten, badges, myIdeas, seenMs, questDone, stickers, holos, peck, myBadges } = this.state;
-    try { localStorage.setItem(KEY, JSON.stringify({ v: 2, favs, eaten, badges, myIdeas, seenMs, questDone, stickers, holos, peck, myBadges })); } catch (e) {}
+    return { v: 2, favs, eaten, badges, myIdeas, seenMs, questDone, stickers, holos, peck, myBadges };
+  }
+  persist() {
+    try { localStorage.setItem(KEY, JSON.stringify(this.saveData())); } catch (e) {}
+    this.backupSoon();
+  }
+  // ── Family backup: a copy of saveData() on the family server, a few seconds after each change ──
+  backupSoon() {
+    const ses = this.famSession();
+    if (!ses.token) return;
+    this._bSeq = (this._bSeq || 0) + 1;
+    if (!ses.bDirty) lsSet(FKEY, { ...ses, bDirty: true });
+    if (!this.famActive()) return;
+    clearTimeout(this._bT);
+    this._bT = setTimeout(() => this.backupNow(), 3000);
+  }
+  async backupNow(keepalive) {
+    if (!this.famActive() || this._backingUp) return;
+    this._backingUp = true;
+    const seq = this._bSeq || 0;
+    try {
+      await this.api('PUT', 'backup', { data: this.saveData() }, keepalive);
+      const t = Date.now(), ses = this.famSession();
+      if (ses.token) lsSet(FKEY, { ...ses, bAt: t, bDirty: (this._bSeq || 0) !== seq });
+      this.setState({ backupAt: t });
+    } catch (e) { this.famFail(e, true); }
+    finally { this._backingUp = false; }
+  }
+  // A one-time code to move to another phone: for this member (m = null) or, for parents, someone else.
+  moveCreate(m) {
+    this.famDo(async () => {
+      if (!m) await this.backupNow();
+      const r = await this.api('POST', 'move/create', m ? { memberId: m.id } : {});
+      this.setState({ moveCode: r });
+    });
+  }
+  async redeemMove() {
+    const code = this.state.famForm.moveCode.replace(/[^A-Z0-9]/g, '');
+    if (code.length !== 8) { this.setState({ famErr: 'Move codes have 8 letters and numbers, like ABCD-2345.' }); return; }
+    await this.famDo(async () => {
+      const { token, backup, ...fam } = await this.api('POST', 'move/redeem', { code });
+      lsSet(FKEY, { token, synced: true }); lsSet(FDIRTY, null);
+      this.setState(s => ({ fam, famForm: { ...s.famForm, moveCode: '' } }));
+      const restored = !!(backup && backup.data);
+      // Share only this week's picks the family doesn't already have from the old phone.
+      const monday = iso(mondayOf(new Date())), had = restored && isObj(backup.data.favs) ? backup.data.favs : {};
+      const fresh = Object.keys(this.state.favs).filter(d => d >= monday && (this.state.favs[d] || []).some(x => !(had[d] || []).includes(x)));
+      if (restored) await this.restoreFrom(backup.data); else this.backupSoon();
+      if (fresh.length) await this.api('POST', 'addons/sync', { days: Object.fromEntries(fresh.map(d => [d, (this.state.favs[d] || []).map(x => String(x).slice(0, 80))])) }).catch(() => {});
+      this.famLoadEvents(true); this.famLoadPlans(); this.pushCheck();
+      this.flash(restored ? `🎉 Welcome back, ${fam.me.nickname}! Your stuff is back.` : `🎉 Welcome back, ${fam.me.nickname}!`);
+    });
+  }
+  restoreFrom(data) {
+    const merged = mergeSaved(this.state, data);
+    merged.seenMs = [...new Set([...merged.seenMs, ...this.unlocked({ ...this.state, ...merged })])];
+    return new Promise(res => this.setState(merged, () => { this.persist(); this.checkMilestones(); res(); }));
   }
   setDraft(p) { this.setState(s => ({ draft: { ...s.draft, ...p } })); }
   saveIdea() {
@@ -2336,8 +2464,19 @@ class Component extends DCLogic {
       famPlans: famPlansView, famNoPlans: famAct && !famPlansView.length,
       famMembers: famMembersAll.filter(m => m.status === 'active').map(m => ({
         ...m, emoji: ROLE_EMO[m.role] || '🙂', roleLabel: (m.role === 'parent' ? 'Parent' : 'Kid') + (m.id === fam.me.id ? ' · you' : ''),
-        canRemove: famParent && m.id !== fam.me.id, removeLabel: `Remove ${m.nickname}`, onRemove: () => this.removeMember(m)
+        canRemove: famParent && m.id !== fam.me.id, removeLabel: `Remove ${m.nickname}`, onRemove: () => this.removeMember(m),
+        moveAria: `Get a new-phone code for ${m.nickname}`, onMove: () => this.moveCreate(m)
       })),
+      backupIcon: s.backupAt ? '✅' : '⏳',
+      backupText: s.backupAt ? `Backed up ${ago(s.backupAt)}` : 'Making your first backup…',
+      moveSelf: () => this.moveCreate(null), moveLabel: s.famBusy ? 'Working…' : '📲 Move to a new phone',
+      hasMoveSelf: !!(s.moveCode && s.moveCode.self), hasMoveOther: !!(s.moveCode && !s.moveCode.self),
+      moveCodeText: s.moveCode ? s.moveCode.code : '',
+      moveCodeFor: s.moveCode && !s.moveCode.self ? `New-phone code for ${s.moveCode.nickname}` : 'Your move code',
+      moveCodeHow: s.moveCode ? `${s.moveCode.self ? 'On your other phone' : `On ${s.moveCode.nickname}’s new phone`}, open Lunch Buddy’s Family tab and enter it under “Moving phones?”. It works once, until ${new Date(s.moveCode.expiresAt).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })}. The old phone then leaves the family but keeps what’s on it.` : '',
+      moveDone: () => this.setState({ moveCode: null }),
+      onMoveCode: e => this.setFamForm({ moveCode: fmtMove(e.target.value) }),
+      redeemMove: () => this.redeemMove(), redeemLabel: s.famBusy ? 'Working…' : '📲 Bring my stuff back',
       leaveLabel: famParent && !famMembersAll.some(m => m.id !== fam.me.id && m.role === 'parent' && m.status === 'active') ? 'Delete family' : 'Leave family',
       toast: s.toast, hasToast: !!s.toast,
       hasCelebrate: !!s.celebrate, celebrate: { ...c, rarityBg: RARITY[c.rarity] }, closeCelebrate: () => this.nextCelebrate(), celebrateBtn: s.queue.length ? 'Next ›' : 'Nice 🪶',

@@ -9,6 +9,8 @@ const CODE_ALPHABET = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789';
 const DAY_RE = /^\d{4}-\d{2}-\d{2}$/;
 const DOW = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 const MON = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+const MAX_BACKUP = 300000;          // characters of JSON per member
+const MOVE_TTL = 15 * 60 * 1000;    // move codes work once, for 15 minutes
 
 class HttpError extends Error {
   constructor(status, code, message) { super(message); this.status = status; this.code = code; }
@@ -27,9 +29,22 @@ async function sha256hex(s) {
   const d = new Uint8Array(await crypto.subtle.digest('SHA-256', new TextEncoder().encode(s)));
   return [...d].map((x) => x.toString(16).padStart(2, '0')).join('');
 }
-function randomCode() {
-  const b = crypto.getRandomValues(new Uint8Array(6));
+function randomCode(n = 6) {
+  const b = crypto.getRandomValues(new Uint8Array(n));
   return [...b].map((x) => CODE_ALPHABET[x % CODE_ALPHABET.length]).join('');
+}
+
+// Backup tables are created on first use, so an existing database needs no manual migration.
+let tablesReady = null;
+function ensureBackupTables(env) {
+  if (!tablesReady) {
+    tablesReady = env.DB.batch([
+      env.DB.prepare('CREATE TABLE IF NOT EXISTS backups (member_id TEXT PRIMARY KEY REFERENCES members(id) ON DELETE CASCADE, family_id TEXT NOT NULL, data TEXT NOT NULL, size INTEGER NOT NULL, updated_at INTEGER NOT NULL)'),
+      env.DB.prepare('CREATE TABLE IF NOT EXISTS move_codes (code_hash TEXT PRIMARY KEY, member_id TEXT NOT NULL REFERENCES members(id) ON DELETE CASCADE, created_by TEXT NOT NULL, expires_at INTEGER NOT NULL)'),
+      env.DB.prepare('CREATE INDEX IF NOT EXISTS move_codes_member ON move_codes(member_id)')
+    ]).catch((e) => { tablesReady = null; throw e; });
+  }
+  return tablesReady;
 }
 // Trim, collapse whitespace, drop control characters; reject empty or too long.
 function clean(v, max, label) {
@@ -300,6 +315,66 @@ const ROUTES = {
       "SELECT a.member_id, m.nickname, m.role, a.day, a.items FROM addons a JOIN members m ON m.id = a.member_id WHERE a.family_id = ? AND m.status = 'active' AND a.day BETWEEN ? AND ? ORDER BY m.created_at, a.day"
     ).bind(me.family_id, start, end).all();
     return json({ plans: results.map((r) => ({ memberId: r.member_id, nickname: r.nickname, role: r.role, day: r.day, items: JSON.parse(r.items), mine: r.member_id === me.id })) });
+  },
+
+  // Backup of this member's own saved app data (ideas, badges, game points…), replaced on every save.
+  'PUT backup': async ({ env, request, body }) => {
+    const me = await auth(env, request);
+    await ensureBackupTables(env);
+    const data = body.data;
+    if (!data || typeof data !== 'object' || Array.isArray(data)) throw new HttpError(400, 'bad_backup', 'Bad backup');
+    const text = JSON.stringify(data);
+    if (text.length > MAX_BACKUP) throw new HttpError(413, 'too_big', 'This backup is too big to save.');
+    await limit(env, 'backup:' + me.id, 120, 600);
+    const t = now();
+    await env.DB.prepare('INSERT INTO backups (member_id, family_id, data, size, updated_at) VALUES (?, ?, ?, ?, ?) ON CONFLICT (member_id) DO UPDATE SET data = excluded.data, size = excluded.size, updated_at = excluded.updated_at')
+      .bind(me.id, me.family_id, text, text.length, t).run();
+    return json({ ok: true, updatedAt: t });
+  },
+
+  // A one-time code that moves a member to another phone. Members make one for themselves;
+  // parents can make one for anyone in the family (for a lost or new phone).
+  'POST move/create': async ({ env, request, body }) => {
+    const me = await auth(env, request);
+    await ensureBackupTables(env);
+    await limit(env, 'move:' + me.id, 10, 3600);
+    let target = me;
+    const want = String(body.memberId || '');
+    if (want && want !== me.id) {
+      if (me.role !== 'parent') throw new HttpError(403, 'parents_only', 'Only parents can make a code for someone else.');
+      target = await env.DB.prepare("SELECT * FROM members WHERE id = ? AND family_id = ? AND status = 'active'").bind(want, me.family_id).first();
+      if (!target) throw new HttpError(404, 'gone', 'That person is not in the family.');
+    }
+    const code = randomCode(8), expiresAt = now() + MOVE_TTL;
+    await env.DB.batch([
+      env.DB.prepare('DELETE FROM move_codes WHERE member_id = ? OR expires_at < ?').bind(target.id, now()),
+      env.DB.prepare('INSERT INTO move_codes (code_hash, member_id, created_by, expires_at) VALUES (?, ?, ?, ?)').bind(await sha256hex(code), target.id, me.id, expiresAt)
+    ]);
+    return json({ code: code.slice(0, 4) + '-' + code.slice(4), expiresAt, nickname: target.nickname, self: target.id === me.id });
+  },
+
+  // Use a move code on the new phone: this phone becomes the member, the old phone is signed out.
+  'POST move/redeem': async ({ env, request, body }) => {
+    await limit(env, 'redeem:' + ipOf(request), 10, 3600);
+    await ensureBackupTables(env);
+    const code = String(body.code || '').toUpperCase().replace(/[^A-Z0-9]/g, '');
+    if (code.length !== 8) throw new HttpError(400, 'bad_code', 'Move codes have 8 letters and numbers.');
+    const row = await env.DB.prepare('SELECT * FROM move_codes WHERE code_hash = ?').bind(await sha256hex(code)).first();
+    if (!row || row.expires_at < now()) throw new HttpError(404, 'bad_code', 'That code didn’t work. Codes work once, for 15 minutes. Ask for a new one.');
+    const who = await reload(env, row.member_id);
+    if (!who || who.status !== 'active') throw new HttpError(404, 'bad_code', 'That code didn’t work. Ask for a new one.');
+    const token = randomToken();
+    await env.DB.batch([
+      env.DB.prepare('UPDATE members SET token_hash = ? WHERE id = ?').bind(await sha256hex(token), who.id),
+      env.DB.prepare('DELETE FROM move_codes WHERE member_id = ?').bind(who.id),
+      env.DB.prepare('DELETE FROM push_subs WHERE member_id = ?').bind(who.id),
+      addEvent(env, who, 'moved', {})
+    ]);
+    const b = await env.DB.prepare('SELECT data, updated_at FROM backups WHERE member_id = ?').bind(who.id).first();
+    return json({
+      token, ...(await state(env, await reload(env, who.id))),
+      backup: b ? { data: JSON.parse(b.data), updatedAt: b.updated_at } : null
+    });
   },
 
   'POST push/subscribe': async ({ env, request, body }) => {
