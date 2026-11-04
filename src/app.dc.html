@@ -344,6 +344,13 @@ input::placeholder{color:#B49A86}
 @keyframes lb-pop{0%{transform:scale(.2) rotate(-20deg);opacity:0}60%{transform:scale(1.12) rotate(6deg);opacity:1}100%{transform:scale(1) rotate(0)}}
 @keyframes lb-wob{0%,100%{transform:rotate(-6deg)}50%{transform:rotate(6deg)}}
 @keyframes lb-spin{to{transform:rotate(360deg)}}
+@keyframes lb-peck{0%{transform:translateY(-8px) rotate(0)}45%{transform:translateY(4px) rotate(30deg)}70%{transform:translateY(-2px) rotate(10deg)}100%{transform:translateY(-8px) rotate(0)}}
+@keyframes lb-flip{0%{transform:rotateY(90deg) scale(.9)}100%{transform:rotateY(0) scale(1)}}
+@keyframes lb-shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-6px)}40%{transform:translateX(6px)}60%{transform:translateX(-4px)}80%{transform:translateX(4px)}}
+@keyframes lb-bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
+@keyframes lb-rise{from{transform:translateY(100%)}to{transform:translateY(0)}}
+@keyframes lb-drain{from{width:100%}to{width:0}}
+@media (prefers-reduced-motion:reduce){*{animation-duration:.01ms!important;animation-iteration-count:1!important;transition:none!important}}
 </style>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -562,139 +569,244 @@ input::placeholder{color:#B49A86}
     </div>
   </sc-if>
 
-  <sc-if value="{{ isBadges }}" hint-placeholder-val="{{ false }}">
+  <sc-if value="{{ isNest }}" hint-placeholder-val="{{ false }}">
     <div style="padding:18px 16px 0;display:flex;flex-direction:column;gap:14px">
       <div>
-        <h2 style="font-family:'Baloo 2',sans-serif;font-size:26px;margin:0;font-weight:800">🪶 The Aviary</h2>
-        <div style="font-size:14px;font-weight:600;color:#8A6E5A">Your badge collection. Good plates earn daily badges; habits unlock milestones.</div>
+        <h2 style="font-family:'Baloo 2',sans-serif;font-size:26px;margin:0;font-weight:800">🐣 The Nest</h2>
+        <div style="font-size:14px;font-weight:600;color:#8A6E5A">Every badge lives here: quests to do, badges you’ve earned and badges you design yourself.</div>
       </div>
       <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px">
-        <div style="background:#FFD166;border:2px solid #3B2A20;border-radius:18px;padding:10px 12px"><div style="font-family:'Baloo 2',sans-serif;font-size:28px;font-weight:800;line-height:1">{{ badgeCount }}</div><div style="font-size:12px;font-weight:800">badges</div></div>
+        <div style="background:#FFD166;border:2px solid #3B2A20;border-radius:18px;padding:10px 12px"><div style="font-family:'Baloo 2',sans-serif;font-size:28px;font-weight:800;line-height:1">{{ badgeTotal }}</div><div style="font-size:12px;font-weight:800">badges</div></div>
         <div style="background:#FFB4A2;border:2px solid #3B2A20;border-radius:18px;padding:10px 12px"><div style="font-family:'Baloo 2',sans-serif;font-size:28px;font-weight:800;line-height:1">{{ streak }} 🔥</div><div style="font-size:12px;font-weight:800">day streak</div></div>
-        <div style="background:#D9C7F2;border:2px solid #3B2A20;border-radius:18px;padding:10px 12px"><div style="font-family:'Baloo 2',sans-serif;font-size:28px;font-weight:800;line-height:1">{{ msDone }}/{{ msTotal }}</div><div style="font-size:12px;font-weight:800">milestones</div></div>
+        <button sc-camel-on-click="{{ goGame }}" style="background:#BFE0FA;border:2px solid #3B2A20;border-radius:18px;padding:10px 12px;text-align:left;font-family:inherit;color:#3B2A20;cursor:pointer"><div style="font-family:'Baloo 2',sans-serif;font-size:28px;font-weight:800;line-height:1">{{ peckPts }}</div><div style="font-size:12px;font-weight:800">game points ›</div></button>
       </div>
-      <div style="font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#8A6E5A">Daily plate badges</div>
-      <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px">
-        <sc-for list="{{ catalog }}" as="c" hint-placeholder-count="4">
-          <div style="background:#fff;border:2px solid #3B2A20;border-radius:22px;padding:16px 10px 12px;display:flex;flex-direction:column;align-items:center;text-align:center;gap:6px;opacity:{{ c.op }}">
-            <div style="width:72px;height:72px;border-radius:50%;background:{{ c.bg }};display:flex;align-items:center;justify-content:center;font-size:38px;box-shadow:0 0 0 4px #fff,0 0 0 7px {{ c.ring }};filter:{{ c.filter }}">{{ c.emoji }}</div>
-            <div style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:16px;line-height:1.1;margin-top:4px">{{ c.name }}</div>
-            <span style="background:{{ c.rarityBg }};border-radius:999px;padding:1px 8px;font-size:10px;font-weight:800;letter-spacing:.06em;text-transform:uppercase">{{ c.rarity }}</span>
-            <div style="font-size:12px;font-weight:700;color:#8A6E5A;text-wrap:pretty">{{ c.rule }}</div>
-            <div style="font-size:12px;font-weight:800;color:#E2553F">{{ c.countLabel }}</div>
-          </div>
+      <div role="tablist" aria-label="Nest view" style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:4px;background:#F1E4D6;border:2px solid #3B2A20;border-radius:18px;padding:4px">
+        <sc-for list="{{ nestTabs }}" as="nt" hint-placeholder-count="2">
+          <button role="tab" aria-selected="{{ nt.sel }}" sc-camel-on-click="{{ nt.onClick }}" style="height:44px;border-radius:14px;border:{{ nt.border }};background:{{ nt.bg }};color:#3B2A20;font-family:'Baloo 2',sans-serif;font-size:17px;font-weight:800;cursor:pointer">{{ nt.label }}</button>
         </sc-for>
       </div>
-      <div style="font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#8A6E5A;margin-top:4px">Milestones</div>
-      <div style="display:flex;flex-direction:column;gap:8px">
-        <sc-for list="{{ milestones }}" as="m" hint-placeholder-count="5">
-          <div style="background:#fff;border:2px solid #3B2A20;border-radius:20px;padding:10px 12px;display:flex;align-items:center;gap:12px;opacity:{{ m.op }}">
-            <div style="width:52px;height:52px;border-radius:50%;background:{{ m.bg }};display:flex;align-items:center;justify-content:center;font-size:28px;flex:none;filter:{{ m.filter }};box-shadow:0 0 0 3px #fff,0 0 0 5px #3B2A20">{{ m.emoji }}</div>
+
+      <sc-if value="{{ nestQuests }}" hint-placeholder-val="{{ true }}">
+        <div style="display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px">
+          <sc-for list="{{ days }}" as="d" hint-placeholder-count="5">
+            <button sc-camel-on-click="{{ d.onClick }}" style="border:2px solid #3B2A20;border-radius:14px;padding:6px 0;background:{{ d.bg }};color:{{ d.fg }};cursor:pointer;font-family:inherit;font-size:12px;font-weight:800;display:flex;flex-direction:column;align-items:center;gap:1px"><span>{{ d.label }}</span><span style="font-size:11px;opacity:.75">{{ d.date }}</span></button>
+          </sc-for>
+        </div>
+
+        <section style="background:#E1F0FB;border:2px solid #3B2A20;border-radius:24px;padding:16px;box-shadow:4px 4px 0 #3B2A20;display:flex;flex-direction:column;gap:10px">
+          <div style="display:flex;align-items:baseline;justify-content:space-between;gap:8px">
+            <h3 style="font-family:'Baloo 2',sans-serif;font-size:20px;margin:0;font-weight:800">🎯 Today’s quests</h3>
+            <span style="font-size:13px;font-weight:700;color:#4A6A85">{{ dayTitle }}</span>
+          </div>
+          <sc-for list="{{ quests }}" as="q" hint-placeholder-count="3">
+            <button sc-camel-on-click="{{ q.onClick }}" style="min-height:60px;border-radius:18px;border:2px solid #3B2A20;background:{{ q.bg }};display:flex;align-items:center;gap:12px;padding:8px 12px;font-family:inherit;color:#3B2A20;cursor:pointer;text-align:left">
+              <span style="font-size:26px;flex:none">{{ q.e }}</span>
+              <span style="flex:1;min-width:0"><span style="display:block;font-weight:800;font-size:15px;line-height:1.2">{{ q.text }}</span><span style="display:block;font-size:12px;font-weight:700;color:#8A6E5A">{{ q.hint }}</span></span>
+              <span style="width:32px;height:32px;border-radius:50%;border:2px solid #3B2A20;background:{{ q.checkBg }};display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:800;color:#fff;flex:none">{{ q.check }}</span>
+            </button>
+          </sc-for>
+          <div style="height:12px;border-radius:999px;background:#fff;border:2px solid #3B2A20;overflow:hidden"><div style="height:100%;width:{{ qPct }};background:#5AA9E6;transition:width .3s"></div></div>
+          <div style="display:flex;align-items:center;gap:12px;background:#fff;border:2px dashed #3B2A20;border-radius:18px;padding:10px 12px">
+            <span style="width:56px;height:56px;border-radius:50%;background:{{ stickerBg }};display:flex;align-items:center;justify-content:center;font-size:30px;flex:none;box-shadow:0 0 0 3px #fff,0 0 0 5px #3B2A20">{{ stickerPreview }}</span>
+            <span style="flex:1;min-width:0"><span style="display:block;font-family:'Baloo 2',sans-serif;font-weight:800;font-size:17px">{{ stickerName }}</span><span style="display:block;font-size:12px;font-weight:700;color:#8A6E5A">{{ stickerSub }}</span></span>
+          </div>
+          <sc-if value="{{ canSticker }}" hint-placeholder-val="{{ false }}">
+            <button sc-camel-on-click="{{ claimSticker }}" style="width:100%;height:54px;border-radius:18px;border:2px solid #3B2A20;background:#3B2A20;color:#FFD166;font-family:'Baloo 2',sans-serif;font-size:19px;font-weight:800;cursor:pointer;box-shadow:0 4px 0 #1E140E">✨ Reveal my badge</button>
+          </sc-if>
+        </section>
+
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:8px">
+          <h3 style="font-family:'Baloo 2',sans-serif;font-size:20px;margin:0;font-weight:800">✏️ My goals</h3>
+          <button sc-camel-on-click="{{ openBadgeSheet }}" style="min-height:40px;border:none;background:none;font-family:inherit;font-weight:800;font-size:14px;color:#B23A6A;cursor:pointer;padding:0 4px">+ Design a badge</button>
+        </div>
+        <sc-if value="{{ noMyGoals }}" hint-placeholder-val="{{ true }}">
+          <button sc-camel-on-click="{{ openBadgeSheet }}" style="background:#FFF7EC;border:2px dashed #C9748C;border-radius:20px;padding:12px 14px;font-family:inherit;font-size:13px;font-weight:700;color:#8A4A5E;text-align:left;cursor:pointer">{{ myGoalsEmpty }}</button>
+        </sc-if>
+        <sc-for list="{{ myGoals }}" as="mb" hint-placeholder-count="1">
+          <div style="background:#fff;border:2px solid #3B2A20;border-radius:20px;padding:10px 12px;display:flex;align-items:center;gap:12px">
+            <div style="width:52px;height:52px;border-radius:50%;background:{{ mb.bg }};display:flex;align-items:center;justify-content:center;font-size:28px;flex:none;filter:{{ mb.filter }};box-shadow:0 0 0 3px #fff,0 0 0 5px #3B2A20">{{ mb.emoji }}</div>
             <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:4px">
-              <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap"><span style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:16px;line-height:1.1">{{ m.name }}</span><span style="background:{{ m.rarityBg }};border-radius:999px;padding:1px 8px;font-size:10px;font-weight:800;letter-spacing:.06em;text-transform:uppercase">{{ m.rarity }}</span></div>
-              <div style="font-size:12px;font-weight:700;color:#8A6E5A">{{ m.rule }}</div>
+              <span style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:16px;line-height:1.1;overflow-wrap:anywhere">{{ mb.name }}</span>
+              <div style="font-size:12px;font-weight:700;color:#8A6E5A;overflow-wrap:anywhere">{{ mb.rule }}</div>
               <div style="display:flex;align-items:center;gap:8px">
-                <div style="flex:1;height:8px;border-radius:999px;background:#F1E4D6;overflow:hidden"><div style="height:100%;width:{{ m.pct }};background:{{ m.bar }}"></div></div>
-                <span style="font-size:11px;font-weight:800;color:#5A4334;white-space:nowrap">{{ m.progressLabel }}</span>
+                <div style="flex:1;height:8px;border-radius:999px;background:#F1E4D6;overflow:hidden"><div style="height:100%;width:{{ mb.pct }};background:{{ mb.bar }}"></div></div>
+                <span style="font-size:11px;font-weight:800;color:#5A4334;white-space:nowrap">{{ mb.progressLabel }}</span>
               </div>
             </div>
+            <sc-if value="{{ mb.canLog }}" hint-placeholder-val="{{ true }}">
+              <button aria-label="{{ mb.logAria }}" sc-camel-on-click="{{ mb.onLog }}" style="min-width:68px;height:44px;padding:0 8px;flex:none;border-radius:14px;border:2px solid #3B2A20;background:{{ mb.logBg }};font-family:'Baloo 2',sans-serif;font-size:15px;font-weight:800;color:#3B2A20;cursor:pointer;box-shadow:0 3px 0 #3B2A20">{{ mb.logLabel }}</button>
+            </sc-if>
           </div>
         </sc-for>
-      </div>
-      <sc-if value="{{ hasHistory }}" hint-placeholder-val="{{ false }}">
-        <div style="font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#8A6E5A">Recent</div>
-        <sc-for list="{{ history }}" as="h" hint-placeholder-count="2">
-          <div style="display:flex;align-items:center;gap:12px;background:#fff;border:2px solid #3B2A20;border-radius:18px;padding:10px 12px">
-            <span style="font-size:28px">{{ h.emoji }}</span>
-            <div style="flex:1;min-width:0"><div style="display:flex;align-items:center;gap:6px"><span style="font-weight:800">{{ h.name }}</span><span style="background:{{ h.rarityBg }};border-radius:999px;padding:1px 8px;font-size:10px;font-weight:800;text-transform:uppercase">{{ h.rarity }}</span></div><div style="font-size:12px;font-weight:700;color:#8A6E5A">{{ h.date }} · {{ h.groups }}</div></div>
+
+        <div>
+          <h3 style="font-family:'Baloo 2',sans-serif;font-size:20px;margin:0;font-weight:800">📅 This week</h3>
+          <div style="font-size:13px;font-weight:600;color:#8A6E5A">Weekly challenges earn shiny holo badges. They start over every Monday.</div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:8px">
+          <sc-for list="{{ weekly }}" as="a" hint-placeholder-count="3">
+            <div style="background:#fff;border:2px solid #3B2A20;border-radius:20px;padding:12px;display:flex;flex-direction:column;gap:8px;opacity:{{ a.op }}">
+              <div style="display:flex;align-items:center;gap:12px">
+                <span style="width:48px;height:48px;border-radius:50%;background:linear-gradient(135deg,#FFD6E8,#CFEFFF 35%,#E6FFD9 65%,#FFF1C2);display:flex;align-items:center;justify-content:center;font-size:26px;flex:none;box-shadow:0 0 0 3px #fff,0 0 0 5px #3B2A20">{{ a.emoji }}</span>
+                <div style="flex:1;min-width:0">
+                  <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap"><span style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:16px;line-height:1.1">{{ a.name }}</span><span style="background:#CFEFFF;border-radius:999px;padding:1px 8px;font-size:10px;font-weight:800;letter-spacing:.06em;text-transform:uppercase">Holo</span></div>
+                  <div style="font-size:12px;font-weight:700;color:#8A6E5A;text-wrap:pretty">{{ a.rule }}</div>
+                </div>
+                <sc-if value="{{ a.ready }}" hint-placeholder-val="{{ false }}">
+                  <button sc-camel-on-click="{{ a.claim }}" style="height:44px;padding:0 14px;flex:none;border-radius:14px;border:2px solid #3B2A20;background:#FFD166;font-family:'Baloo 2',sans-serif;font-size:15px;font-weight:800;cursor:pointer;color:#3B2A20;box-shadow:0 3px 0 #3B2A20">Claim ✦</button>
+                </sc-if>
+              </div>
+              <div style="display:flex;align-items:center;gap:8px">
+                <div style="flex:1;height:8px;border-radius:999px;background:#F1E4D6;overflow:hidden"><div style="height:100%;width:{{ a.pct }};background:{{ a.bar }}"></div></div>
+                <span style="font-size:11px;font-weight:800;color:#5A4334;white-space:nowrap">{{ a.progressLabel }}</span>
+              </div>
+            </div>
+          </sc-for>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ nestBadges }}" hint-placeholder-val="{{ false }}">
+        <button sc-camel-on-click="{{ openBadgeSheet }}" style="display:flex;align-items:center;gap:12px;background:#FFE3EC;border:2px solid #3B2A20;border-radius:20px;padding:12px 14px;font-family:inherit;color:#3B2A20;cursor:pointer;text-align:left;box-shadow:4px 4px 0 #3B2A20">
+          <span style="font-size:30px;flex:none">✏️</span>
+          <span style="flex:1;min-width:0"><span style="display:block;font-family:'Baloo 2',sans-serif;font-weight:800;font-size:17px;line-height:1.1">Design your own badge</span><span style="display:block;font-size:12px;font-weight:700;color:#8A4A5E">Pick an icon, a color and a goal. {{ myLeft }}</span></span>
+          <span style="font-weight:800;font-size:18px">›</span>
+        </button>
+        <sc-if value="{{ hasMyBadges }}" hint-placeholder-val="{{ false }}">
+          <div style="font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#8A6E5A">Designed by me</div>
+          <sc-for list="{{ myBadgeCards }}" as="mb" hint-placeholder-count="1">
+            <div style="background:#fff;border:2px solid #3B2A20;border-radius:20px;padding:10px 12px;display:flex;align-items:center;gap:12px">
+              <div style="width:52px;height:52px;border-radius:50%;background:{{ mb.bg }};display:flex;align-items:center;justify-content:center;font-size:28px;flex:none;filter:{{ mb.filter }};box-shadow:0 0 0 3px #fff,0 0 0 5px #3B2A20">{{ mb.emoji }}</div>
+              <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:4px">
+                <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap"><span style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:16px;line-height:1.1;overflow-wrap:anywhere">{{ mb.name }}</span><span style="background:#FFE3EC;border-radius:999px;padding:1px 8px;font-size:10px;font-weight:800;letter-spacing:.06em;text-transform:uppercase">My badge</span></div>
+                <div style="font-size:12px;font-weight:700;color:#8A6E5A;overflow-wrap:anywhere">{{ mb.rule }}</div>
+                <div style="display:flex;align-items:center;gap:8px">
+                  <div style="flex:1;height:8px;border-radius:999px;background:#F1E4D6;overflow:hidden"><div style="height:100%;width:{{ mb.pct }};background:{{ mb.bar }}"></div></div>
+                  <span style="font-size:11px;font-weight:800;color:#5A4334;white-space:nowrap">{{ mb.progressLabel }}</span>
+                </div>
+              </div>
+              <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px;flex:none">
+                <sc-if value="{{ mb.canLog }}" hint-placeholder-val="{{ false }}">
+                  <button aria-label="{{ mb.logAria }}" sc-camel-on-click="{{ mb.onLog }}" style="min-width:68px;height:40px;padding:0 8px;border-radius:14px;border:2px solid #3B2A20;background:{{ mb.logBg }};font-family:'Baloo 2',sans-serif;font-size:15px;font-weight:800;color:#3B2A20;cursor:pointer">{{ mb.logLabel }}</button>
+                </sc-if>
+                <button aria-label="{{ mb.deleteAria }}" sc-camel-on-click="{{ mb.onDelete }}" style="width:40px;height:40px;border-radius:14px;border:2px solid #3B2A20;background:#fff;font-size:16px;cursor:pointer;padding:0">🗑️</button>
+              </div>
+            </div>
+          </sc-for>
+        </sc-if>
+
+        <div style="font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#8A6E5A;margin-top:4px">Plate badges · earned on the Menu tab</div>
+        <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px">
+          <sc-for list="{{ catalog }}" as="c" hint-placeholder-count="4">
+            <div style="background:#fff;border:2px solid #3B2A20;border-radius:22px;padding:16px 10px 12px;display:flex;flex-direction:column;align-items:center;text-align:center;gap:6px;opacity:{{ c.op }}">
+              <div style="width:72px;height:72px;border-radius:50%;background:{{ c.bg }};display:flex;align-items:center;justify-content:center;font-size:38px;box-shadow:0 0 0 4px #fff,0 0 0 7px {{ c.ring }};filter:{{ c.filter }}">{{ c.emoji }}</div>
+              <div style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:16px;line-height:1.1;margin-top:4px">{{ c.name }}</div>
+              <span style="background:{{ c.rarityBg }};border-radius:999px;padding:1px 8px;font-size:10px;font-weight:800;letter-spacing:.06em;text-transform:uppercase">{{ c.rarity }}</span>
+              <div style="font-size:12px;font-weight:700;color:#8A6E5A;text-wrap:pretty">{{ c.rule }}</div>
+              <div style="font-size:12px;font-weight:800;color:#C2412E">{{ c.countLabel }}</div>
+            </div>
+          </sc-for>
+        </div>
+
+        <div style="font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#8A6E5A;margin-top:4px">Goal badges · {{ goalsDone }} of {{ goalsTotal }}</div>
+        <div style="display:flex;flex-direction:column;gap:8px">
+          <sc-for list="{{ goals }}" as="m" hint-placeholder-count="5">
+            <div style="background:#fff;border:2px solid #3B2A20;border-radius:20px;padding:10px 12px;display:flex;align-items:center;gap:12px;opacity:{{ m.op }}">
+              <div style="width:52px;height:52px;border-radius:50%;background:{{ m.bg }};display:flex;align-items:center;justify-content:center;font-size:28px;flex:none;filter:{{ m.filter }};box-shadow:0 0 0 3px #fff,0 0 0 5px #3B2A20">{{ m.emoji }}</div>
+              <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:4px">
+                <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap"><span style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:16px;line-height:1.1">{{ m.name }}</span><span style="background:{{ m.rarityBg }};border-radius:999px;padding:1px 8px;font-size:10px;font-weight:800;letter-spacing:.06em;text-transform:uppercase">{{ m.rarity }}</span></div>
+                <div style="font-size:12px;font-weight:700;color:#8A6E5A">{{ m.rule }}</div>
+                <div style="display:flex;align-items:center;gap:8px">
+                  <div style="flex:1;height:8px;border-radius:999px;background:#F1E4D6;overflow:hidden"><div style="height:100%;width:{{ m.pct }};background:{{ m.bar }}"></div></div>
+                  <span style="font-size:11px;font-weight:800;color:#5A4334;white-space:nowrap">{{ m.progressLabel }}</span>
+                </div>
+              </div>
+            </div>
+          </sc-for>
+        </div>
+
+        <div style="font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#8A6E5A;margin-top:4px">Weekly holo badges</div>
+        <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px">
+          <sc-for list="{{ weeklyBadges }}" as="w" hint-placeholder-count="3">
+            <div style="background:#fff;border:2px solid #3B2A20;border-radius:20px;padding:12px 6px 10px;display:flex;flex-direction:column;align-items:center;text-align:center;gap:6px;opacity:{{ w.op }}">
+              <div style="width:56px;height:56px;border-radius:50%;background:{{ w.bg }};display:flex;align-items:center;justify-content:center;font-size:30px;filter:{{ w.filter }};box-shadow:0 0 0 3px #fff,0 0 0 5px #3B2A20">{{ w.emoji }}</div>
+              <div style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:14px;line-height:1.1">{{ w.name }}</div>
+              <div style="font-size:12px;font-weight:800;color:#C2412E">{{ w.countLabel }}</div>
+            </div>
+          </sc-for>
+        </div>
+        <sc-if value="{{ hasClassic }}" hint-placeholder-val="{{ false }}">
+          <div style="display:flex;flex-wrap:wrap;gap:6px;align-items:center">
+            <span style="font-size:12px;font-weight:800;color:#8A6E5A">Classic:</span>
+            <sc-for list="{{ classic }}" as="cl" hint-placeholder-count="1">
+              <span style="background:#fff;border:2px solid #3B2A20;border-radius:999px;padding:4px 10px;font-size:12px;font-weight:800">{{ cl.label }}</span>
+            </sc-for>
           </div>
-        </sc-for>
+        </sc-if>
+
+        <div style="display:flex;align-items:baseline;justify-content:space-between;margin-top:4px">
+          <div style="font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#8A6E5A">Quest badges</div>
+          <span style="font-size:13px;font-weight:800;color:#8A6E5A">{{ bookCount }} of {{ bookTotal }} found</span>
+        </div>
+        <div style="background:#FFFDF8;border:2px solid #3B2A20;border-radius:24px;padding:16px;background-image:radial-gradient(#EADBC8 1px,transparent 1px);background-size:14px 14px">
+          <sc-if value="{{ noBook }}" hint-placeholder-val="{{ true }}">
+            <div style="text-align:center;padding:12px;color:#8A6E5A;font-weight:700"><div style="font-size:36px">❔</div>Finish all three daily quests to reveal a mystery badge.</div>
+          </sc-if>
+          <sc-if value="{{ hasBook }}" hint-placeholder-val="{{ false }}">
+            <div style="display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px 10px">
+              <sc-for list="{{ book }}" as="b" hint-placeholder-count="4">
+                <div style="display:flex;flex-direction:column;align-items:center;gap:4px;transform:{{ b.tilt }}">
+                  <div style="width:58px;height:58px;border-radius:50%;background:{{ b.bg }};display:flex;align-items:center;justify-content:center;font-size:30px;border:4px solid #fff;box-shadow:0 0 0 2px #3B2A20,2px 3px 0 2px rgba(59,42,32,.25)">{{ b.e }}</div>
+                  <span style="font-size:11px;font-weight:800;text-align:center;line-height:1.1">{{ b.name }}</span>
+                  <span style="font-size:10px;font-weight:800;color:#4F77AD">{{ b.tag }}</span>
+                </div>
+              </sc-for>
+            </div>
+          </sc-if>
+        </div>
       </sc-if>
     </div>
   </sc-if>
 
-  <sc-if value="{{ isQuests }}" hint-placeholder-val="{{ false }}">
-    <div style="padding:18px 16px 0;display:flex;flex-direction:column;gap:14px">
-      <div>
-        <h2 style="font-family:'Baloo 2',sans-serif;font-size:26px;margin:0;font-weight:800">🎯 Quests</h2>
-        <div style="font-size:14px;font-weight:600;color:#8A6E5A">Three new quests every school day. Clear them all for a sticker.</div>
-      </div>
-      <div style="display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px">
-        <sc-for list="{{ days }}" as="d" hint-placeholder-count="5">
-          <button sc-camel-on-click="{{ d.onClick }}" style="border:2px solid #3B2A20;border-radius:14px;padding:6px 0;background:{{ d.bg }};color:{{ d.fg }};cursor:pointer;font-family:inherit;font-size:12px;font-weight:800;display:flex;flex-direction:column;align-items:center;gap:1px"><span>{{ d.label }}</span><span style="font-size:11px;opacity:.75">{{ d.date }}</span></button>
-        </sc-for>
-      </div>
-
-      <section style="background:#E1F0FB;border:2px solid #3B2A20;border-radius:24px;padding:16px;box-shadow:4px 4px 0 #3B2A20;display:flex;flex-direction:column;gap:10px">
-        <div style="display:flex;align-items:baseline;justify-content:space-between;gap:8px">
-          <h3 style="font-family:'Baloo 2',sans-serif;font-size:20px;margin:0;font-weight:800">Today’s quests</h3>
-          <span style="font-size:13px;font-weight:700;color:#4A6A85">{{ dayTitle }}</span>
+  <sc-if value="{{ isGame }}" hint-placeholder-val="{{ false }}">
+    <div style="padding:18px 16px 0;display:flex;flex-direction:column;gap:16px">
+      <div style="display:flex;align-items:center;gap:12px">
+        <div style="width:68px;height:68px;flex:none">{{ pipHero }}</div>
+        <div style="min-width:0">
+          <h2 style="font-family:'Baloo 2',sans-serif;font-size:26px;margin:0;font-weight:800;line-height:1.1">🎮 Peck Patch</h2>
+          <div style="font-size:14px;font-weight:600;color:#8A6E5A">Help Pip peck for healthy food. Peek first, and remember where the sometimes foods hide!</div>
         </div>
-        <sc-for list="{{ quests }}" as="q" hint-placeholder-count="3">
-          <button sc-camel-on-click="{{ q.onClick }}" style="min-height:60px;border-radius:18px;border:2px solid #3B2A20;background:{{ q.bg }};display:flex;align-items:center;gap:12px;padding:8px 12px;font-family:inherit;color:#3B2A20;cursor:pointer;text-align:left">
-            <span style="font-size:26px;flex:none">{{ q.e }}</span>
-            <span style="flex:1;min-width:0"><span style="display:block;font-weight:800;font-size:15px;line-height:1.2">{{ q.text }}</span><span style="display:block;font-size:12px;font-weight:700;color:#8A6E5A">{{ q.hint }}</span></span>
-            <span style="width:32px;height:32px;border-radius:50%;border:2px solid #3B2A20;background:{{ q.checkBg }};display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:800;color:#fff;flex:none">{{ q.check }}</span>
-          </button>
-        </sc-for>
-        <div style="height:12px;border-radius:999px;background:#fff;border:2px solid #3B2A20;overflow:hidden"><div style="height:100%;width:{{ qPct }};background:#5AA9E6;transition:width .3s"></div></div>
-        <div style="display:flex;align-items:center;gap:12px;background:#fff;border:2px dashed #3B2A20;border-radius:18px;padding:10px 12px">
-          <span style="width:56px;height:56px;border-radius:16px;background:{{ stickerBg }};display:flex;align-items:center;justify-content:center;font-size:32px;flex:none;border:3px solid #fff;box-shadow:0 0 0 2px #3B2A20;transform:rotate(-5deg)">{{ stickerPreview }}</span>
-          <span style="flex:1;min-width:0"><span style="display:block;font-family:'Baloo 2',sans-serif;font-weight:800;font-size:17px">{{ stickerName }}</span><span style="display:block;font-size:12px;font-weight:700;color:#8A6E5A">{{ stickerSub }}</span></span>
-        </div>
-        <sc-if value="{{ canSticker }}" hint-placeholder-val="{{ false }}">
-          <button sc-camel-on-click="{{ claimSticker }}" style="width:100%;height:54px;border-radius:18px;border:2px solid #3B2A20;background:#3B2A20;color:#FFD166;font-family:'Baloo 2',sans-serif;font-size:19px;font-weight:800;cursor:pointer;box-shadow:0 4px 0 #1E140E">✨ Reveal my sticker</button>
-        </sc-if>
-      </section>
-
-      <div>
-        <h3 style="font-family:'Baloo 2',sans-serif;font-size:20px;margin:0;font-weight:800">🔥 Advanced quests</h3>
-        <div style="font-size:13px;font-weight:600;color:#8A6E5A">Harder challenges. Each one awards a rare holographic sticker.</div>
       </div>
-      <div style="display:flex;flex-direction:column;gap:8px">
-        <sc-for list="{{ adv }}" as="a" hint-placeholder-count="4">
-          <div style="background:#fff;border:2px solid #3B2A20;border-radius:20px;padding:12px;display:flex;flex-direction:column;gap:8px;opacity:{{ a.op }}">
-            <div style="display:flex;align-items:center;gap:12px">
-              <span style="width:48px;height:48px;border-radius:14px;background:#F3E3FA;display:flex;align-items:center;justify-content:center;font-size:26px;flex:none">{{ a.e }}</span>
-              <div style="flex:1;min-width:0">
-                <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap"><span style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:16px;line-height:1.1">{{ a.name }}</span><span style="background:#FFF1C2;border-radius:999px;padding:1px 8px;font-size:10px;font-weight:800;letter-spacing:.06em;text-transform:uppercase">{{ a.scope }}</span></div>
-                <div style="font-size:12px;font-weight:700;color:#8A6E5A;text-wrap:pretty">{{ a.rule }}</div>
+      <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px">
+        <div style="background:#FFF1C2;border:2px solid #3B2A20;border-radius:18px;padding:10px 12px"><div style="font-family:'Baloo 2',sans-serif;font-size:24px;font-weight:800;line-height:1">⭐ {{ peckPts }}</div><div style="font-size:12px;font-weight:800">points</div></div>
+        <div style="background:#DDF5E8;border:2px solid #3B2A20;border-radius:18px;padding:10px 12px"><div style="font-family:'Baloo 2',sans-serif;font-size:24px;font-weight:800;line-height:1">★ {{ peckStars }}</div><div style="font-size:12px;font-weight:800">of {{ peckStarsMax }} stars</div></div>
+        <div style="background:#E1F0FB;border:2px solid #3B2A20;border-radius:18px;padding:10px 12px"><div style="font-family:'Baloo 2',sans-serif;font-size:24px;font-weight:800;line-height:1">{{ peckToday }}</div><div style="font-size:12px;font-weight:800">points today</div></div>
+      </div>
+      <sc-if value="{{ peckAllDone }}" hint-placeholder-val="{{ false }}">
+        <div style="background:#FFF1C2;border:2px solid #3B2A20;border-radius:18px;padding:10px 14px;font-weight:800;font-size:14px">👑 Every level cleared! Replay any level to collect all 3 stars.</div>
+      </sc-if>
+      <sc-for list="{{ units }}" as="u" hint-placeholder-count="3">
+        <section style="display:flex;flex-direction:column;align-items:center;gap:22px;padding-bottom:8px">
+          <div style="align-self:stretch;background:{{ u.color }};border:2px solid #3B2A20;border-radius:20px;padding:12px 14px;box-shadow:0 4px 0 #3B2A20;color:#1E140E">
+            <div style="font-size:11px;font-weight:800;letter-spacing:.1em;text-transform:uppercase">Unit {{ u.n }}</div>
+            <div style="font-family:'Baloo 2',sans-serif;font-size:21px;font-weight:800;line-height:1.1">{{ u.icon }} {{ u.title }}</div>
+            <div style="font-size:13px;font-weight:700">{{ u.sub }}</div>
+          </div>
+          <sc-for list="{{ u.levels }}" as="lv" hint-placeholder-count="4">
+            <div style="position:relative;transform:translateX({{ lv.dx }});display:flex;flex-direction:column;align-items:center;gap:4px">
+              <sc-if value="{{ lv.isCurrent }}" hint-placeholder-val="{{ false }}">
+                <div style="position:absolute;bottom:100%;margin-bottom:2px;background:#fff;border:2px solid #3B2A20;border-radius:12px;padding:1px 10px;font-family:'Baloo 2',sans-serif;font-size:14px;font-weight:800;color:#3B2A20;white-space:nowrap;animation:lb-bob 1.6s ease-in-out infinite;z-index:1">START</div>
+              </sc-if>
+              <button aria-label="{{ lv.aria }}" sc-camel-on-click="{{ lv.onClick }}" style="width:78px;height:72px;border-radius:50%;border:2px solid #3B2A20;background:{{ lv.bg }};box-shadow:0 7px 0 {{ lv.shadow }};font-family:'Baloo 2',sans-serif;font-size:30px;font-weight:800;color:#3B2A20;cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0;margin-bottom:7px">{{ lv.icon }}</button>
+              <div aria-hidden="true" style="display:flex;gap:1px;font-size:16px;line-height:1">
+                <sc-for list="{{ lv.starList }}" as="sx" hint-placeholder-count="3"><span style="color:{{ sx.c }}">★</span></sc-for>
               </div>
-            </div>
-            <div style="display:flex;align-items:center;gap:8px">
-              <div style="flex:1;height:8px;border-radius:999px;background:#F1E4D6;overflow:hidden"><div style="height:100%;width:{{ a.pct }};background:{{ a.bar }}"></div></div>
-              <span style="font-size:11px;font-weight:800;color:#5A4334;white-space:nowrap">{{ a.progressLabel }}</span>
-            </div>
-            <div style="display:flex;align-items:center;justify-content:space-between;gap:8px">
-              <span style="font-size:12px;font-weight:800;color:#4A6A85">Reward: {{ a.rewardLabel }}</span>
-              <sc-if value="{{ a.ready }}" hint-placeholder-val="{{ false }}">
-                <button sc-camel-on-click="{{ a.claim }}" style="height:40px;padding:0 14px;border-radius:14px;border:2px solid #3B2A20;background:#FFD166;font-family:'Baloo 2',sans-serif;font-size:15px;font-weight:800;cursor:pointer;color:#3B2A20">Claim ✦</button>
+              <sc-if value="{{ lv.hasPip }}" hint-placeholder-val="{{ false }}">
+                <div style="position:absolute;top:0;left:{{ lv.pipLeft }};right:{{ lv.pipRight }};width:66px;height:66px;pointer-events:none">{{ pipMap }}</div>
               </sc-if>
             </div>
-          </div>
-        </sc-for>
-      </div>
-
-      <div style="display:flex;align-items:baseline;justify-content:space-between">
-        <h3 style="font-family:'Baloo 2',sans-serif;font-size:20px;margin:0;font-weight:800">📒 Sticker book</h3>
-        <span style="font-size:13px;font-weight:800;color:#8A6E5A">{{ bookCount }} collected</span>
-      </div>
-      <div style="background:#FFFDF8;border:2px solid #3B2A20;border-radius:24px;padding:16px;background-image:radial-gradient(#EADBC8 1px,transparent 1px);background-size:14px 14px">
-        <sc-if value="{{ noBook }}" hint-placeholder-val="{{ true }}">
-          <div style="text-align:center;padding:12px;color:#8A6E5A;font-weight:700"><div style="font-size:36px">📒</div>Empty pages. Finish today’s quests to add your first sticker.</div>
-        </sc-if>
-        <sc-if value="{{ hasBook }}" hint-placeholder-val="{{ false }}">
-          <div style="display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px 10px">
-            <sc-for list="{{ book }}" as="b" hint-placeholder-count="4">
-              <div style="display:flex;flex-direction:column;align-items:center;gap:4px;transform:{{ b.tilt }}">
-                <div style="width:60px;height:60px;border-radius:18px;background:{{ b.bg }};display:flex;align-items:center;justify-content:center;font-size:32px;border:4px solid #fff;box-shadow:0 0 0 2px #3B2A20,2px 3px 0 2px rgba(59,42,32,.25)">{{ b.e }}</div>
-                <span style="font-size:11px;font-weight:800;text-align:center;line-height:1.1">{{ b.name }}</span>
-                <span style="font-size:9px;font-weight:800;color:#5A7FB0;letter-spacing:.06em;text-transform:uppercase">{{ b.tag }}</span>
-              </div>
-            </sc-for>
-          </div>
-        </sc-if>
-      </div>
+          </sc-for>
+        </section>
+      </sc-for>
     </div>
   </sc-if>
 
@@ -929,8 +1041,146 @@ input::placeholder{color:#B49A86}
     </div>
   </sc-if>
 
+  <sc-if value="{{ hasGame }}" hint-placeholder-val="{{ false }}">
+    <div role="dialog" aria-modal="true" aria-label="Peck Patch level" style="position:fixed;inset:0;z-index:8;background:#FFF7EC;display:flex;justify-content:center">
+      <div style="width:100%;max-width:440px;height:100%;display:flex;flex-direction:column;position:relative;overflow:hidden">
+        <sc-if value="{{ gPlaying }}" hint-placeholder-val="{{ true }}">
+          <div style="display:flex;align-items:center;gap:10px;padding:14px 16px 6px;flex:none">
+            <button aria-label="Quit level" sc-camel-on-click="{{ gQuit }}" style="width:44px;height:44px;flex:none;border:none;background:none;font-size:26px;font-weight:800;color:#8A6E5A;cursor:pointer;padding:0">✕</button>
+            <div style="flex:1;height:18px;border-radius:999px;background:#EADBC8;overflow:hidden">
+              <div style="height:100%;width:{{ gPct }};min-width:18px;background:#3DBE8B;border-radius:999px;transition:width .4s ease-out;padding:4px 8px 0;box-sizing:border-box"><div style="height:4px;border-radius:999px;background:rgba(255,255,255,.5)"></div></div>
+            </div>
+            <div aria-label="{{ gHeartsAria }}" style="font-size:17px;white-space:nowrap;flex:none">{{ gHearts }}</div>
+          </div>
+          <div style="display:flex;align-items:flex-end;gap:10px;padding:2px 16px 6px;flex:none">
+            <div style="width:72px;height:72px;flex:none">{{ gPip }}</div>
+            <div aria-live="polite" style="flex:1;min-width:0;background:#fff;border:2px solid #E5D3C0;border-radius:18px 18px 18px 4px;padding:10px 12px;font-weight:800;font-size:15px;line-height:1.3;margin-bottom:12px">{{ gSay }}</div>
+          </div>
+          <div style="display:flex;justify-content:space-between;gap:8px;padding:0 16px 8px;font-size:13px;font-weight:800;color:#8A6E5A;flex:none"><span>{{ gLevelLabel }}</span><span>{{ gPecksLabel }}</span></div>
+          <sc-if value="{{ gPeek }}" hint-placeholder-val="{{ false }}">
+            <div style="margin:0 16px 10px;height:8px;border-radius:999px;background:#EADBC8;overflow:hidden;flex:none"><div style="height:100%;background:#5AA9E6;border-radius:999px;animation:lb-drain {{ gPeekMs }} linear forwards"></div></div>
+          </sc-if>
+          <div style="flex:1;overflow-y:auto;padding:18px 16px 28px">
+            <div style="display:grid;grid-template-columns:repeat({{ gCols }},minmax(0,1fr));gap:10px;max-width:{{ gGridMax }};margin:0 auto">
+              <sc-for list="{{ gTiles }}" as="t" hint-placeholder-count="9">
+                <button aria-label="{{ t.aria }}" sc-camel-on-click="{{ t.onClick }}" style="position:relative;aspect-ratio:1/1;border-radius:18px;border:2px solid #3B2A20;background:{{ t.bg }};box-shadow:0 5px 0 {{ t.shadow }};font-size:{{ t.fs }};line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0;animation:{{ t.anim }}">
+                  <span>{{ t.face }}</span>
+                  <sc-if value="{{ t.pecking }}" hint-placeholder-val="{{ false }}">
+                    <span style="position:absolute;left:50%;top:-22px;margin-left:-28px;width:56px;height:56px;pointer-events:none">{{ pipPeck }}</span>
+                  </sc-if>
+                  <sc-if value="{{ t.mark }}" hint-placeholder-val="{{ false }}">
+                    <span style="position:absolute;top:-8px;right:-8px;width:24px;height:24px;border-radius:50%;border:2px solid #3B2A20;background:{{ t.markBg }};color:#fff;font-size:13px;font-weight:800;display:flex;align-items:center;justify-content:center">{{ t.markText }}</span>
+                  </sc-if>
+                </button>
+              </sc-for>
+            </div>
+          </div>
+          <sc-if value="{{ gQuiz }}" hint-placeholder-val="{{ false }}">
+            <div style="position:absolute;left:0;right:0;bottom:0;background:#fff;border-top:2px solid #E5D3C0;border-radius:24px 24px 0 0;padding:16px 16px 24px;display:flex;flex-direction:column;gap:10px;box-shadow:0 -8px 24px rgba(59,42,32,.15);animation:lb-rise .25s ease-out">
+              <div style="display:flex;align-items:center;gap:12px">
+                <span style="width:64px;height:64px;border-radius:18px;background:#DDF5E8;border:2px solid #3B2A20;display:flex;align-items:center;justify-content:center;font-size:38px;flex:none">{{ gQ.e }}</span>
+                <div style="min-width:0"><div style="font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#8A6E5A">Which food group?</div><div style="font-family:'Baloo 2',sans-serif;font-size:24px;font-weight:800;line-height:1.1">{{ gQ.name }}</div></div>
+              </div>
+              <sc-for list="{{ gOptions }}" as="o" hint-placeholder-count="3">
+                <button sc-camel-on-click="{{ o.onClick }}" style="min-height:54px;border-radius:16px;border:2px solid #D8C2AC;background:#fff;box-shadow:0 4px 0 #D8C2AC;font-family:'Baloo 2',sans-serif;font-weight:800;font-size:19px;color:#3B2A20;cursor:pointer;padding:0 14px">{{ o.label }}</button>
+              </sc-for>
+            </div>
+          </sc-if>
+          <sc-if value="{{ gFeedback }}" hint-placeholder-val="{{ false }}">
+            <div role="status" style="position:absolute;left:0;right:0;bottom:0;background:{{ gFb.bg }};border-top:2px solid {{ gFb.line }};padding:16px 16px 24px;display:flex;flex-direction:column;gap:12px;animation:lb-rise .25s ease-out">
+              <div style="display:flex;align-items:center;gap:12px">
+                <span style="width:52px;height:52px;border-radius:50%;background:#fff;border:2px solid {{ gFb.line }};display:flex;align-items:center;justify-content:center;font-size:30px;flex:none">{{ gFb.icon }}</span>
+                <div style="min-width:0"><div style="font-family:'Baloo 2',sans-serif;font-size:23px;font-weight:800;line-height:1.1;color:{{ gFb.fg }}">{{ gFb.title }}</div><div style="font-size:14px;font-weight:700;color:{{ gFb.fg }};text-wrap:pretty">{{ gFb.sub }}</div></div>
+              </div>
+              <button sc-camel-on-click="{{ gContinue }}" style="height:54px;border-radius:16px;border:none;background:{{ gFb.btn }};box-shadow:0 4px 0 {{ gFb.btnShadow }};color:{{ gFb.btnFg }};font-family:'Baloo 2',sans-serif;font-size:19px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;cursor:pointer">Continue</button>
+            </div>
+          </sc-if>
+        </sc-if>
+        <sc-if value="{{ gDone }}" hint-placeholder-val="{{ false }}">
+          <div style="flex:1;overflow-y:auto;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;padding:24px 20px;text-align:center">
+            <div style="width:140px;height:140px">{{ gPipBig }}</div>
+            <div style="font-family:'Baloo 2',sans-serif;font-size:32px;font-weight:800;line-height:1.05;color:{{ gRes.color }}">{{ gRes.title }}</div>
+            <div style="font-size:15px;font-weight:700;color:#5A4334;text-wrap:pretty">{{ gRes.sub }}</div>
+            <div aria-label="{{ gRes.starsAria }}" style="display:flex;gap:8px;font-size:50px;line-height:1">
+              <sc-for list="{{ gRes.stars }}" as="sx" hint-placeholder-count="3"><span style="display:inline-block;color:{{ sx.c }};animation:lb-pop .6s cubic-bezier(.3,1.6,.5,1) {{ sx.delay }} both">★</span></sc-for>
+            </div>
+            <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;width:100%;margin-top:6px">
+              <sc-for list="{{ gRes.tiles }}" as="rt" hint-placeholder-count="3">
+                <div style="border:2px solid #3B2A20;border-radius:16px;overflow:hidden;background:#fff">
+                  <div style="background:{{ rt.c }};color:#1E140E;font-size:11px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;padding:4px 2px;border-bottom:2px solid #3B2A20">{{ rt.label }}</div>
+                  <div style="padding:8px 2px;font-family:'Baloo 2',sans-serif;font-size:22px;font-weight:800;color:#3B2A20">{{ rt.value }}</div>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+          <div style="padding:0 16px 24px;display:flex;flex-direction:column;gap:10px;flex:none">
+            <button sc-camel-on-click="{{ gPrimary }}" style="height:56px;border-radius:16px;border:none;background:#2E8A5E;box-shadow:0 4px 0 #1F5E40;color:#fff;font-family:'Baloo 2',sans-serif;font-size:20px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;cursor:pointer">{{ gRes.primary }}</button>
+            <button sc-camel-on-click="{{ gSecondary }}" style="height:52px;border-radius:16px;border:2px solid #D8C2AC;background:#fff;box-shadow:0 4px 0 #D8C2AC;color:#3B2A20;font-family:'Baloo 2',sans-serif;font-size:18px;font-weight:800;cursor:pointer">{{ gRes.secondary }}</button>
+          </div>
+        </sc-if>
+      </div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ bSheet }}" hint-placeholder-val="{{ false }}">
+    <div style="position:fixed;inset:0;z-index:9;display:flex;flex-direction:column;justify-content:flex-end;align-items:center">
+      <div sc-camel-on-click="{{ closeBadgeSheet }}" style="position:absolute;inset:0;background:rgba(59,42,32,.5)"></div>
+      <div role="dialog" aria-modal="true" aria-label="Design a badge" style="position:relative;width:100%;max-width:440px;max-height:90vh;overflow-y:auto;box-sizing:border-box;background:#FFF7EC;border:2px solid #3B2A20;border-bottom:none;border-radius:28px 28px 0 0;padding:18px 16px 24px;display:flex;flex-direction:column;gap:12px">
+        <div style="width:44px;height:5px;border-radius:999px;background:#D8C2AC;align-self:center;flex:none"></div>
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;flex:none">
+          <div style="font-family:'Baloo 2',sans-serif;font-size:22px;font-weight:800;line-height:1.1">✏️ Design a badge</div>
+          <button aria-label="Close" sc-camel-on-click="{{ closeBadgeSheet }}" style="width:40px;height:40px;border-radius:50%;border:2px solid #3B2A20;background:#fff;font-size:16px;font-weight:800;color:#3B2A20;cursor:pointer;flex:none;padding:0">✕</button>
+        </div>
+        <div style="display:flex;align-items:center;gap:18px;background:#fff;border:2px solid #3B2A20;border-radius:22px;padding:16px;flex:none">
+          <div style="width:80px;height:80px;border-radius:50%;background:{{ bd.color }};display:flex;align-items:center;justify-content:center;font-size:42px;flex:none;box-shadow:0 0 0 5px #fff,0 0 0 8px #3B2A20;margin-left:6px">{{ bd.emoji }}</div>
+          <div style="min-width:0">
+            <span style="display:inline-block;background:#FFE3EC;border-radius:999px;padding:1px 8px;font-size:10px;font-weight:800;letter-spacing:.06em;text-transform:uppercase">My badge</span>
+            <div style="font-family:'Baloo 2',sans-serif;font-size:20px;font-weight:800;line-height:1.1;margin-top:2px;overflow-wrap:anywhere">{{ bd.nameShow }}</div>
+            <div style="font-size:13px;font-weight:700;color:#8A6E5A;overflow-wrap:anywhere">{{ bd.rule }}</div>
+          </div>
+        </div>
+        <div style="font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#7A4B12;flex:none">Icon</div>
+        <div style="display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:6px;flex:none">
+          <sc-for list="{{ bIcons }}" as="bi" hint-placeholder-count="18">
+            <button aria-label="{{ bi.aria }}" aria-pressed="{{ bi.pressed }}" sc-camel-on-click="{{ bi.onClick }}" style="height:44px;border-radius:14px;border:2px solid {{ bi.border }};background:{{ bi.bg }};font-size:22px;cursor:pointer;padding:0">{{ bi.e }}</button>
+          </sc-for>
+        </div>
+        <div style="font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#7A4B12;flex:none">Color</div>
+        <div style="display:flex;gap:12px;flex-wrap:wrap;padding:4px 6px;flex:none">
+          <sc-for list="{{ bColors }}" as="bc" hint-placeholder-count="6">
+            <button aria-label="{{ bc.label }}" aria-pressed="{{ bc.pressed }}" sc-camel-on-click="{{ bc.onClick }}" style="width:44px;height:44px;border-radius:50%;border:2px solid #3B2A20;background:{{ bc.c }};box-shadow:{{ bc.ring }};cursor:pointer;padding:0"></button>
+          </sc-for>
+        </div>
+        <label style="display:flex;flex-direction:column;gap:6px;flex:none">
+          <span style="font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#7A4B12">Name</span>
+          <input value="{{ bName }}" sc-camel-on-change="{{ onBName }}" maxlength="24" placeholder="e.g. Water Bottle Hero" style="height:48px;border-radius:16px;border:2px solid #3B2A20;padding:0 14px;font-family:inherit;font-size:16px;font-weight:700;color:#3B2A20;background:#fff;outline:none;min-width:0">
+        </label>
+        <div style="font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#7A4B12;flex:none">How do you earn it?</div>
+        <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;flex:none">
+          <sc-for list="{{ bTypes }}" as="bt" hint-placeholder-count="9">
+            <button aria-pressed="{{ bt.pressed }}" sc-camel-on-click="{{ bt.onClick }}" style="min-height:58px;border-radius:16px;border:2px solid #3B2A20;background:{{ bt.bg }};color:{{ bt.fg }};font-family:inherit;font-weight:800;font-size:12px;line-height:1.15;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;padding:4px"><span style="font-size:20px">{{ bt.e }}</span>{{ bt.label }}</button>
+          </sc-for>
+        </div>
+        <sc-if value="{{ bdOwn }}" hint-placeholder-val="{{ true }}">
+          <label style="display:flex;flex-direction:column;gap:6px;flex:none">
+            <span style="font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#7A4B12">What will you do?</span>
+            <input value="{{ bTask }}" sc-camel-on-change="{{ onBTask }}" maxlength="40" placeholder="e.g. Pack my own lunch" style="height:48px;border-radius:16px;border:2px solid #3B2A20;padding:0 14px;font-family:inherit;font-size:16px;font-weight:700;color:#3B2A20;background:#fff;outline:none;min-width:0">
+          </label>
+        </sc-if>
+        <div style="font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#7A4B12;flex:none">Goal</div>
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;background:#fff;border:2px solid #3B2A20;border-radius:18px;padding:6px;flex:none">
+          <button aria-label="Lower the goal" sc-camel-on-click="{{ bMinus }}" style="width:48px;height:48px;border-radius:14px;border:2px solid #3B2A20;background:#FFF1C2;font-size:24px;font-weight:800;color:#3B2A20;cursor:pointer;padding:0">−</button>
+          <div style="text-align:center"><div style="font-family:'Baloo 2',sans-serif;font-size:26px;font-weight:800;line-height:1">{{ bd.goal }}</div><div style="font-size:12px;font-weight:800;color:#8A6E5A">{{ bd.unit }}</div></div>
+          <button aria-label="Raise the goal" sc-camel-on-click="{{ bPlus }}" style="width:48px;height:48px;border-radius:14px;border:2px solid #3B2A20;background:#FFF1C2;font-size:24px;font-weight:800;color:#3B2A20;cursor:pointer;padding:0">+</button>
+        </div>
+        <div style="font-size:12px;font-weight:700;color:#8A6E5A;flex:none">{{ bHelp }}</div>
+        <button sc-camel-on-click="{{ saveBadge }}" style="height:54px;border-radius:18px;border:2px solid #3B2A20;background:{{ bSaveBg }};opacity:{{ bSaveOp }};color:#3B2A20;font-family:'Baloo 2',sans-serif;font-size:19px;font-weight:800;cursor:pointer;box-shadow:0 4px 0 #3B2A20;flex:none">💾 Save my badge</button>
+      </div>
+    </div>
+  </sc-if>
+
   <sc-if value="{{ hasToast }}" hint-placeholder-val="{{ false }}">
-    <div style="position:fixed;bottom:88px;left:50%;transform:translateX(-50%);background:#fff;border:2px solid #3B2A20;border-radius:999px;padding:10px 18px;font-weight:800;font-size:14px;z-index:6;white-space:nowrap;box-shadow:3px 3px 0 #3B2A20">{{ toast }}</div>
+    <div role="status" style="position:fixed;bottom:88px;left:50%;transform:translateX(-50%);background:#fff;border:2px solid #3B2A20;border-radius:999px;padding:10px 18px;font-weight:800;font-size:14px;z-index:11;white-space:nowrap;max-width:calc(100% - 48px);overflow:hidden;text-overflow:ellipsis;box-shadow:3px 3px 0 #3B2A20">{{ toast }}</div>
   </sc-if>
 
   <sc-if value="{{ hasCelebrate }}" hint-placeholder-val="{{ false }}">
@@ -978,20 +1228,28 @@ const BADGES = [
   { id: 'veghero', emoji: '🌿', name: 'Field Sketch', color: '#C8E6A0', rarity: 'Rare', rule: '4+ groups with veggies', cheer: 'Greens in the frame. Solid composition.' },
   { id: 'power', emoji: '🐦', name: 'Early Bird', color: '#BFE0FA', rarity: 'Common', rule: 'A balanced plate', cheer: 'Fueled up and ready to take off for the afternoon.' }
 ];
-const RARITY = { Common: '#E1F0FB', Rare: '#DDF5E8', Epic: '#F3E3FA', Legendary: '#FFD166' };
-const MILESTONES = [
-  { id: 'feather', emoji: '🪶', name: 'First Feather', color: '#FFE3D8', rarity: 'Common', rule: 'Earn your first badge', goal: 1, stat: 'total', cheer: 'Your first feather. The collection begins.' },
-  { id: 'sketchbook', emoji: '✏️', name: 'Sketchbook', color: '#FFF1C2', rarity: 'Common', rule: 'Create 3 of your own ideas', goal: 3, stat: 'mine', cheer: 'Three original recipes. You’re designing lunch now.' },
+const RARITY = { Common: '#E1F0FB', Rare: '#DDF5E8', Epic: '#F3E3FA', Legendary: '#FFD166', Quest: '#FFE3D8', Holo: '#CFEFFF', 'My badge': '#FFE3EC' };
+// ── The Nest: one badge system, five ways to earn ──
+// Plate badges (BADGES, from the Menu tab), quest badges (MYSTERY, finish 3 daily quests), weekly holo
+// badges (WEEKLY), goal badges (GOALS, lifetime) and badges kids design themselves (state.myBadges).
+// Each badge emoji is used once across the built-in sets.
+const GOALS = [
+  { id: 'feather', emoji: '🪶', name: 'First Feather', color: '#FFE3D8', rarity: 'Common', rule: 'Earn your first plate badge', goal: 1, stat: 'total', cheer: 'Your first feather. The collection begins.' },
+  { id: 'hatch', emoji: '🥚', name: 'First Peck', color: '#FFF1C2', rarity: 'Common', rule: 'Clear a level of Peck Patch', goal: 1, stat: 'levels', cheer: 'Cracked it! Pip is proud of you.' },
+  { id: 'sketchbook', emoji: '✏️', name: 'Sketchbook', color: '#FFF1C2', rarity: 'Common', rule: 'Create 3 of your own lunch ideas', goal: 3, stat: 'mine', cheer: 'Three original recipes. You’re designing lunch now.' },
   { id: 'kingfisher', emoji: '💧', name: 'Kingfisher', color: '#A8E3F0', rarity: 'Rare', rule: 'Drink water on 5 days', goal: 5, stat: 'water', cheer: 'Kingfishers live by the water. So do you, apparently.' },
+  { id: 'birdwatcher', emoji: '🔭', name: 'Birdwatcher', color: '#E1F0FB', rarity: 'Rare', rule: 'Complete “Spot a bird” 5 times', goal: 5, stat: 'birds', cheer: 'Five sightings logged. Sharp eyes!' },
   { id: 'hummingbird', emoji: '🌺', name: 'Hummingbird', color: '#FFC9D6', rarity: 'Rare', rule: 'Eat fruit on 10 days', goal: 10, stat: 'fruit', cheer: 'Ten days of fruit. Hummingbird energy.' },
   { id: 'flamingo', emoji: '🦩', name: 'Flamingo', color: '#FFB4C8', rarity: 'Rare', rule: 'Eat veggies on 10 days', goal: 10, stat: 'veggie', cheer: 'You are what you eat — and now you’re a little bit pink.' },
-  { id: 'eagle', emoji: '🦅', name: 'Eagle Streak', color: '#F5DFA0', rarity: 'Epic', rule: '5 school days in a row', goal: 5, stat: 'best', cheer: 'A full week of good plates. Soaring.' },
+  { id: 'seedstash', emoji: '🌰', name: 'Seed Stash', color: '#EADBC8', rarity: 'Rare', rule: 'Score 500 points in Peck Patch', goal: 500, stat: 'points', cheer: 'Five hundred points tucked away for winter.' },
+  { id: 'eagle', emoji: '🦅', name: 'Eagle Streak', color: '#F5DFA0', rarity: 'Epic', rule: 'Plate badges 5 school days in a row', goal: 5, stat: 'best', cheer: 'A full week of good plates. Soaring.' },
   { id: 'owl', emoji: '🦉', name: 'Wise Owl', color: '#D9C7F2', rarity: 'Epic', rule: 'Earn 3 Peacock Masterpieces', goal: 3, stat: 'golden', cheer: 'Three masterpieces. Wise choices, every time.' },
-  { id: 'crow', emoji: '🐦‍⬛', name: 'Crow’s Collection', color: '#C9CED6', rarity: 'Epic', rule: 'Earn all 5 daily badges', goal: 5, stat: 'distinct', cheer: 'Crows collect shiny things. You collected every badge.' },
-  { id: 'swan', emoji: '🦢', name: 'Swan Lake', color: '#E6EEF7', rarity: 'Legendary', rule: '10 school days in a row', goal: 10, stat: 'best', cheer: 'Two weeks straight. Graceful and unstoppable.' },
-  { id: 'gallery', emoji: '🖼️', name: 'Gallery Show', color: '#FFD166', rarity: 'Legendary', rule: 'Earn 20 badges', goal: 20, stat: 'total', cheer: 'Twenty works on the wall. Your solo show is open.' }
+  { id: 'crow', emoji: '🐦‍⬛', name: 'Crow’s Collection', color: '#C9CED6', rarity: 'Epic', rule: 'Earn all 5 kinds of plate badge', goal: 5, stat: 'distinct', cheer: 'Crows collect shiny things. You collected every plate badge.' },
+  { id: 'swan', emoji: '🦢', name: 'Swan Lake', color: '#E6EEF7', rarity: 'Legendary', rule: 'Plate badges 10 school days in a row', goal: 10, stat: 'best', cheer: 'Two weeks straight. Graceful and unstoppable.' },
+  { id: 'gallery', emoji: '🖼️', name: 'Gallery Show', color: '#FFD166', rarity: 'Legendary', rule: 'Earn 20 plate badges', goal: 20, stat: 'total', cheer: 'Twenty works on the wall. Your solo show is open.' },
+  { id: 'questmaster', emoji: '🎯', name: 'Quest Master', color: '#FFD6E0', rarity: 'Legendary', rule: 'Finish daily quests on 15 days', goal: 15, stat: 'questDays', cheer: 'Fifteen days of quests. Legendary dedication.' },
+  { id: 'goldbeak', emoji: '🏆', name: 'Golden Beak', color: '#FFD166', rarity: 'Legendary', rule: 'Get 3 stars on all 12 Peck Patch levels', goal: 12, stat: 'perfect', cheer: 'Every patch, perfectly pecked.' }
 ];
-RARITY.Sticker = '#FFE3D8'; RARITY.Holo = '#CFEFFF';
 const RARE_UP = ['golden', 'rainbow', 'songbird', 'veghero'];
 const Q_AUTO = [
   { id: 'water', text: 'Drink water with lunch', e: '💧', tab: 'menu', test: (x) => x.eat.includes('water') },
@@ -1014,25 +1272,26 @@ const Q_MANUAL = [
   { id: 'm_share', text: 'Share a lunch idea with a friend', e: '🤝' },
   { id: 'm_screen', text: 'Take a screen-free lunch', e: '📵' }
 ];
-const STICKERS = [
+// Mystery quest badges. Order matters: each school day maps to a slot by hash.
+const MYSTERY = [
   { id: 'dove', e: '🕊️', name: 'Dove', color: '#E6EEF7' }, { id: 'chick', e: '🐤', name: 'Chick', color: '#FFF1C2' },
-  { id: 'penguin', e: '🐧', name: 'Penguin', color: '#E1F0FB' }, { id: 'parrot', e: '🦜', name: 'Parrot', color: '#DDF5E8' },
-  { id: 'owl', e: '🦉', name: 'Owl', color: '#EADBC8' }, { id: 'flamingo', e: '🦩', name: 'Flamingo', color: '#FFD6E0' },
-  { id: 'swan', e: '🦢', name: 'Swan', color: '#F3F6FA' }, { id: 'feather', e: '🪶', name: 'Feather', color: '#F3E3FA' },
+  { id: 'penguin', e: '🐧', name: 'Penguin', color: '#E1F0FB' }, { id: 'ladybug', e: '🐞', name: 'Ladybug', color: '#FFD6E0' },
+  { id: 'butterfly', e: '🦋', name: 'Butterfly', color: '#D9EEFF' }, { id: 'snail', e: '🐌', name: 'Snail', color: '#EADBC8' },
+  { id: 'bee', e: '🐝', name: 'Bee', color: '#FFF1C2' }, { id: 'clover', e: '🍀', name: 'Clover', color: '#DDF5E8' },
   { id: 'brush', e: '🖌️', name: 'Paintbrush', color: '#FFE3D8' }, { id: 'crayon', e: '🖍️', name: 'Crayon', color: '#FFE3EC' },
-  { id: 'palette', e: '🎨', name: 'Palette', color: '#FFF1C2' }, { id: 'frame', e: '🖼️', name: 'Frame', color: '#F5DFA0' },
+  { id: 'kite', e: '🪁', name: 'Kite', color: '#F3E3FA' }, { id: 'balloon', e: '🎈', name: 'Balloon', color: '#FFD6DC' },
   { id: 'sunflower', e: '🌻', name: 'Sunflower', color: '#FFF1C2' }, { id: 'mushroom', e: '🍄', name: 'Mushroom', color: '#FFE3D8' },
-  { id: 'moon', e: '🌙', name: 'Moon', color: '#D9C7F2' }, { id: 'nest', e: '🪺', name: 'Nest', color: '#EADBC8' }
+  { id: 'moon', e: '🌙', name: 'Moon', color: '#D9C7F2' }, { id: 'cactus', e: '🌵', name: 'Cactus', color: '#DDF5E8' }
 ];
-const ADV = [
-  { id: 'questweek', e: '🗓️', name: 'Quest Week', rule: 'Finish daily quests all 5 days this week', goal: 5, weekly: true, holo: { e: '🦚', name: 'Holo Peacock' } },
-  { id: 'rainbowweek', e: '🌈', name: 'Rainbow Week', rule: 'All 5 food groups on 3 days this week', goal: 3, weekly: true, holo: { e: '🌈', name: 'Holo Rainbow' } },
-  { id: 'hydroweek', e: '💧', name: 'Hydration Week', rule: 'Water with lunch all 5 days this week', goal: 5, weekly: true, holo: { e: '🐳', name: 'Holo Whale' } },
-  { id: 'twinpeacock', e: '🦚', name: 'Twin Masterpieces', rule: '2 Peacock Masterpieces in one week', goal: 2, weekly: true, holo: { e: '💎', name: 'Holo Gem' } },
-  { id: 'curator', e: '🖼️', name: 'Curator', rule: 'Create 5 of your own lunch ideas', goal: 5, holo: { e: '🎨', name: 'Holo Palette' } },
-  { id: 'birdwatcher', e: '🔭', name: 'Birdwatcher', rule: 'Complete “Spot a bird” 5 times', goal: 5, holo: { e: '🦉', name: 'Holo Owl' } },
-  { id: 'questmaster', e: '🎯', name: 'Quest Master', rule: 'Finish daily quests on 15 days', goal: 15, holo: { e: '🦢', name: 'Holo Swan' } }
+// Old sticker ids whose bird or art clashed with another badge; earned ones move to the badge in the same slot.
+const LEGACY_Q = { parrot: 'ladybug', owl: 'butterfly', flamingo: 'snail', swan: 'bee', feather: 'clover', palette: 'kite', frame: 'balloon', nest: 'cactus' };
+const WEEKLY = [
+  { id: 'questweek', emoji: '🗓️', name: 'Quest Week', rule: 'Finish daily quests all 5 school days', goal: 5 },
+  { id: 'rainbowweek', emoji: '🌈', name: 'Rainbow Week', rule: 'All 5 food groups on 3 days', goal: 3 },
+  { id: 'peckweek', emoji: '🪱', name: 'Worm Hunt', rule: 'Score 150 points in Peck Patch', goal: 150 }
 ];
+// Weekly or long-term challenges from the old Quests tab. They're no longer offered, but ones a kid earned still show.
+const RETIRED = { hydroweek: { emoji: '🐳', name: 'Hydration Week' }, twinpeacock: { emoji: '💎', name: 'Twin Masterpieces' }, curator: { emoji: '🏛️', name: 'Curator' } };
 const hashStr = s => { let h = 2166136261; for (let i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 16777619); } return h >>> 0; };
 const IDEAS = [
   { emoji: '🌯', title: 'Turkey Pinwheels', time: '5 min', g: ['protein', 'grain', 'dairy', 'veggie'], how: 'Spread cream cheese on a tortilla, layer turkey + spinach, roll tight and slice into wheels.' },
@@ -1084,6 +1343,89 @@ const ago = t => { const s = Math.max(0, (Date.now() - t) / 1000); if (s < 60) r
 const dayLbl = k => { const d = new Date(k + 'T12:00'); return `${['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'][d.getDay()]}, ${MON[d.getMonth()]} ${d.getDate()}`; };
 const andList = a => a.length <= 2 ? a.join(' and ') : a.slice(0, -1).join(', ') + ' and ' + a[a.length - 1];
 const ROLE_EMO = { kid: '🧒', parent: '🧑' };
+// ── Badges kids design themselves ──
+const MB_MAX = 12;
+const MB_ICONS = ['🥕', '🍎', '🥦', '💧', '🥛', '🍳', '🥪', '🍱', '🏃', '🚲', '⚽', '🧘', '😴', '📚', '🎨', '🎵', '🦷', '🌱'];
+const MB_COLORS = [['#FFD166', 'Sunny yellow'], ['#FFB4A2', 'Peach'], ['#9BE3B8', 'Mint'], ['#BFE0FA', 'Sky blue'], ['#D9C7F2', 'Lavender'], ['#FFC9D6', 'Pink']];
+const MB_TYPES = [
+  { id: 'own', e: '✋', label: 'My own goal', unit: 'times', step: 1, max: 100, def: 5 },
+  { id: 'fruit', e: '🍎', label: 'Eat fruit', unit: 'days', step: 1, max: 100, def: 5 },
+  { id: 'veggie', e: '🥦', label: 'Eat veggies', unit: 'days', step: 1, max: 100, def: 5 },
+  { id: 'water', e: '💧', label: 'Drink water', unit: 'days', step: 1, max: 100, def: 5 },
+  { id: 'dairy', e: '🥛', label: 'Get dairy', unit: 'days', step: 1, max: 100, def: 5 },
+  { id: 'protein', e: '🍗', label: 'Get protein', unit: 'days', step: 1, max: 100, def: 5 },
+  { id: 'plates', e: '🏅', label: 'Plate badges', unit: 'badges', step: 1, max: 100, def: 5 },
+  { id: 'quests', e: '🎯', label: 'Daily quests', unit: 'days', step: 1, max: 100, def: 5 },
+  { id: 'points', e: '⭐', label: 'Game points', unit: 'points', step: 50, max: 5000, def: 300 }
+];
+const MB_BLANK = { emoji: '🥕', color: '#FFD166', name: '', type: 'own', task: '', goal: 5 };
+const plural = (n, w) => `${n} ${w}${n === 1 ? '' : 's'}`;
+const mbRule = b => ({
+  own: `${b.task || 'My goal'}: ${plural(b.goal, 'time')}`,
+  fruit: `Eat fruit on ${plural(b.goal, 'day')}`, veggie: `Eat veggies on ${plural(b.goal, 'day')}`,
+  water: `Drink water on ${plural(b.goal, 'day')}`, dairy: `Get dairy on ${plural(b.goal, 'day')}`,
+  protein: `Get protein on ${plural(b.goal, 'day')}`, plates: `Earn ${plural(b.goal, 'plate badge')}`,
+  quests: `Finish daily quests on ${plural(b.goal, 'day')}`, points: `Score ${b.goal} points in Peck Patch`
+}[b.type] || '');
+// ── Peck Patch (the Game tab) ──
+const GROUP_INFO = {
+  fruit: { label: 'Fruit', phrase: 'is a fruit', plural: 'are fruit' }, veggie: { label: 'Veggie', phrase: 'is a veggie', plural: 'are veggies' },
+  protein: { label: 'Protein', phrase: 'is a protein', plural: 'are a protein' }, grain: { label: 'Grain', phrase: 'is a grain', plural: 'are a grain' },
+  dairy: { label: 'Dairy', phrase: 'is dairy', plural: 'are dairy' }
+};
+const PLURAL_FOODS = ['Grapes', 'Blueberries', 'Cherries', 'Beans', 'Peanuts'];
+const GROUP_IDS = Object.keys(GROUP_INFO);
+// alt: a group the food could also count as, so the quiz never offers it as a wrong answer.
+const FOODS = [
+  ['🍎', 'Apple', 'fruit'], ['🍌', 'Banana', 'fruit'], ['🍇', 'Grapes', 'fruit'], ['🍓', 'Strawberry', 'fruit'], ['🍊', 'Orange', 'fruit'], ['🍐', 'Pear', 'fruit'],
+  ['🍑', 'Peach', 'fruit'], ['🍉', 'Watermelon', 'fruit'], ['🍍', 'Pineapple', 'fruit'], ['🫐', 'Blueberries', 'fruit'], ['🥝', 'Kiwi', 'fruit'], ['🍒', 'Cherries', 'fruit'],
+  ['🥦', 'Broccoli', 'veggie'], ['🥕', 'Carrot', 'veggie'], ['🌽', 'Corn', 'veggie', 'grain'], ['🥒', 'Cucumber', 'veggie'], ['🫑', 'Bell pepper', 'veggie'],
+  ['🥬', 'Lettuce', 'veggie'], ['🍆', 'Eggplant', 'veggie'], ['🍠', 'Sweet potato', 'veggie'], ['🧅', 'Onion', 'veggie'], ['🥔', 'Potato', 'veggie'],
+  ['🍗', 'Chicken', 'protein'], ['🥚', 'Egg', 'protein'], ['🐟', 'Fish', 'protein'], ['🫘', 'Beans', 'protein', 'veggie'], ['🥜', 'Peanuts', 'protein'], ['🍤', 'Shrimp', 'protein'],
+  ['🍞', 'Bread', 'grain'], ['🍚', 'Rice', 'grain'], ['🥯', 'Bagel', 'grain'], ['🫓', 'Pita', 'grain'], ['🍝', 'Pasta', 'grain'], ['🍙', 'Rice ball', 'grain'],
+  ['🥛', 'Milk', 'dairy'], ['🧀', 'Cheese', 'dairy'], ['🥣', 'Yogurt', 'dairy']
+].map(([e, name, g, alt]) => ({ e, name, g, alt }));
+const JUNK = [['🍩', 'Donut'], ['🍭', 'Lollipop'], ['🍬', 'Candy'], ['🥤', 'Soda'], ['🧁', 'Cupcake'], ['🍫', 'Candy bar'], ['🍪', 'Cookie'], ['🍰', 'Cake'], ['🍦', 'Ice cream'], ['🍟', 'Fries']]
+  .map(([e, name]) => ({ e, name }));
+// c×r leaf piles; junk = sometimes foods (cost a heart), gold = golden seeds; goal = healthy finds to clear; peek in ms.
+const LEVELS = [
+  { c: 3, r: 3, junk: 1, gold: 1, goal: 4, pecks: 6, peek: 3200 }, { c: 3, r: 3, junk: 2, gold: 1, goal: 4, pecks: 6, peek: 3000 },
+  { c: 3, r: 4, junk: 2, gold: 1, goal: 5, pecks: 7, peek: 3000 }, { c: 3, r: 4, junk: 3, gold: 1, goal: 5, pecks: 7, peek: 2800 },
+  { c: 4, r: 4, junk: 3, gold: 1, goal: 6, pecks: 8, peek: 2800 }, { c: 4, r: 4, junk: 4, gold: 1, goal: 6, pecks: 8, peek: 2600 },
+  { c: 4, r: 4, junk: 4, gold: 1, goal: 7, pecks: 9, peek: 2400 }, { c: 4, r: 4, junk: 5, gold: 1, goal: 7, pecks: 9, peek: 2300 },
+  { c: 4, r: 5, junk: 5, gold: 1, goal: 8, pecks: 10, peek: 2400 }, { c: 4, r: 5, junk: 6, gold: 1, goal: 8, pecks: 10, peek: 2200 },
+  { c: 4, r: 5, junk: 7, gold: 1, goal: 9, pecks: 11, peek: 2000 }, { c: 4, r: 5, junk: 8, gold: 1, goal: 9, pecks: 11, peek: 1800 }
+];
+const UNITS = [
+  { title: 'Veggie Garden', sub: 'Crunchy veggies grow in this patch.', icon: '🥦', color: '#7FD6A8', shadow: '#2E8A5E', focus: 'veggie' },
+  { title: 'Fruit Orchard', sub: 'Sweet fruit, and sneaky sweets too.', icon: '🍎', color: '#FFA594', shadow: '#C8473A', focus: 'fruit' },
+  { title: 'Farm Market', sub: 'Every food group. Faster peeks!', icon: '🧺', color: '#9CCBF2', shadow: '#3A7DB3', focus: null }
+];
+const shuffle = a => { a = [...a]; for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+const drawFoods = (focus, k) => {
+  const out = focus ? shuffle(FOODS.filter(f => f.g === focus)).slice(0, Math.ceil(k / 2)) : [];
+  for (const f of shuffle(FOODS)) { if (out.length >= k) break; if (!out.includes(f)) out.push(f); }
+  return out;
+};
+// Pip, the Peck Patch bird (an original drawing). mood: normal | happy | sad.
+const pipEl = (mood, size, anim) => {
+  const h = React.createElement, ink = '#3B2A20';
+  const eye = mood === 'happy'
+    ? h('path', { d: 'M55 47 Q62 39 69 47', fill: 'none', stroke: ink, strokeWidth: 4.5, strokeLinecap: 'round' })
+    : h('g', null, h('circle', { cx: 62, cy: 46, r: 8.5, fill: '#fff', stroke: ink, strokeWidth: 3 }), h('circle', { cx: mood === 'sad' ? 61 : 64.5, cy: mood === 'sad' ? 49 : 46, r: 3.8, fill: ink }));
+  return h('svg', { viewBox: '0 0 100 100', width: size, height: size, 'aria-hidden': 'true', style: { display: 'block', overflow: 'visible', animation: anim || 'none', transformOrigin: '50% 85%' } },
+    h('path', { d: 'M42 86 L39 96 M42 86 L46 96 M58 86 L55 96 M58 86 L62 96', stroke: '#E2A11B', strokeWidth: 4, strokeLinecap: 'round' }),
+    h('path', { d: 'M22 60 Q6 62 9 48 Q17 54 25 52 Z', fill: '#E2553F', stroke: ink, strokeWidth: 3.5, strokeLinejoin: 'round' }),
+    h('ellipse', { cx: 50, cy: 59, rx: 32, ry: 29, fill: '#FF8A5B', stroke: ink, strokeWidth: 4 }),
+    h('ellipse', { cx: 57, cy: 68, rx: 17, ry: 15, fill: '#FFE3C2' }),
+    h('path', { d: mood === 'happy' ? 'M27 56 Q37 42 49 56 Q42 72 27 66 Z' : 'M27 58 Q38 50 48 62 Q40 76 27 70 Z', fill: '#E2553F', stroke: ink, strokeWidth: 3.5, strokeLinejoin: 'round' }),
+    h('path', { d: 'M45 31 Q42 17 53 21 Q55 13 62 23', fill: 'none', stroke: ink, strokeWidth: 4, strokeLinecap: 'round' }),
+    h('circle', { cx: 72, cy: 60, r: 4.5, fill: '#FFB4A2' }),
+    eye,
+    mood === 'sad' ? h('path', { d: 'M53 34 L69 38', stroke: ink, strokeWidth: 3.5, strokeLinecap: 'round' }) : null,
+    h('path', { d: mood === 'happy' ? 'M78 49 L96 53 L79 62 Z' : 'M78 50 L95 56 L78 62 Z', fill: '#FFD166', stroke: ink, strokeWidth: 3.5, strokeLinejoin: 'round' })
+  );
+};
 
 class Component extends DCLogic {
   constructor(p) {
@@ -1099,11 +1441,16 @@ class Component extends DCLogic {
       favs: saved.favs || {}, eaten: saved.eaten || {}, badges: saved.badges || {},
       myIdeas: saved.myIdeas || [], showForm: false, draft: { title: '', how: '', emoji: '🥪', g: [], time: '5 min' },
       input: '', quickSeed: 0, filter: 'all', toast: '', celebrate: null, queue: [], seenMs: saved.seenMs || null,
-      questDone: saved.questDone || {}, stickers: saved.stickers || {}, holos: saved.holos || {},
+      questDone: saved.questDone || {}, holos: saved.holos || {},
+      stickers: Object.fromEntries(Object.entries(saved.stickers || {}).map(([d, id]) => [d, LEGACY_Q[id] || id])),
+      peck: { pts: 0, best: {}, log: {}, plays: 0, ...(saved.peck || {}) }, myBadges: saved.myBadges || [],
+      nestView: 'quests', bSheet: false, bDraft: { ...MB_BLANK }, game: null,
       famOk: false, fam: null, famBusy: false, famErr: '', famEvents: [], famLastSeen: 0, famPlans: [], pushState: 'unknown',
       famForm: { familyName: '', startName: '', code: '', joinName: '', role: 'kid' }
     };
-    if (!this.state.seenMs) this.state.seenMs = this.unlocked(this.state);
+    // Version 2 merged Quests + Aviary into the Nest and added goal badges. Goals already met count as seen,
+    // so nobody opens the update to a pile of pop-ups.
+    if (saved.v !== 2) this.state.seenMs = [...new Set([...(this.state.seenMs || []), ...this.unlocked(this.state)])];
   }
   componentDidMount() { this.load(); this.famInit(); }
 
@@ -1353,8 +1700,8 @@ class Component extends DCLogic {
     return { emoji, text, when: ago(e.at), isNew, bg: isNew ? '#FFF1C2' : '#FFF7EC' };
   }
   persist() {
-    const { favs, eaten, badges, myIdeas, seenMs, questDone, stickers, holos } = this.state;
-    try { localStorage.setItem(KEY, JSON.stringify({ favs, eaten, badges, myIdeas, seenMs, questDone, stickers, holos })); } catch (e) {}
+    const { favs, eaten, badges, myIdeas, seenMs, questDone, stickers, holos, peck, myBadges } = this.state;
+    try { localStorage.setItem(KEY, JSON.stringify({ v: 2, favs, eaten, badges, myIdeas, seenMs, questDone, stickers, holos, peck, myBadges })); } catch (e) {}
   }
   setDraft(p) { this.setState(s => ({ draft: { ...s.draft, ...p } })); }
   saveIdea() {
@@ -1468,7 +1815,7 @@ class Component extends DCLogic {
     this.setState(s => {
       const cur = s.eaten[k] || [];
       return { eaten: { ...s.eaten, [k]: cur.includes(id) ? cur.filter(x => x !== id) : [...cur, id] } };
-    }, () => this.persist());
+    }, () => { this.persist(); this.checkMilestones(); });
   }
   pickBadge(list) {
     const food = list.filter(x => x !== 'water');
@@ -1484,7 +1831,7 @@ class Component extends DCLogic {
     this.setState(s => ({ badges: { ...s.badges, [k]: id }, celebrate: { ...BADGES.find(b => b.id === id), kind: 'New badge unlocked!' } }), () => { this.persist(); this.checkMilestones(); });
   }
   stats(st = this.state) {
-    const vals = Object.values(st.badges), eat = Object.values(st.eaten);
+    const vals = Object.values(st.badges), eat = Object.values(st.eaten), pb = (st.peck && st.peck.best) || {};
     const c = {}; vals.forEach(b => c[b] = (c[b] || 0) + 1);
     const dates = Object.keys(st.badges).sort();
     let best = 0, run = 0, prev = null;
@@ -1495,18 +1842,26 @@ class Component extends DCLogic {
     });
     return {
       total: vals.length, mine: st.myIdeas.length, best, golden: c.golden || 0, distinct: Object.keys(c).length,
-      water: eat.filter(e => e.includes('water')).length, fruit: eat.filter(e => e.includes('fruit')).length, veggie: eat.filter(e => e.includes('veggie')).length
+      water: eat.filter(e => e.includes('water')).length, fruit: eat.filter(e => e.includes('fruit')).length, veggie: eat.filter(e => e.includes('veggie')).length,
+      birds: Object.values(st.questDone).filter(l => l.includes('m_bird')).length, questDays: Object.keys(st.stickers).length,
+      points: (st.peck && st.peck.pts) || 0, levels: Object.values(pb).filter(v => v >= 1).length, perfect: Object.values(pb).filter(v => v >= 3).length
     };
   }
-  unlocked(st) { const x = this.stats(st); return MILESTONES.filter(m => x[m.stat] >= m.goal).map(m => m.id); }
+  unlocked(st) { const x = this.stats(st); return GOALS.filter(m => x[m.stat] >= m.goal).map(m => m.id); }
+  // Awards goal badges and kid-designed badges that just reached their goal, queueing a celebration for each.
   checkMilestones() {
     const fresh = this.unlocked().filter(id => !this.state.seenMs.includes(id));
-    if (!fresh.length) return;
-    const q = fresh.map(id => ({ ...MILESTONES.find(m => m.id === id), kind: 'New milestone!' }));
-    this.setState(s => ({ seenMs: [...s.seenMs, ...fresh], queue: [...s.queue, ...q], celebrate: s.celebrate || q[0] }), () => {
-      if (this.state.celebrate === q[0]) this.setState(s => ({ queue: s.queue.slice(1) }));
-      this.persist();
-    });
+    const doneMine = this.state.myBadges.filter(b => !b.earned && this.myProgress(b) >= b.goal);
+    if (!fresh.length && !doneMine.length) return;
+    const day = iso(new Date()), ids = doneMine.map(b => b.id);
+    const q = [
+      ...fresh.map(id => ({ ...GOALS.find(m => m.id === id), kind: 'New goal badge!' })),
+      ...doneMine.map(b => ({ id: 'my-' + b.id, emoji: b.emoji, name: b.name, color: b.color, rarity: 'My badge', kind: 'You earned your own badge!', cheer: `${mbRule(b)}. You designed it, and you earned it.` }))
+    ];
+    this.setState(s => {
+      const queue = [...s.queue, ...q], celebrate = s.celebrate || queue.shift();
+      return { seenMs: [...s.seenMs, ...fresh], myBadges: s.myBadges.map(b => ids.includes(b.id) ? { ...b, earned: day } : b), queue, celebrate };
+    }, () => this.persist());
   }
   questsFor(k) {
     let h = hashStr(k), pool = [...Q_AUTO], picks = [];
@@ -1520,32 +1875,139 @@ class Component extends DCLogic {
     const man = s.questDone[k] || [];
     return picks.map(q => ({ ...q, manual: !q.test, done: q.test ? !!q.test(x) : man.includes(q.id) }));
   }
-  stickerFor(k) { return STICKERS[hashStr(k + 's') % STICKERS.length]; }
+  stickerFor(k) { return MYSTERY[hashStr(k + 's') % MYSTERY.length]; }
   toggleManual(k, id) {
-    this.setState(s => { const cur = s.questDone[k] || []; return { questDone: { ...s.questDone, [k]: cur.includes(id) ? cur.filter(x => x !== id) : [...cur, id] } }; }, () => this.persist());
+    this.setState(s => { const cur = s.questDone[k] || []; return { questDone: { ...s.questDone, [k]: cur.includes(id) ? cur.filter(x => x !== id) : [...cur, id] } }; }, () => { this.persist(); this.checkMilestones(); });
   }
   claimSticker(k) {
-    const st = this.stickerFor(k);
-    this.setState(s => ({ stickers: { ...s.stickers, [k]: st.id }, celebrate: { id: 's' + k, emoji: st.e, name: `${st.name} sticker`, color: st.color, rarity: 'Sticker', kind: 'Daily quests complete!', cheer: 'All three quests done. A new sticker for your book.' } }), () => this.persist());
+    const m = this.stickerFor(k);
+    this.setState(s => ({ stickers: { ...s.stickers, [k]: m.id }, celebrate: { id: 'q' + k, emoji: m.e, name: m.name, color: m.color, rarity: 'Quest', kind: 'Daily quests complete!', cheer: 'All three quests done. A mystery badge flew into your Nest.' } }), () => { this.persist(); this.checkMilestones(); });
   }
-  advProgress(a, ws) {
+  weeklyProgress(a, ws) {
     const s = this.state, wk = [0, 1, 2, 3, 4].map(i => iso(add(ws, i)));
     switch (a.id) {
       case 'questweek': return wk.filter(d => s.stickers[d]).length;
       case 'rainbowweek': return wk.filter(d => (s.eaten[d] || []).filter(g => g !== 'water').length >= 5).length;
-      case 'hydroweek': return wk.filter(d => (s.eaten[d] || []).includes('water')).length;
-      case 'twinpeacock': return wk.filter(d => s.badges[d] === 'golden').length;
-      case 'curator': return s.myIdeas.length;
-      case 'birdwatcher': return Object.values(s.questDone).filter(l => l.includes('m_bird')).length;
-      case 'questmaster': return Object.keys(s.stickers).length;
+      case 'peckweek': return [0, 1, 2, 3, 4, 5, 6].reduce((n, i) => n + ((s.peck.log || {})[iso(add(ws, i))] || 0), 0);
     }
     return 0;
   }
-  claimHolo(a, key) {
-    this.setState(s => ({ holos: { ...s.holos, [key]: { id: a.id, date: iso(new Date()) } }, celebrate: { id: 'h' + key, emoji: a.holo.e, name: a.holo.name, color: '#CFEFFF', rarity: 'Holo', kind: 'Advanced quest complete!', cheer: `${a.name} cleared. Holographic stickers are the rarest in the book.` } }), () => this.persist());
+  claimWeekly(a, key) {
+    this.setState(s => ({ holos: { ...s.holos, [key]: { id: a.id, date: iso(new Date()) } }, celebrate: { id: 'w' + key, emoji: a.emoji, name: a.name, color: '#CFEFFF', rarity: 'Holo', kind: 'Weekly badge earned!', cheer: `${a.rule}: done! Holo badges are the shiniest in the Nest.` } }), () => this.persist());
   }
   nextCelebrate() {
-    this.setState(s => s.queue.length ? { celebrate: s.queue[0], queue: s.queue.slice(1) } : { celebrate: null, tab: 'menu' });
+    this.setState(s => s.queue.length ? { celebrate: s.queue[0], queue: s.queue.slice(1) } : { celebrate: null });
+  }
+  // ── Badges kids design ──
+  myProgress(b, st = this.state) {
+    const since = b.since || '0000', from = o => Object.keys(o || {}).filter(d => d >= since);
+    switch (b.type) {
+      case 'own': return (b.log || []).length;
+      case 'plates': return from(st.badges).length;
+      case 'quests': return from(st.stickers).length;
+      case 'points': return from(st.peck.log).reduce((n, d) => n + (st.peck.log[d] || 0), 0);
+      default: return from(st.eaten).filter(d => (st.eaten[d] || []).includes(b.type)).length;
+    }
+  }
+  setBDraft(p) { this.setState(s => ({ bDraft: { ...s.bDraft, ...p } })); }
+  saveMyBadge() {
+    const d = this.state.bDraft, name = d.name.trim(), task = d.task.trim();
+    if (!name) { this.flash('✏️ Give your badge a name'); return; }
+    if (d.type === 'own' && !task) { this.flash('✏️ Write what you’ll do to earn it'); return; }
+    if (this.state.myBadges.length >= MB_MAX) { this.flash(`🙈 You can keep ${MB_MAX} of your own badges`); return; }
+    const b = { id: Date.now().toString(36), emoji: d.emoji, color: d.color, name, type: d.type, task: d.type === 'own' ? task : '', goal: d.goal, since: iso(new Date()), log: [], earned: null };
+    this.setState(s => ({ myBadges: [...s.myBadges, b], bSheet: false, bDraft: { ...MB_BLANK } }), () => { this.persist(); this.flash(`${b.emoji} ${b.name} is in your Nest!`); this.checkMilestones(); });
+  }
+  deleteMyBadge(b) {
+    let ok = true; try { ok = window.confirm(`Delete your badge “${b.name}”?`); } catch (e) {}
+    if (!ok) return;
+    this.setState(s => ({ myBadges: s.myBadges.filter(x => x.id !== b.id) }), () => { this.persist(); this.flash('🗑️ Badge deleted'); });
+  }
+  logMyBadge(id) {
+    const day = iso(new Date()), b = this.state.myBadges.find(x => x.id === id);
+    if (!b) return;
+    const had = (b.log || []).includes(day);
+    this.setState(s => ({ myBadges: s.myBadges.map(x => x.id !== id ? x : { ...x, log: had ? (x.log || []).filter(d => d !== day) : [...(x.log || []), day] }) }),
+      () => { this.persist(); this.flash(had ? 'Took back today’s check' : `✅ ${b.name}: logged for today`); this.checkMilestones(); });
+  }
+  // ── Peck Patch ──
+  setGame(p) { this.setState(s => s.game ? { game: { ...s.game, ...(typeof p === 'function' ? p(s.game) : p) } } : null); }
+  startLevel(i) {
+    clearTimeout(this._gt);
+    const L = LEVELS[i], u = UNITS[Math.floor(i / 4)];
+    const foods = drawFoods(u.focus, L.c * L.r - L.junk - L.gold).map(f => ({ kind: 'food', ...f }));
+    const junk = shuffle(JUNK).slice(0, L.junk).map(f => ({ kind: 'junk', ...f }));
+    const gold = Array.from({ length: L.gold }, () => ({ kind: 'gold', e: '🌟', name: 'Golden seed' }));
+    const tiles = shuffle([...foods, ...junk, ...gold]).map(t => ({ ...t, open: false, ok: null }));
+    this.setState({ game: { lv: i, tiles, phase: 'peek', hearts: 3, pecks: L.pecks, found: 0, pts: 0, right: 0, wrong: 0, junk: 0, last: -1, peckIdx: -1, quiz: null, fb: null, res: null, mood: 'normal' } });
+    this._gt = setTimeout(() => this.setGame(g => g.phase === 'peek' ? { phase: 'play' } : {}), L.peek);
+  }
+  peck(i) {
+    const g = this.state.game;
+    if (!g || g.phase !== 'play' || g.peckIdx >= 0 || g.tiles[i].open) return;
+    this.setGame({ peckIdx: i, last: -1 });
+    clearTimeout(this._gt);
+    this._gt = setTimeout(() => {
+      const cur = this.state.game; if (!cur || cur.peckIdx !== i) return;
+      const tiles = cur.tiles.map((t, j) => j === i ? { ...t, open: true } : t), t = tiles[i];
+      const base = { tiles, pecks: cur.pecks - 1, peckIdx: -1, last: i };
+      if (t.kind === 'junk') {
+        try { if (navigator.vibrate) navigator.vibrate(80); } catch (e) {}
+        this.setGame({ ...base, hearts: cur.hearts - 1, junk: cur.junk + 1, phase: 'fb', mood: 'sad', fb: { icon: t.e, say: 'Ew, sticky!', title: `${t.name}!`, sub: 'That’s a sometimes food, not an every-lunch food. −1 ❤️' } });
+      } else if (t.kind === 'gold') {
+        this.setGame({ ...base, found: cur.found + 1, pts: cur.pts + 25, phase: 'fb', mood: 'happy', fb: { gold: true, icon: '🌟', say: 'Shiny!', title: 'Golden seed!', sub: 'A lucky find. +25 ⭐' } });
+      } else {
+        const opts = shuffle([t.g, ...shuffle(GROUP_IDS.filter(x => x !== t.g && x !== t.alt)).slice(0, 2)]);
+        this.setGame({ ...base, phase: 'quiz', mood: 'normal', quiz: { idx: i, opts } });
+      }
+    }, 420);
+  }
+  answer(id) {
+    const g = this.state.game; if (!g || g.phase !== 'quiz' || !g.quiz) return;
+    const t = g.tiles[g.quiz.idx], ok = id === t.g, info = GROUP_INFO[t.g];
+    const fact = `${t.name} ${PLURAL_FOODS.includes(t.name) ? info.plural : info.phrase}`;
+    const cheers = ['Nice!', 'Great peck!', 'You got it!', 'Tweet-tastic!'];
+    this.setGame({
+      phase: 'fb', found: g.found + 1, pts: g.pts + (ok ? 10 : 4), right: g.right + (ok ? 1 : 0), wrong: g.wrong + (ok ? 0 : 1), mood: ok ? 'happy' : 'sad',
+      tiles: g.tiles.map((x, j) => j === g.quiz.idx ? { ...x, ok } : x), quiz: null,
+      fb: ok ? { ok: true, icon: t.e, say: 'Yum! 😋', title: cheers[g.found % cheers.length], sub: `${fact}. +10 ⭐` }
+        : { icon: t.e, say: 'Close one!', title: 'Not quite', sub: `${fact}. Still a healthy find: +4 ⭐` }
+    });
+  }
+  gContinue() {
+    const g = this.state.game; if (!g || g.phase !== 'fb') return;
+    const L = LEVELS[g.lv];
+    if (g.found >= L.goal) return this.endLevel(true);
+    if (g.hearts <= 0) return this.endLevel(false, 'hearts');
+    if (g.pecks < L.goal - g.found) return this.endLevel(false, 'pecks');
+    this.setGame({ phase: 'play', fb: null, mood: 'normal', last: -1 });
+  }
+  endLevel(win, why) {
+    clearTimeout(this._gt);
+    const g = this.state.game; if (!g) return;
+    const mistakes = g.junk + g.wrong, stars = win ? (mistakes === 0 ? 3 : mistakes <= 2 ? 2 : 1) : 0;
+    const bonus = stars * 10, total = g.pts + bonus, day = iso(new Date()), answered = g.right + g.wrong;
+    const prevBest = this.state.peck.best[g.lv] || 0;
+    const title = win ? (stars === 3 ? 'Perfect patch!' : 'Level complete!') : why === 'hearts' ? 'Out of hearts!' : 'Out of pecks!';
+    const sub = win
+      ? `+${total} points${bonus ? `, with a ${bonus}-point star bonus` : ''}.${prevBest && stars > prevBest ? ' New best!' : ''}${!prevBest && g.lv + 1 < LEVELS.length ? ` Level ${g.lv + 2} is open.` : ''}`
+      : total ? `You still earned ${total} points. Peek carefully and try again!` : 'Peek carefully and try again. You’ve got this!';
+    this.setState(s => {
+      const p = s.peck, best = { ...p.best }; if (stars > (best[g.lv] || 0)) best[g.lv] = stars;
+      return {
+        peck: { ...p, pts: (p.pts || 0) + total, best, plays: (p.plays || 0) + 1, log: { ...p.log, [day]: ((p.log || {})[day] || 0) + total } },
+        game: s.game && { ...s.game, phase: 'done', mood: win ? 'happy' : 'sad', fb: null, quiz: null, res: { win, stars, total, title, sub, quizLabel: answered ? `${g.right}/${answered}` : '—' } }
+      };
+    }, () => { this.persist(); this.checkMilestones(); });
+  }
+  quitGame() { clearTimeout(this._gt); this.setState({ game: null }); window.scrollTo(0, 0); }
+  gQuit() {
+    const g = this.state.game; if (!g) return;
+    if (g.phase !== 'done' && g.tiles.some(t => t.open)) {
+      let ok = true; try { ok = window.confirm('Leave this level? Points from this round won’t count.'); } catch (e) {}
+      if (!ok) return;
+    }
+    this.quitGame();
   }
   streak() {
     let d = mondayOf(new Date()); const today = new Date();
@@ -1597,13 +2059,9 @@ class Component extends DCLogic {
       };
     });
     const counts = {}; Object.values(s.badges).forEach(b => counts[b] = (counts[b] || 0) + 1);
-    const history = Object.entries(s.badges).sort((a, b) => b[0].localeCompare(a[0])).slice(0, 6).map(([d, id]) => {
-      const b = BADGES.find(x => x.id === id) || BADGES[3]; const dt = new Date(d + 'T12:00');
-      return { emoji: b.emoji, name: b.name, rarity: b.rarity, rarityBg: RARITY[b.rarity], date: `${MON[dt.getMonth()]} ${dt.getDate()}`, groups: (s.eaten[d] || []).map(g => (GROUPS.find(x => x.id === g) || {}).e).join('') };
-    });
     const total = Object.keys(s.badges).length;
     const yum = ['🥄', '🍴', '🍽️', '😋', '🤩'];
-    const tabs = [['menu', '🍽️', 'Menu'], ['ideas', '💡', 'Ideas'], ['quests', '🎯', 'Quests'], ['badges', '🪶', 'Aviary']];
+    const tabs = [['menu', '🍽️', 'Menu'], ['ideas', '💡', 'Ideas'], ['nest', '🐣', 'Nest'], ['game', '🎮', 'Game']];
     if (s.famOk) tabs.push(['family', '👪', 'Family']);
     // Family view values
     const fam = s.fam, famIn = !!(fam && fam.me), famAct = famIn && fam.me.status === 'active';
@@ -1629,43 +2087,120 @@ class Component extends DCLogic {
     };
     const qs = this.questsFor(k), qDone = qs.filter(q => q.done).length, todaySticker = this.stickerFor(k), hasSticker = !!s.stickers[k];
     const wkKey = iso(ws);
-    const book = [
-      ...Object.entries(s.holos).map(([key, h]) => { const a = ADV.find(x => x.id === h.id) || ADV[0]; return { sort: h.date + 'z', e: a.holo.e, name: a.holo.name, holo: true }; }),
-      ...Object.entries(s.stickers).map(([d, id]) => { const t = STICKERS.find(x => x.id === id) || STICKERS[0]; return { sort: d, e: t.e, name: t.name, color: t.color, holo: false }; })
-    ].sort((a, b) => b.sort.localeCompare(a.sort)).map((b, n) => ({
-      ...b, tilt: `rotate(${[-6, 4, -3, 7, -5, 2][n % 6]}deg)`,
-      bg: b.holo ? 'linear-gradient(135deg,#FFD6E8,#CFEFFF 35%,#E6FFD9 65%,#FFF1C2)' : b.color,
-      tag: b.holo ? '✦ Holo' : ''
-    }));
     const st = this.stats();
+    // ── The Nest ──
+    const qCounts = {}; Object.values(s.stickers).forEach(id => { qCounts[id] = (qCounts[id] || 0) + 1; });
+    const book = MYSTERY.filter(m => qCounts[m.id]).map((m, n) => ({ e: m.e, name: m.name, bg: m.color, tilt: `rotate(${[-6, 4, -3, 7, -5, 2][n % 6]}deg)`, tag: qCounts[m.id] > 1 ? `× ${qCounts[m.id]}` : '' }));
+    const goalsDone = GOALS.filter(m => st[m.stat] >= m.goal).length;
+    const holoList = Object.values(s.holos);
+    // Old long-term holos for Birdwatcher and Quest Master are now goal badges, so they aren't counted twice.
+    const holoCount = holoList.filter(h => h.id !== 'birdwatcher' && h.id !== 'questmaster').length;
+    const badgeTotal = total + Object.keys(s.stickers).length + holoCount + goalsDone + s.myBadges.filter(b => b.earned).length;
+    const today = iso(new Date());
+    const mbView = (b, withDelete) => {
+      const v = Math.min(this.myProgress(b), b.goal), done = !!b.earned, logged = (b.log || []).includes(today);
+      return {
+        emoji: b.emoji, name: b.name, rule: mbRule(b), bg: b.color, filter: done ? 'none' : 'saturate(.5)',
+        pct: `${v / b.goal * 100}%`, bar: done ? '#3DBE8B' : '#E2A85A', progressLabel: done ? '✓ Earned' : `${v} / ${b.goal}`,
+        canLog: b.type === 'own' && !done, logLabel: logged ? '✓ Today' : '+1 today', logBg: logged ? '#DDF5E8' : '#FFD166',
+        logAria: logged ? `Take back today’s check for ${b.name}` : `Log ${b.name} for today`, onLog: () => this.logMyBadge(b.id),
+        canDelete: withDelete, deleteAria: `Delete ${b.name}`, onDelete: () => this.deleteMyBadge(b)
+      };
+    };
+    const classic = Object.keys(RETIRED).map(id => ({ ...RETIRED[id], n: holoList.filter(h => h.id === id).length })).filter(c => c.n)
+      .map(c => ({ label: `${c.emoji} ${c.name}${c.n > 1 ? ` × ${c.n}` : ''}` }));
+    const bd = s.bDraft, bt = MB_TYPES.find(t => t.id === bd.type) || MB_TYPES[0];
+    const bdReady = !!bd.name.trim() && (bd.type !== 'own' || !!bd.task.trim());
+    // ── Peck Patch ──
+    const pk = s.peck, pbest = pk.best || {};
+    const curLv = LEVELS.findIndex((_, i) => !((pbest[i] || 0) >= 1));
+    const units = UNITS.map((u, ui) => ({
+      n: ui + 1, title: u.title, sub: u.sub, icon: u.icon, color: u.color,
+      levels: [0, 1, 2, 3].map(j => {
+        const i = ui * 4 + j, b = pbest[i] || 0, open = i === 0 || (pbest[i - 1] || 0) >= 1, cur = i === curLv, dx = [0, 64, 0, -64][j];
+        return {
+          dx: `${dx}px`, isCurrent: cur, hasPip: cur, pipLeft: dx >= 0 ? '-84px' : 'auto', pipRight: dx >= 0 ? 'auto' : '-84px',
+          bg: b ? '#FFD166' : cur ? u.color : open ? '#FFF7EC' : '#E5D9CC', shadow: b ? '#C9971F' : cur ? u.shadow : '#C4B5A5',
+          icon: !open ? '🔒' : b === 3 ? '👑' : b ? '✓' : j === 3 ? '🏆' : u.icon,
+          starList: [1, 2, 3].map(n => ({ c: n <= b ? '#F5B400' : '#DCCDBD' })),
+          aria: `Level ${i + 1}${!open ? ', locked' : b ? `, ${b} of 3 stars` : ''}`,
+          onClick: () => open ? this.startLevel(i) : this.flash('🔒 Clear the level before this one first')
+        };
+      })
+    }));
+    const g = s.game;
+    let gv = {
+      hasGame: false, gPlaying: false, gDone: false, gPct: '0%', gHearts: '', gHeartsAria: '', gPip: null, gSay: '', gLevelLabel: '', gPecksLabel: '',
+      gPeek: false, gPeekMs: '0ms', gCols: 3, gGridMax: '300px', gTiles: [], pipPeck: null, gQuiz: false, gQ: {}, gOptions: [], gFeedback: false, gFb: {},
+      gContinue: () => {}, gQuit: () => {}, gPipBig: null, gRes: { stars: [], tiles: [] }, gPrimary: () => {}, gSecondary: () => {}
+    };
+    if (g) {
+      const GL = LEVELS[g.lv], phase = g.phase, fb = g.fb || {}, r = g.res || {}, qT = g.quiz ? g.tiles[g.quiz.idx] : null, left = GL.goal - g.found;
+      const FB = fb.gold ? { bg: '#FFF1C2', line: '#E2A11B', fg: '#6B4210', btn: '#FFD166', btnShadow: '#C9971F', btnFg: '#3B2A20' }
+        : fb.ok ? { bg: '#DDF5E8', line: '#3DBE8B', fg: '#1F5E40', btn: '#2E8A5E', btnShadow: '#1F5E40', btnFg: '#fff' }
+        : { bg: '#FFE3E6', line: '#E57C8D', fg: '#8E2436', btn: '#C9405A', btnShadow: '#8E2436', btnFg: '#fff' };
+      const say = phase === 'peek' ? 'Peek time! Remember where the sometimes foods hide 👀'
+        : phase === 'quiz' ? 'Ooh, what did I find?' : phase === 'fb' ? fb.say
+        : phase === 'done' ? '' : g.found ? `${left} more healthy ${left === 1 ? 'food' : 'foods'} to find!` : 'Tap a leaf pile and I’ll peck it!';
+      const hearts = Math.max(0, g.hearts);
+      gv = {
+        hasGame: true, gPlaying: phase !== 'done', gDone: phase === 'done',
+        gPct: `${Math.min(100, g.found / GL.goal * 100)}%`, gHearts: '❤️'.repeat(hearts) + '🤍'.repeat(3 - hearts), gHeartsAria: `${hearts} of 3 hearts left`,
+        gPip: pipEl(g.mood, 72), gSay: say, gLevelLabel: `Level ${g.lv + 1} · ⭐ ${g.pts}`,
+        gPecksLabel: phase === 'peek' ? 'Get ready…' : `${g.pecks} peck${g.pecks === 1 ? '' : 's'} left`,
+        gPeek: phase === 'peek', gPeekMs: `${GL.peek}ms`, gCols: GL.c, gGridMax: GL.c >= 4 ? '100%' : '300px',
+        gTiles: g.tiles.map((t, i) => {
+          const show = phase === 'peek' || t.open, fresh = g.last === i && t.open;
+          let bg = 'linear-gradient(180deg,#9AD77C,#5FB548)', shadow = '#3F8A2E', face = '🍃';
+          if (show && t.kind === 'junk') { bg = '#FFD6DC'; shadow = '#C44A60'; face = t.e; }
+          else if (show && t.kind === 'gold') { bg = '#FFE9A8'; shadow = '#D99A12'; face = '🌟'; }
+          else if (show) { bg = t.open ? '#DDF5E8' : '#FFF7EC'; shadow = t.open ? '#2E8A5E' : '#D8C2AC'; face = t.e; }
+          return {
+            bg, shadow, face, fs: GL.c >= 4 ? '32px' : '40px', pecking: g.peckIdx === i, aria: show ? t.name : `Leaf pile ${i + 1}`,
+            anim: fresh ? (t.kind === 'junk' ? 'lb-flip .3s ease-out, lb-shake .4s ease-in-out .3s' : 'lb-flip .3s ease-out') : 'none',
+            mark: t.open && (t.kind === 'junk' || t.ok != null), markText: t.kind === 'junk' ? '✕' : t.ok ? '✓' : '!',
+            markBg: t.kind === 'junk' ? '#C9405A' : t.ok ? '#2E8A5E' : '#C77A0A', onClick: () => this.peck(i)
+          };
+        }),
+        pipPeck: g.peckIdx >= 0 ? pipEl('normal', 56, 'lb-peck .42s ease-in-out') : null,
+        gQuiz: phase === 'quiz' && !!qT, gQ: qT ? { e: qT.e, name: qT.name } : {},
+        gOptions: qT ? g.quiz.opts.map(id => ({ label: GROUP_INFO[id].label, onClick: () => this.answer(id) })) : [],
+        gFeedback: phase === 'fb', gFb: { ...FB, icon: fb.icon, title: fb.title, sub: fb.sub },
+        gContinue: () => this.gContinue(), gQuit: () => this.gQuit(),
+        gPipBig: phase === 'done' ? pipEl(r.win ? 'happy' : 'sad', 140, r.win ? 'lb-bob 1.6s ease-in-out infinite' : 'none') : null,
+        gRes: phase === 'done' ? {
+          color: r.win ? '#1F7A50' : '#B23A50', title: r.title, sub: r.sub, starsAria: `${r.stars} of 3 stars`,
+          stars: [1, 2, 3].map(n => ({ c: n <= r.stars ? '#F5B400' : '#E5D9CC', delay: `${0.15 + n * 0.25}s` })),
+          tiles: [{ label: 'Points', value: `+${r.total}`, c: '#FFD166' }, { label: 'Food groups', value: r.quizLabel, c: '#9BE3B8' }, { label: 'Hearts', value: `${hearts} ❤️`, c: '#FFB4A2' }],
+          primary: r.win ? 'Continue' : 'Try again', secondary: r.win ? 'Play again' : 'Back to map'
+        } : { stars: [], tiles: [] },
+        gPrimary: () => r.win ? this.quitGame() : this.startLevel(g.lv), gSecondary: () => r.win ? this.startLevel(g.lv) : this.quitGame()
+      };
+    }
     const confettiEls = s.celebrate ? Array.from({ length: 26 }, (_, i) => React.createElement('span', {
       key: i, style: { position: 'absolute', top: 0, left: `${(i * 37) % 100}%`, fontSize: 18 + (i % 4) * 6, animation: `lb-fall ${2.4 + (i % 5) * 0.5}s ${(i % 7) * 0.18}s linear infinite`, pointerEvents: 'none' }
     }, ['🪶', '🎨', '✨', '🐦', '🖌️', '⭐', '🌿', '🦜'][i % 8])) : null;
     const c = s.celebrate || {};
     return {
-      yumLine: yum.slice(0, Math.min(5, 1 + total)).join(' ') + (total ? `  ${total} badge${total > 1 ? 's' : ''}` : '  earn your first badge!'),
-      isMenu: s.tab === 'menu', isIdeas: s.tab === 'ideas', isBadges: s.tab === 'badges', isQuests: s.tab === 'quests',
-      goQuests: () => { this.setState({ tab: 'quests' }); window.scrollTo(0, 0); },
-      questSummary: hasSticker ? `Sticker earned: ${todaySticker.e} ${todaySticker.name}` : `${qDone} of 3 done · reward: mystery sticker`,
+      yumLine: yum.slice(0, Math.min(5, 1 + badgeTotal)).join(' ') + (badgeTotal ? `  ${badgeTotal} badge${badgeTotal > 1 ? 's' : ''}` : '  earn your first badge!'),
+      isMenu: s.tab === 'menu', isIdeas: s.tab === 'ideas', isNest: s.tab === 'nest', isGame: s.tab === 'game',
+      goQuests: () => { this.setState({ nestView: 'quests' }); this.goTab('nest'); },
+      questSummary: hasSticker ? `Badge found: ${todaySticker.e} ${todaySticker.name}` : `${qDone} of 3 done · reward: mystery badge`,
       questDots: qs.map(q => q.done ? '✅' : '⬜').join(' '),
       quests: qs.map(q => ({
         e: q.e, text: q.text, hint: q.manual ? 'Tap when you’ve done it' : q.done ? 'Auto-checked' : q.tab === 'ideas' ? 'Go to Ideas →' : 'Track it on the Menu tab →',
         bg: q.done ? '#DDF5E8' : '#fff', check: q.done ? '✓' : '', checkBg: q.done ? '#3DBE8B' : '#fff',
-        onClick: () => q.manual ? this.toggleManual(k, q.id) : (!q.done && (this.setState({ tab: q.tab }), window.scrollTo(0, 0)))
+        onClick: () => q.manual ? this.toggleManual(k, q.id) : (!q.done && this.goTab(q.tab))
       })),
       qDone, qPct: `${qDone / 3 * 100}%`, canSticker: qDone === 3 && !hasSticker, hasSticker, notSticker: !hasSticker,
       claimSticker: () => this.claimSticker(k),
-      stickerPreview: hasSticker ? todaySticker.e : '❔', stickerName: hasSticker ? `${todaySticker.name} sticker` : 'Mystery sticker',
-      stickerBg: hasSticker ? todaySticker.color : '#EFE6DC', stickerSub: hasSticker ? 'Added to your sticker book' : qDone === 3 ? 'Ready to reveal!' : 'Finish all 3 quests to reveal',
-      adv: ADV.map(a => {
-        const v = Math.min(this.advProgress(a, ws), a.goal), key = a.weekly ? `${a.id}@${wkKey}` : a.id, claimed = !!s.holos[key], ready = v >= a.goal && !claimed;
-        return {
-          ...a, scope: a.weekly ? 'This week' : 'Long-term', pct: `${v / a.goal * 100}%`, bar: claimed ? '#3DBE8B' : '#7FB8E6',
-          progressLabel: claimed ? '✓ Holo earned' : `${v} / ${a.goal}`, ready, notReady: !ready,
-          rewardLabel: `${a.holo.e} ${a.holo.name}`, claim: () => this.claimHolo(a, key), op: claimed ? 0.75 : 1
-        };
+      stickerPreview: hasSticker ? todaySticker.e : '❔', stickerName: hasSticker ? todaySticker.name : 'Mystery badge',
+      stickerBg: hasSticker ? todaySticker.color : '#EFE6DC', stickerSub: hasSticker ? 'Found! It’s in your Quest badges.' : qDone === 3 ? 'Ready to reveal!' : 'Finish all 3 quests to reveal it',
+      weekly: WEEKLY.map(a => {
+        const v = Math.min(this.weeklyProgress(a, ws), a.goal), key = `${a.id}@${wkKey}`, claimed = !!s.holos[key], ready = v >= a.goal && !claimed;
+        return { ...a, pct: `${v / a.goal * 100}%`, bar: claimed ? '#3DBE8B' : '#7FB8E6', progressLabel: claimed ? '✓ Earned this week' : `${v} / ${a.goal}`, ready, claim: () => this.claimWeekly(a, key), op: claimed ? 0.8 : 1 };
       }),
-      book, hasBook: book.length > 0, noBook: book.length === 0, bookCount: book.length,
+      book, hasBook: book.length > 0, noBook: book.length === 0, bookCount: book.length, bookTotal: MYSTERY.length,
       prevWeek: () => this.shiftWeek(-1), nextWeek: () => this.shiftWeek(1),
       weekLabel: `${MON[ws.getMonth()]} ${ws.getDate()} – ${MON[add(ws, 4).getMonth()]} ${add(ws, 4).getDate()}`,
       sourceNote: s.loading ? 'Loading menu…' : src === 'live' ? '🟢 Live from MealViewer' : '🟠 Sample menu · live menu unavailable',
@@ -1721,18 +2256,47 @@ class Component extends DCLogic {
       }),
       timeOpts: ['3 min', '5 min', '10 min', '15 min'].map(t => ({ label: t, bg: s.draft.time === t ? '#3B2A20' : '#fff', fg: s.draft.time === t ? '#FFD166' : '#3B2A20', onClick: () => this.setDraft({ time: t }) })),
       saveIdea: () => this.saveIdea(), saveBg: s.draft.title.trim() ? '#FFD166' : '#F3E6D3', saveOp: s.draft.title.trim() ? 1 : 0.7,
-      badgeCount: total, streak: this.streak(),
+      badgeTotal, streak: this.streak(),
       catalog: BADGES.map(b => {
         const n = counts[b.id] || 0;
         return { ...b, rarityBg: RARITY[b.rarity], bg: n ? b.color : '#EFE6DC', ring: n ? b.color : '#D8CBBE', filter: n ? 'none' : 'grayscale(1)', op: n ? 1 : 0.7, countLabel: n ? `× ${n}` : '🔒 Locked' };
       }),
-      msDone: MILESTONES.filter(m => st[m.stat] >= m.goal).length, msTotal: MILESTONES.length, bestStreak: st.best,
-      milestones: MILESTONES.map(m => {
+      goalsDone, goalsTotal: GOALS.length,
+      goals: GOALS.map(m => {
         const v = Math.min(st[m.stat], m.goal), done = v >= m.goal;
         return { ...m, rarityBg: RARITY[m.rarity], bg: done ? m.color : '#EFE6DC', filter: done ? 'none' : 'grayscale(1)', op: done ? 1 : 0.75,
           pct: `${v / m.goal * 100}%`, bar: done ? '#3DBE8B' : '#E2A85A', progressLabel: done ? '✓ Unlocked' : `${v} / ${m.goal}` };
       }),
-      history, hasHistory: history.length > 0,
+      weeklyBadges: WEEKLY.map(a => {
+        const n = holoList.filter(h => h.id === a.id).length;
+        return { emoji: a.emoji, name: a.name, countLabel: n ? `× ${n}` : 'Not yet', bg: n ? 'linear-gradient(135deg,#FFD6E8,#CFEFFF 35%,#E6FFD9 65%,#FFF1C2)' : '#EFE6DC', filter: n ? 'none' : 'grayscale(1)', op: n ? 1 : 0.7 };
+      }),
+      classic, hasClassic: classic.length > 0,
+      nestTabs: [['quests', '🎯 Quests'], ['badges', '🏅 Badges']].map(([id, label]) => {
+        const on = (s.nestView === 'badges') === (id === 'badges');
+        return { label, sel: on ? 'true' : 'false', bg: on ? '#FFD166' : 'transparent', border: on ? '2px solid #3B2A20' : '2px solid transparent', onClick: () => this.setState({ nestView: id }) };
+      }),
+      nestQuests: s.nestView !== 'badges', nestBadges: s.nestView === 'badges',
+      myGoals: s.myBadges.filter(b => !b.earned).map(b => mbView(b, false)), noMyGoals: !s.myBadges.some(b => !b.earned),
+      myGoalsEmpty: s.myBadges.length ? 'Every badge you designed is earned. Tap to design another!' : 'Make up your own badge, like “Pack my own lunch 5 times”, and track it here. Tap to start.',
+      myBadgeCards: s.myBadges.map(b => mbView(b, true)), hasMyBadges: s.myBadges.length > 0,
+      myLeft: s.myBadges.length ? `${s.myBadges.length} of ${MB_MAX} made.` : `Make up to ${MB_MAX}.`,
+      openBadgeSheet: () => s.myBadges.length >= MB_MAX ? this.flash(`🙈 ${MB_MAX} is the limit. Delete one to make room.`) : this.setState({ bSheet: true }),
+      bSheet: !!s.bSheet, closeBadgeSheet: () => this.setState({ bSheet: false }),
+      bd: { emoji: bd.emoji, color: bd.color, nameShow: bd.name.trim() || 'My badge', rule: mbRule({ ...bd, task: bd.task.trim() }), goal: bd.goal, unit: bd.goal === 1 ? bt.unit.replace(/s$/, '') : bt.unit },
+      bIcons: MB_ICONS.map(e => ({ e, aria: `Icon ${e}`, pressed: bd.emoji === e ? 'true' : 'false', bg: bd.emoji === e ? '#FFD166' : '#fff', border: bd.emoji === e ? '#3B2A20' : '#E8D3BC', onClick: () => this.setBDraft({ emoji: e }) })),
+      bColors: MB_COLORS.map(([c, label]) => ({ c, label, pressed: bd.color === c ? 'true' : 'false', ring: bd.color === c ? '0 0 0 3px #FFF7EC,0 0 0 6px #3B2A20' : 'none', onClick: () => this.setBDraft({ color: c }) })),
+      bName: bd.name, onBName: e => this.setBDraft({ name: e.target.value }),
+      bTypes: MB_TYPES.map(t => ({ e: t.e, label: t.label, pressed: bd.type === t.id ? 'true' : 'false', bg: bd.type === t.id ? '#3B2A20' : '#fff', fg: bd.type === t.id ? '#FFD166' : '#3B2A20', onClick: () => this.setBDraft({ type: t.id, goal: t.def }) })),
+      bdOwn: bd.type === 'own', bTask: bd.task, onBTask: e => this.setBDraft({ task: e.target.value }),
+      bMinus: () => this.setBDraft({ goal: Math.max(bt.step, bd.goal - bt.step) }), bPlus: () => this.setBDraft({ goal: Math.min(bt.max, bd.goal + bt.step) }),
+      bHelp: bd.type === 'own' ? 'Tap “+1 today” in the Nest on each day you do it.' : 'Counts from today on, and fills in by itself as you use Lunch Buddy.',
+      saveBadge: () => this.saveMyBadge(), bSaveBg: bdReady ? '#FFD166' : '#F3E6D3', bSaveOp: bdReady ? 1 : 0.7,
+      goGame: () => this.goTab('game'),
+      pipHero: s.tab === 'game' ? pipEl('happy', 68, 'lb-bob 2.2s ease-in-out infinite') : null, pipMap: s.tab === 'game' ? pipEl('normal', 66) : null,
+      peckPts: pk.pts || 0, peckStars: Object.values(pbest).reduce((a, b) => a + b, 0), peckStarsMax: LEVELS.length * 3,
+      peckToday: (pk.log || {})[today] || 0, peckAllDone: curLv < 0, units,
+      ...gv,
       nav: tabs.map(([id, e, label]) => {
         const badge = id === 'family' ? famUnread : 0;
         return { e, label, bg: s.tab === id ? '#FFD166' : 'transparent', fg: s.tab === id ? '#3B2A20' : '#FFF7EC', onClick: () => this.goTab(id),
