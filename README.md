@@ -2,7 +2,7 @@
 
 Southeast Bulloch Middle's lunch menu with add-on ideas, the Nest (quests and badges), the
 Flight Plan (an after-school planner from 3 to 10 PM whose finished activities earn Nest
-points) and the Peck Patch game, live at https://lunch-buddy.pages.dev. Every phone's progress
+points, plus a private month calendar for events, important days and period tracking) and the Peck Patch game, live at https://lunch-buddy.pages.dev. Every phone's progress
 is backed up automatically, and a one-time move code brings it to a new phone. Families can
 link up so parents see (and get phone alerts for) the lunch add-ons their kids plan, see their
 kids' after-school plans, and leave them notes of encouragement that kids can reply to.
@@ -51,7 +51,8 @@ Keep the private key: replacing it means every family has to turn phone alerts o
 
 ## Privacy
 
-Stored: each phone's app backup (ideas, badges, quests, game points) under a random key kept
+Stored: each phone's app backup (ideas, badges, quests, game points, after-school plan, and the
+private "My calendar": events and period days, which other family members never see) under a random key kept
 on that phone, plus, for families, nicknames, the family name, lunch add-on picks, activity
 and push subscriptions, kids' after-school plans, and parents' notes with kids' replies (plans and
 notes are deleted after 120 days). No emails, passwords or full names. Family members back up to their

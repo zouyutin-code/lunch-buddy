@@ -872,6 +872,90 @@ input::placeholder{color:#B49A86}
         </sc-if>
       </section>
 
+      <section aria-label="My calendar" style="background:#fff;border:2px solid #3B2A20;border-radius:24px;padding:14px 12px 12px;box-shadow:4px 4px 0 #3B2A20;display:flex;flex-direction:column;gap:10px">
+        <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px;padding:0 2px">
+          <div style="min-width:0">
+            <div style="font-family:'Baloo 2',sans-serif;font-size:20px;font-weight:800;line-height:1.1">📅 My calendar</div>
+            <div style="font-size:12px;font-weight:700;color:#8A6E5A">{{ calHint }}</div>
+          </div>
+          <sc-if value="{{ calShowToday }}" hint-placeholder-val="{{ false }}">
+            <button sc-camel-on-click="{{ calToday }}" style="flex:none;min-height:34px;padding:0 12px;border-radius:999px;border:2px solid #3B2A20;background:#FFF1C2;color:#3B2A20;font-family:inherit;font-weight:800;font-size:13px;cursor:pointer">Today</button>
+          </sc-if>
+        </div>
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:8px">
+          <button aria-label="Previous month" sc-camel-on-click="{{ calPrev }}" style="width:40px;height:40px;border-radius:50%;border:2px solid #3B2A20;background:#fff;font-size:16px;font-weight:800;color:#3B2A20;cursor:pointer;flex:none;padding:0">‹</button>
+          <div aria-live="polite" style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:19px">{{ calMonthLabel }}</div>
+          <button aria-label="Next month" sc-camel-on-click="{{ calNext }}" style="width:40px;height:40px;border-radius:50%;border:2px solid #3B2A20;background:#fff;font-size:16px;font-weight:800;color:#3B2A20;cursor:pointer;flex:none;padding:0">›</button>
+        </div>
+        <div aria-hidden="true" style="display:grid;grid-template-columns:{{ calCols }};gap:4px;transition:grid-template-columns .35s ease">
+          <sc-for list="{{ calWd }}" as="w" hint-placeholder-count="7">
+            <div style="text-align:center;font-size:11px;font-weight:800;color:{{ w.color }};letter-spacing:.04em;overflow:hidden;white-space:nowrap">{{ w.label }}</div>
+          </sc-for>
+        </div>
+        <div style="display:grid;grid-template-columns:{{ calCols }};grid-template-rows:{{ calRows }};gap:4px;transition:grid-template-columns .35s ease,grid-template-rows .35s ease">
+          <sc-for list="{{ calCells }}" as="c" hint-placeholder-count="30">
+            <div style="grid-column:{{ c.col }};grid-row:{{ c.row }};position:relative;min-width:0;min-height:0;box-sizing:border-box;border-radius:12px;border:{{ c.border }};background:{{ c.bg }};box-shadow:{{ c.shadow }};overflow:hidden;transition:background .2s">
+              <sc-if value="{{ c.compact }}" hint-placeholder-val="{{ true }}">
+                <button aria-label="{{ c.aria }}" sc-camel-on-click="{{ c.onClick }}" style="position:absolute;inset:0;width:100%;height:100%;border:none;background:none;padding:3px 1px 0;margin:0;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:1px;font-family:inherit;color:#3B2A20">
+                  <span style="font-size:{{ c.numFs }};font-weight:800;line-height:1.25;min-width:1.5em;border-radius:999px;background:{{ c.numBg }};color:{{ c.numFg }}">{{ c.num }}</span>
+                  <span style="font-size:{{ c.markFs }};line-height:1.15;white-space:{{ c.markWs }};word-break:break-all;text-align:center;overflow:hidden;max-width:100%">{{ c.marks }}</span>
+                </button>
+              </sc-if>
+              <sc-if value="{{ c.big }}" hint-placeholder-val="{{ false }}">
+                <div style="position:absolute;inset:0;padding:7px 7px 7px 8px;display:flex;flex-direction:column;gap:5px">
+                  <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:4px;flex:none">
+                    <div style="min-width:0;line-height:1">
+                      <div style="font-size:10px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:#E2553F">{{ c.wd }}</div>
+                      <div style="font-family:'Baloo 2',sans-serif;font-size:24px;font-weight:800;line-height:1">{{ c.num }}</div>
+                    </div>
+                    <button aria-label="Zoom out" sc-camel-on-click="{{ c.onClick }}" style="width:28px;height:28px;border-radius:50%;border:2px solid #3B2A20;background:#fff;font-size:12px;font-weight:800;color:#3B2A20;cursor:pointer;flex:none;padding:0">✕</button>
+                  </div>
+                  <div style="flex:1;min-height:0;overflow-y:auto;display:flex;flex-direction:column;gap:4px">
+                    <sc-for list="{{ c.events }}" as="ce" hint-placeholder-count="2">
+                      <button aria-label="{{ ce.aria }}" sc-camel-on-click="{{ ce.onEdit }}" style="flex:none;display:flex;align-items:center;gap:4px;width:100%;min-height:30px;padding:2px 6px;border-radius:9px;border:{{ ce.border }};background:{{ ce.bg }};font-family:inherit;font-size:12px;font-weight:800;color:#3B2A20;cursor:pointer;text-align:left">
+                        <span style="flex:none;font-size:14px">{{ ce.e }}</span>
+                        <span style="min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ ce.t }}</span>
+                      </button>
+                    </sc-for>
+                    <sc-if value="{{ c.noEvents }}" hint-placeholder-val="{{ false }}">
+                      <div style="font-size:11px;font-weight:700;color:#B49A86;line-height:1.3">{{ c.emptyText }}</div>
+                    </sc-if>
+                  </div>
+                  <div style="display:flex;gap:4px;flex:none">
+                    <button sc-camel-on-click="{{ c.onAdd }}" style="flex:1;min-width:0;height:34px;border-radius:10px;border:2px solid #3B2A20;background:#FFD166;color:#3B2A20;font-family:inherit;font-weight:800;font-size:13px;cursor:pointer;padding:0">+ Add</button>
+                    <button aria-label="{{ c.periodAria }}" aria-pressed="{{ c.periodPressed }}" sc-camel-on-click="{{ c.onPeriod }}" style="flex:none;width:38px;height:34px;border-radius:10px;border:2px solid {{ c.periodBorder }};background:{{ c.periodBg }};font-size:15px;cursor:pointer;padding:0">🩸</button>
+                  </div>
+                </div>
+              </sc-if>
+            </div>
+          </sc-for>
+        </div>
+        <sc-if value="{{ calHasSoon }}" hint-placeholder-val="{{ false }}">
+          <div style="display:flex;flex-direction:column;gap:6px">
+            <div style="font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#7A4B12;padding:0 2px">Coming up</div>
+            <sc-for list="{{ calSoon }}" as="cs" hint-placeholder-count="2">
+              <button sc-camel-on-click="{{ cs.onClick }}" style="display:flex;align-items:center;gap:8px;width:100%;min-height:40px;padding:4px 10px;border-radius:14px;border:2px solid {{ cs.border }};background:{{ cs.bg }};font-family:inherit;color:#3B2A20;cursor:pointer;text-align:left">
+                <span style="font-size:18px;flex:none">{{ cs.e }}</span>
+                <span style="flex:1;min-width:0;font-size:14px;font-weight:800;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ cs.t }}</span>
+                <span style="flex:none;font-size:12px;font-weight:800;color:#8A6E5A">{{ cs.when }}</span>
+              </button>
+            </sc-for>
+          </div>
+        </sc-if>
+        <sc-if value="{{ calHasPeriod }}" hint-placeholder-val="{{ false }}">
+          <div style="background:#FFE8EE;border:2px solid #F7B6C5;border-radius:16px;padding:10px 12px">
+            <div style="font-size:14px;font-weight:800;color:#9C2F4C">{{ calPeriodLine }}</div>
+            <div style="font-size:12px;font-weight:700;color:#A86478;margin-top:2px;text-wrap:pretty">{{ calPeriodNote }}</div>
+          </div>
+        </sc-if>
+        <div style="display:flex;flex-wrap:wrap;gap:4px 10px;font-size:11px;font-weight:700;color:#8A6E5A;padding:0 2px">
+          <span><span style="display:inline-block;width:10px;height:10px;border-radius:3px;background:#FFE08A;border:1px solid #E8B93A;vertical-align:-1px"></span> Important</span>
+          <span><span style="display:inline-block;width:10px;height:10px;border-radius:3px;background:#FFD6DF;border:1px solid #F28BA0;vertical-align:-1px"></span> Period</span>
+          <span><span style="display:inline-block;width:10px;height:10px;border-radius:3px;background:#fff;border:1.5px dashed #F28BA0;vertical-align:-1px;box-sizing:border-box"></span> Period estimate</span>
+          <span style="flex-basis:100%">🔒 Only you see your calendar. It’s saved on this phone and in your backup.</span>
+        </div>
+      </section>
+
       <div style="display:flex;align-items:center;justify-content:space-between;gap:8px">
         <button aria-label="Previous week" sc-camel-on-click="{{ fpPrevWeek }}" style="width:44px;height:44px;border-radius:50%;border:2px solid #3B2A20;background:#fff;font-size:18px;font-weight:800;cursor:pointer;color:#3B2A20;flex:none">‹</button>
         <div style="text-align:center;min-width:0">
@@ -1506,6 +1590,52 @@ input::placeholder{color:#B49A86}
     </div>
   </sc-if>
 
+  <sc-if value="{{ calHasSheet }}" hint-placeholder-val="{{ false }}">
+    <div style="position:fixed;inset:0;z-index:9;display:flex;flex-direction:column;justify-content:flex-end;align-items:center">
+      <div sc-camel-on-click="{{ calClose }}" style="position:absolute;inset:0;background:rgba(59,42,32,.5)"></div>
+      <div role="dialog" aria-modal="true" aria-label="{{ calSh.title }}" style="position:relative;width:100%;max-width:440px;max-height:90vh;overflow-y:auto;box-sizing:border-box;background:#FFF7EC;border:2px solid #3B2A20;border-bottom:none;border-radius:28px 28px 0 0;padding:18px 16px 0;display:flex;flex-direction:column;gap:12px">
+        <div style="width:44px;height:5px;border-radius:999px;background:#D8C2AC;align-self:center;flex:none"></div>
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;flex:none">
+          <div style="min-width:0">
+            <div style="font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#E2553F">{{ calSh.sub }}</div>
+            <div style="font-family:'Baloo 2',sans-serif;font-size:22px;font-weight:800;line-height:1.1">{{ calSh.title }}</div>
+          </div>
+          <button aria-label="Close" sc-camel-on-click="{{ calClose }}" style="width:40px;height:40px;border-radius:50%;border:2px solid #3B2A20;background:#fff;font-size:16px;font-weight:800;color:#3B2A20;cursor:pointer;flex:none;padding:0">✕</button>
+        </div>
+        <label style="display:flex;flex-direction:column;gap:4px;flex:none">
+          <span style="font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#7A4B12">What’s happening?</span>
+          <input value="{{ calShT }}" sc-camel-on-change="{{ onCalT }}" maxlength="40" placeholder="{{ calShPh }}" style="height:48px;border-radius:16px;border:2px solid #3B2A20;padding:0 14px;font-family:inherit;font-size:16px;font-weight:700;color:#3B2A20;background:#fff;outline:none;min-width:0">
+        </label>
+        <div style="font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#7A4B12;flex:none">Kind of event</div>
+        <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;flex:none">
+          <sc-for list="{{ calKinds }}" as="ck" hint-placeholder-count="9">
+            <button aria-pressed="{{ ck.pressed }}" sc-camel-on-click="{{ ck.onClick }}" style="min-height:62px;border-radius:16px;border:2px solid {{ ck.border }};background:{{ ck.bg }};box-shadow:{{ ck.shadow }};padding:6px 4px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;font-family:inherit;font-size:12px;font-weight:800;line-height:1.1;color:#3B2A20;cursor:pointer;min-width:0;text-align:center">
+              <span style="font-size:22px">{{ ck.e }}</span>{{ ck.label }}
+            </button>
+          </sc-for>
+        </div>
+        <button aria-pressed="{{ calShImpPressed }}" sc-camel-on-click="{{ calToggleImp }}" style="flex:none;display:flex;align-items:center;gap:10px;min-height:52px;padding:6px 12px;border-radius:16px;border:2px solid {{ calShImpBorder }};background:{{ calShImpBg }};font-family:inherit;color:#3B2A20;cursor:pointer;text-align:left">
+          <span style="font-size:22px">⭐</span>
+          <span style="flex:1;min-width:0"><span style="display:block;font-size:15px;font-weight:800">Important</span><span style="display:block;font-size:12px;font-weight:700;color:#8A6E5A">Highlight this day on the calendar</span></span>
+          <span style="width:26px;height:26px;border-radius:8px;border:2px solid #3B2A20;background:{{ calShImpBox }};display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:800;flex:none">{{ calShImpMark }}</span>
+        </button>
+        <label style="display:flex;align-items:center;justify-content:space-between;gap:10px;flex:none">
+          <span style="font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#7A4B12">Time (optional)</span>
+          <input type="time" value="{{ calShTm }}" sc-camel-on-change="{{ onCalTm }}" aria-label="Time" style="height:44px;border-radius:14px;border:2px solid #3B2A20;padding:0 10px;font-family:inherit;font-size:16px;font-weight:700;color:#3B2A20;background:#fff;outline:none;min-width:0">
+        </label>
+        <sc-if value="{{ calShRepeats }}" hint-placeholder-val="{{ false }}">
+          <div style="font-size:12px;font-weight:700;color:#8A6E5A;flex:none">🎂 Birthdays come back every year on this date.</div>
+        </sc-if>
+        <div style="position:sticky;bottom:0;background:#FFF7EC;padding:12px 0 20px;display:flex;gap:8px;flex:none;border-top:2px solid #F1E4D6;margin-top:2px">
+          <sc-if value="{{ calShEditing }}" hint-placeholder-val="{{ false }}">
+            <button aria-label="Delete event" sc-camel-on-click="{{ calRemove }}" style="width:54px;height:54px;border-radius:18px;border:2px solid #3B2A20;background:#fff;font-size:20px;cursor:pointer;flex:none;padding:0">🗑️</button>
+          </sc-if>
+          <button sc-camel-on-click="{{ calSave }}" style="flex:1;height:54px;border-radius:18px;border:2px solid #3B2A20;background:#FFD166;color:#3B2A20;font-family:'Baloo 2',sans-serif;font-size:18px;font-weight:800;cursor:pointer;box-shadow:0 4px 0 #3B2A20">{{ calSaveLabel }}</button>
+        </div>
+      </div>
+    </div>
+  </sc-if>
+
   <sc-if value="{{ hasToast }}" hint-placeholder-val="{{ false }}">
     <div role="status" style="position:fixed;bottom:88px;left:50%;transform:translateX(-50%);background:#fff;border:2px solid #3B2A20;border-radius:999px;padding:10px 18px;font-weight:800;font-size:14px;z-index:11;white-space:nowrap;max-width:calc(100% - 48px);overflow:hidden;text-overflow:ellipsis;box-shadow:3px 3px 0 #3B2A20">{{ toast }}</div>
   </sc-if>
@@ -1685,6 +1815,51 @@ const unionList = (a, b) => [...new Set([...(Array.isArray(a) ? a : []), ...(Arr
 const mergeDays = (a, b) => { const o = { ...(isObj(b) ? b : {}) }; Object.entries(isObj(a) ? a : {}).forEach(([k, v]) => { o[k] = Array.isArray(v) ? unionList(v, o[k]) : v; }); return o; };
 const mergeKeep = (a, b) => ({ ...(isObj(b) ? b : {}), ...(isObj(a) ? a : {}) });
 const maxMap = (a, b) => { const o = { ...(isObj(b) ? b : {}) }; Object.entries(isObj(a) ? a : {}).forEach(([k, v]) => { o[k] = Math.max(Number(v) || 0, Number(o[k]) || 0); }); return o; };
+// ── My calendar (Plan tab): events, important days and period days. Private to each person. ──
+const CAL_KINDS = [
+  ['bday', '🎂', 'Birthday', '#FFE3EC'], ['test', '📝', 'Test or quiz', '#E1F0FB'], ['game', '🏆', 'Game or meet', '#DDF5E8'],
+  ['show', '🎭', 'Show or recital', '#F3E3FA'], ['doctor', '🩺', 'Appointment', '#E3F4F1'], ['trip', '✈️', 'Trip', '#E1F0FB'],
+  ['school', '🏫', 'School event', '#FFF1C2'], ['party', '🎉', 'Party', '#FFE3D8'], ['other', '📌', 'Something else', '#F3E6D3']
+];
+const CAL_KIND = Object.fromEntries(CAL_KINDS.map(([id, e, label, bg]) => [id, { id, e, label, bg }]));
+const CAL_MAX = 12;   // events per day
+const DAY_KEY = /^\d{4}-\d{2}-\d{2}$/;
+const cleanCal = o => {
+  const out = {};
+  if (!isObj(o)) return out;
+  Object.entries(o).forEach(([d, list]) => {
+    if (!DAY_KEY.test(d) || !Array.isArray(list)) return;
+    const ok = list.filter(e => isObj(e) && typeof e.id === 'string' && e.id.length <= 16 && CAL_KIND[e.k] && typeof e.t === 'string' && e.t.trim())
+      .slice(0, CAL_MAX).map(e => ({ id: e.id, t: e.t.trim().slice(0, 40), k: e.k, imp: e.imp ? 1 : 0, ...(/^\d{2}:\d{2}$/.test(e.tm || '') ? { tm: e.tm } : {}) }));
+    if (ok.length) out[d] = ok;
+  });
+  return out;
+};
+const cleanPeriod = o => { const out = {}; if (isObj(o)) Object.keys(o).forEach(d => { if (DAY_KEY.test(d) && o[d]) out[d] = 1; }); return out; };
+// Events are merged one by one (by id), so a backup never loses an event made on another phone.
+const mergeCal = (a, b) => {
+  const out = cleanCal(b);
+  Object.entries(cleanCal(a)).forEach(([d, list]) => { const ids = new Set(list.map(e => e.id)); out[d] = [...list, ...(out[d] || []).filter(e => !ids.has(e.id))].slice(0, CAL_MAX); });
+  return out;
+};
+const tmLabel = tm => { const [h, m] = tm.split(':').map(Number); return `${(h + 11) % 12 + 1}:${pad(m)} ${h < 12 ? 'AM' : 'PM'}`; };
+const dayDiff = (a, b) => Math.round((new Date(b + 'T12:00') - new Date(a + 'T12:00')) / 864e5);
+const firstOfMonth = d => new Date(d.getFullYear(), d.getMonth(), 1, 12);
+// Period estimate from the days logged: average gap between starts (default 28 days) and average length (default 5).
+const periodInfo = (period, today) => {
+  const days = Object.keys(period).sort(); if (!days.length) return null;
+  const set = new Set(days), starts = [], lens = [];
+  days.forEach(d => { if (!set.has(iso(add(new Date(d + 'T12:00'), -1)))) { starts.push(d); lens.push(0); } lens[lens.length - 1]++; });
+  const gaps = starts.slice(1).map((d, i) => dayDiff(starts[i], d)).filter(n => n >= 18 && n <= 45).slice(-6);
+  const cycle = gaps.length ? Math.round(gaps.reduce((x, y) => x + y, 0) / gaps.length) : 28;
+  const recent = lens.slice(-6), len = Math.min(8, Math.max(2, Math.round(recent.reduce((x, y) => x + y, 0) / recent.length)));
+  const last = starts[starts.length - 1];
+  let next = add(new Date(last + 'T12:00'), cycle);
+  while (iso(add(next, len - 1)) < today) next = add(next, cycle);
+  const pred = new Set();
+  for (let k = 0; k < 3; k++) for (let j = 0; j < len; j++) { const d = iso(add(next, k * cycle + j)); if (!set.has(d) && d > last) pred.add(d); }
+  return { next: iso(next), cycle, len, gaps: gaps.length, pred };
+};
 function mergeSaved(loc, rem) {
   rem = isObj(rem) ? rem : {};
   const titles = new Set((loc.myIdeas || []).map(i => i.title));
@@ -1706,10 +1881,11 @@ function mergeSaved(loc, rem) {
     favs: mergeDays(loc.favs, rem.favs), eaten: mergeDays(loc.eaten, rem.eaten), badges: mergeKeep(loc.badges, rem.badges),
     myIdeas, seenMs: unionList(loc.seenMs, rem.seenMs), questDone: mergeDays(loc.questDone, rem.questDone),
     stickers, holos: mergeKeep(loc.holos, rem.holos), peck, myBadges,
-    sched: cleanSched(mergeKeep(cleanSched(loc.sched), cleanSched(rem.sched)))
+    sched: cleanSched(mergeKeep(cleanSched(loc.sched), cleanSched(rem.sched))),
+    cal: mergeCal(loc.cal, rem.cal), period: cleanPeriod(mergeKeep(cleanPeriod(loc.period), cleanPeriod(rem.period)))
   };
 }
-const hasStuff = d => !!d && (['favs', 'eaten', 'badges', 'questDone', 'stickers', 'holos', 'sched'].some(k => isObj(d[k]) && Object.keys(d[k]).length)
+const hasStuff = d => !!d && (['favs', 'eaten', 'badges', 'questDone', 'stickers', 'holos', 'sched', 'cal', 'period'].some(k => isObj(d[k]) && Object.keys(d[k]).length)
   || ['myIdeas', 'myBadges'].some(k => Array.isArray(d[k]) && d[k].length) || (isObj(d.peck) && (Number(d.peck.pts) > 0 || Object.keys(d.peck.best || {}).length > 0)));
 const fmtMove = v => { const c = String(v || '').toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 8); return c.length > 4 ? c.slice(0, 4) + '-' + c.slice(4) : c; };
 // ── Badges kids design themselves ──
@@ -2236,6 +2412,7 @@ const FP_SLOTS = 14, FP_START = 15 * 60, FP_ROW = 56, FP_PAST = 2, BAL_BONUS = 2
 const FDAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 const FDAYSL = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 const PDIRTY = 'lunchbuddy-plan-dirty';   // days whose plan still needs sharing with the family
+const FP_SAMPLE = [{ s: 0, n: 1, a: 'snack', d: 1 }, { s: 1, n: 2, a: 'study', d: 1 }, { s: 3, n: 3, a: 'soccer', d: 0 }, { s: 6, n: 1, a: 'dinner', d: 0 }, { s: 7, n: 2, a: 'reading', d: 0 }, { s: 9, n: 1, a: 'gaming', d: 0 }, { s: 13, n: 1, a: 'bedtime', d: 0 }];
 const FP_LEN = { 1: '30 min', 2: '1 hr', 3: '1½ hr', 4: '2 hr', 5: '2½ hr', 6: '3 hr' };
 const monOf = d => { const x = new Date(d.getFullYear(), d.getMonth(), d.getDate()); return add(x, -((x.getDay() + 6) % 7)); };
 const slotMin = i => FP_START + i * 30;
@@ -2297,7 +2474,7 @@ class Component extends DCLogic {
       stickers: Object.fromEntries(Object.entries(saved.stickers || {}).map(([d, id]) => [d, LEGACY_Q[id] || id])),
       peck: { pts: 0, best: {}, log: {}, plays: 0, ...migratePeck(saved.peck) }, myBadges: saved.myBadges || [],
       nestView: 'quests', bSheet: false, bDraft: { ...MB_BLANK }, game: null,
-      sched: cleanSched(saved.sched), fpWs: monOf(now), fpIdx: (wd + 6) % 7, fpSheet: null, fpKid: null, fpKidSched: {}, fpNotes: [], fpTag: '',
+      sched: cleanSched(saved.sched), cal: cleanCal(saved.cal), period: cleanPeriod(saved.period), calM: firstOfMonth(now), calSel: null, calSheet: null, fpWs: monOf(now), fpIdx: (wd + 6) % 7, fpSheet: null, fpKid: null, fpKidSched: {}, fpNotes: [], fpTag: '',
       fpNoteDraft: '', fpNoteEdit: false, fpReplyFor: null, fpReplyDraft: '', fpReplyEdit: null, fpBusy: false, tick: 0,
       famOk: false, fam: null, famBusy: false, famErr: '', famEvents: [], famLastSeen: 0, famPlans: [], pushState: 'unknown',
       backupAt: ((lsGet(FKEY, {}) || {}).token ? (lsGet(FKEY, {}) || {}).bAt : (lsGet(VKEY, {}) || {}).bAt) || 0, moveCode: null,
@@ -2594,8 +2771,8 @@ class Component extends DCLogic {
     return { emoji, text, when: ago(e.at), isNew, bg: isNew ? '#FFF1C2' : '#FFF7EC' };
   }
   saveData() {
-    const { favs, eaten, badges, myIdeas, seenMs, questDone, stickers, holos, peck, myBadges, sched } = this.state;
-    return { v: 2, favs, eaten, badges, myIdeas, seenMs, questDone, stickers, holos, peck, myBadges, sched };
+    const { favs, eaten, badges, myIdeas, seenMs, questDone, stickers, holos, peck, myBadges, sched, cal, period } = this.state;
+    return { v: 2, favs, eaten, badges, myIdeas, seenMs, questDone, stickers, holos, peck, myBadges, sched, cal, period };
   }
   persist() {
     try { localStorage.setItem(KEY, JSON.stringify(this.saveData())); } catch (e) {}
@@ -3076,6 +3253,40 @@ class Component extends DCLogic {
     if (!text) { this.flash('✏️ Write a reply first'); return; }
     this.fpDo(async () => { await this.api('POST', 'notes/reply', { id: n.id, reply: text }); this.setState({ fpReplyFor: null, fpReplyDraft: '', fpReplyEdit: null }); await this.fpLoad(); this.flash('💬 Reply sent'); });
   }
+  // ── My calendar ──
+  calShift(n) { this.setState(s => ({ calM: new Date(s.calM.getFullYear(), s.calM.getMonth() + n, 1, 12), calSel: null })); }
+  // Zoom into a day, and show the same day in the plan below.
+  calGo(day) {
+    const d = new Date(day + 'T12:00'), ws = monOf(d), same = iso(ws) === iso(this.state.fpWs);
+    this.setState({ calM: firstOfMonth(d), calSel: day, fpWs: ws, fpIdx: (d.getDay() + 6) % 7, fpNoteEdit: false, fpReplyFor: null, fpReplyEdit: null },
+      () => same ? this.fpSeen() : this.fpLoad());
+  }
+  calPick(day) { if (this.state.calSel === day) this.setState({ calSel: null }); else this.calGo(day); }
+  calOpen(day, src, idx) {
+    const e = idx >= 0 ? (this.state.cal[src] || [])[idx] : null;
+    this.setState({ calSheet: { day, src: e ? src : day, idx: e ? idx : -1, t: e ? e.t : '', k: e ? e.k : 'other', imp: e ? e.imp : 0, tm: (e && e.tm) || '' } });
+  }
+  setCalSheet(p) { this.setState(s => s.calSheet ? { calSheet: { ...s.calSheet, ...p } } : null); }
+  calSave() {
+    const f = this.state.calSheet; if (!f) return;
+    const k = CAL_KIND[f.k] ? f.k : 'other', t = f.t.trim() || CAL_KIND[k].label;
+    const cal = { ...this.state.cal }, list = [...(cal[f.src] || [])], old = f.idx >= 0 ? list[f.idx] : null;
+    if (!old && list.length >= CAL_MAX) { this.flash(`That day already has ${CAL_MAX} events`); return; }
+    const ev = { id: old ? old.id : Date.now().toString(36) + Math.random().toString(36).slice(2, 6), t: t.slice(0, 40), k, imp: f.imp ? 1 : 0, ...(f.tm ? { tm: f.tm } : {}) };
+    if (old) list[f.idx] = ev; else list.push(ev);
+    cal[f.src] = list;
+    this.setState({ cal: cleanCal(cal), calSheet: null }, () => { this.persist(); this.flash(`${CAL_KIND[k].e} ${old ? 'Event updated' : 'Added to your calendar'}`); });
+  }
+  calRemove() {
+    const f = this.state.calSheet; if (!f || f.idx < 0) return;
+    const cal = { ...this.state.cal }; cal[f.src] = (cal[f.src] || []).filter((_, i) => i !== f.idx);
+    this.setState({ cal: cleanCal(cal), calSheet: null }, () => { this.persist(); this.flash('🗑️ Event deleted'); });
+  }
+  calPeriod(day) {
+    const period = { ...this.state.period }, on = !period[day];
+    if (on) period[day] = 1; else delete period[day];
+    this.setState({ period }, () => { this.persist(); this.flash(on ? '🩸 Marked as a period day' : 'Period day removed'); });
+  }
   // ── Peck Patch ──
   setGame(p) { this.setState(s => s.game ? { game: { ...s.game, ...(typeof p === 'function' ? p(s.game) : p) } } : null); }
   startLevel(i) {
@@ -3245,7 +3456,9 @@ class Component extends DCLogic {
     const nowD = new Date(), tIso = iso(nowD), nowMin = nowD.getHours() * 60 + nowD.getMinutes();
     const fpD = add(s.fpWs, s.fpIdx), fk = iso(fpD), fpWe = add(s.fpWs, 6);
     const kidLoaded = !!(viewKid && s.fpKidSched[viewKid.id] && s.fpKidSched[viewKid.id][fk]);
-    const fpSrc = famParent ? ((viewKid && s.fpKidSched[viewKid.id]) || {}) : s.sched;
+    // A parent with no kids in the family yet sees an example afternoon, so they know what's coming.
+    const fpSample = famParent && !viewKid;
+    const fpSrc = fpSample ? { [fk]: FP_SAMPLE } : famParent ? ((viewKid && s.fpKidSched[viewKid.id]) || {}) : s.sched;
     const fpBl = fpSrc[fk] || [], fpX = fpDay(fpBl);
     const fpEdit = !famParent && fk >= iso(add(nowD, -FP_PAST));
     const lastWk = s.sched[iso(add(fpD, -7))] || [];
@@ -3294,13 +3507,13 @@ class Component extends DCLogic {
       fpDays: FDAYS.map((label, i) => {
         const dd = add(s.fpWs, i), dk = iso(dd), bl = fpSrc[dk] || [], x = fpDay(bl), sel = i === s.fpIdx, today = dk === tIso;
         return {
-          label: today ? 'Today' : label, date: dd.getDate(), mark: x.pts ? `⭐${x.pts}` : bl.length ? '•'.repeat(Math.min(3, bl.length)) : '',
+          label: today ? 'Today' : label, date: dd.getDate(), mark: fpSample ? '' : x.pts ? `⭐${x.pts}` : bl.length ? '•'.repeat(Math.min(3, bl.length)) : '',
           bg: sel ? '#FF6B57' : today ? '#FFF1C2' : i >= 5 ? '#FFF7EC' : '#fff', fg: sel ? '#fff' : '#3B2A20', shadow: sel ? '0 4px 0 #3B2A20' : 'none',
           pressed: sel ? 'true' : 'false', aria: `${FDAYSL[i]} ${MON[dd.getMonth()]} ${dd.getDate()}${x.pts ? `, ${x.pts} points` : ''}`,
           hasNote: s.fpNotes.some(n => n.day === dk), onClick: () => this.fpPick(i)
         };
       }),
-      fpDayTitle: famParent ? (viewKid ? `${kidName}’s ${FDAYSL[s.fpIdx]}` : FDAYSL[s.fpIdx]) : `${FDAYSL[s.fpIdx]}, ${MON[fpD.getMonth()]} ${fpD.getDate()}`,
+      fpDayTitle: famParent ? (viewKid ? `${kidName}’s ${FDAYSL[s.fpIdx]}` : `Example ${FDAYSL[s.fpIdx]}`) : `${FDAYSL[s.fpIdx]}, ${MON[fpD.getMonth()]} ${fpD.getDate()}`,
       fpPts: fpX.pts,
       fpTimeLine: fpBl.length ? `🕒 ${hrs(fpX.planned)} planned · ${hrs(FP_SLOTS - fpX.planned)} free · ${fpX.done} of ${fpBl.length} done`
         : famParent ? `🕒 Nothing planned for this day yet.` : fpEdit ? '🕒 Nothing planned yet. Tap a time below to add an activity.' : '🕒 Nothing was planned this day.',
@@ -3313,8 +3526,10 @@ class Component extends DCLogic {
         : `Finish some learning and some moving, with 1 hour of screens or less, for a +${BAL_BONUS} ⭐ balance bonus.`,
       fpBalColor: fpX.bal ? '#1F7A50' : fpX.screen > 2 ? '#B23A50' : '#8A6E5A',
       fpCanCopy: fpEdit && !fpBl.length && lastWk.length > 0, fpCopyLabel: `↻ Copy last ${FDAYSL[s.fpIdx]}’s plan`, fpCopy: () => this.fpCopyLast(fk),
-      fpHasLockNote: !famParent && !fpEdit, fpLockNote: `🔒 This day is locked. You can add and check off activities for today, the days ahead, and the last ${FP_PAST} days.`,
-      fpShowGrid: !famParent || (!!viewKid && kidLoaded), fpLoadingKid: !!(famParent && viewKid && !kidLoaded), fpKidName: kidName,
+      fpHasLockNote: (!famParent && !fpEdit) || fpSample,
+      fpLockNote: fpSample ? `👀 This is an example. Once your kids join the family${fam.family && fam.family.code ? ` with invite code ${fam.family.code}` : ''} (on the 👪 Family tab), their real after-school plans show up here.`
+        : `🔒 This day is locked. You can add and check off activities for today, the days ahead, and the last ${FP_PAST} days.`,
+      fpShowGrid: !famParent || fpSample || (!!viewKid && kidLoaded), fpLoadingKid: !!(famParent && viewKid && !kidLoaded), fpKidName: kidName,
       fpTimes: Array.from({ length: FP_SLOTS + 1 }, (_, i) => { const m = slotMin(i), half = m % 60 !== 0; return { row: String(i + 1), label: half ? clock(m) : `${Math.floor(m / 60) - 12} PM`, color: half ? '#B49A86' : '#5A4334', fs: half ? '11px' : '12px' }; }),
       fpEmpty: fpEdit ? freeSlots.map(i => ({ row: String(i + 1), label: i === freeSlots[0] ? 'Add an activity' : '', aria: `Add an activity at ${clock(slotMin(i))} PM`, onClick: () => this.fpOpen(fk, i, -1) })) : [],
       fpGaps: fpEdit ? [] : freeSlots.map(i => ({ row: String(i + 1) })),
@@ -3324,13 +3539,13 @@ class Component extends DCLogic {
           row: `${b.s + 1} / span ${b.n}`, bg: ACT_KIND[a.kind].card, icon: actIcon(a.id, 38), name,
           sub: a.kind === 'screen' ? `${range} · screen` : `${range} · ${b.d ? '+' : ''}${p} ⭐`,
           aria: famParent ? `${name}, ${range}` : `Change ${name}, ${range}`,
-          onOpen: () => famParent ? null : !fpEdit ? this.flash('🔒 That day is locked') : this.fpOpen(fk, b.s, i),
+          onOpen: () => fpSample ? this.flash('👀 This is just an example') : famParent ? null : !fpEdit ? this.flash('🔒 That day is locked') : this.fpOpen(fk, b.s, i),
           checkAria: famParent ? (b.d ? `${name} is done` : `${name} is not done yet`) : (b.d ? `Mark ${name} not done` : `Mark ${name} done`), pressed: b.d ? 'true' : 'false',
           checkBg: b.d ? '#3DBE8B' : '#fff', dotBg: b.d ? '#fff' : '#FFF7EC', check: b.d ? '✓' : '',
-          onCheck: () => famParent ? this.flash(`✓ marks appear when ${kidName} finishes`) : this.fpToggle(fk, i)
+          onCheck: () => fpSample ? this.flash('👀 This is just an example') : famParent ? this.flash(`✓ marks appear when ${kidName} finishes`) : this.fpToggle(fk, i)
         };
       }),
-      fpHasNow: fk === tIso && nowMin >= FP_START && nowMin <= slotMin(FP_SLOTS) && (!famParent || kidLoaded), fpNowTop: `${(nowMin - FP_START) / 30 * FP_ROW}px`,
+      fpHasNow: fk === tIso && nowMin >= FP_START && nowMin <= slotMin(FP_SLOTS) && (!famParent || kidLoaded || fpSample), fpNowTop: `${(nowMin - FP_START) / 30 * FP_ROW}px`,
       fpHasSheet: !!sh, fpClose: () => this.setState({ fpSheet: null }),
       fpSh: sh ? { title: sh.idx >= 0 ? 'Change activity' : 'Add an activity', sub: `${FDAYS[(new Date(sh.day + 'T12:00').getDay() + 6) % 7]} · ${fpRange(sh.s, sh.n)}` } : {},
       fpShOther: !!(sh && sh.a === 'other'), fpShT: sh ? sh.t : '', onFpT: e => this.setFpSheet({ t: e.target.value.slice(0, 24) }),
@@ -3344,6 +3559,85 @@ class Component extends DCLogic {
       fpShEditing: !!(sh && sh.idx >= 0), fpSave: () => this.fpSave(), fpRemove: () => this.fpRemove(),
       fpSaveLabel: !sh || !sh.a ? 'Pick an activity' : `${sh.idx >= 0 ? 'Save' : 'Add'} ${sh.a === 'other' ? (sh.t.trim() || 'it') : ACT[sh.a].name} · ${FP_LEN[sh.n] || ''}`,
       fpSaveBg: sh && sh.a ? '#FFD166' : '#F3E6D3', fpSaveOp: sh && sh.a ? 1 : 0.7
+    };
+    // ── My calendar ──
+    const cm = s.calM, cy = cm.getFullYear(), cmo = cm.getMonth(), mKey = iso(cm).slice(0, 7);
+    const lead = (cm.getDay() + 6) % 7, nDays = new Date(cy, cmo + 1, 0).getDate(), nRows = Math.ceil((lead + nDays) / 7);
+    const zDay = s.calSel && s.calSel.slice(0, 7) === mKey ? s.calSel : null;
+    const zD = zDay ? new Date(zDay + 'T12:00') : null;
+    const zCol = zD ? (zD.getDay() + 6) % 7 : -1, zRow = zD ? Math.floor((lead + zD.getDate() - 1) / 7) : -1;
+    const pInfo = periodInfo(s.period, tIso);
+    // Birthdays come back every year: index them by month-day.
+    const bdays = {};
+    Object.entries(s.cal).forEach(([d, list]) => list.forEach((e, i) => { if (e.k === 'bday') (bdays[d.slice(5)] = bdays[d.slice(5)] || []).push({ ...e, src: d, idx: i }); }));
+    const eventsOn = day => [...(s.cal[day] || []).map((e, i) => ({ ...e, src: day, idx: i })), ...(bdays[day.slice(5)] || []).filter(e => e.src < day)]
+      .sort((a, b) => (b.imp - a.imp) || (a.tm || '99').localeCompare(b.tm || '99'));
+    const evText = e => `${e.t}${e.tm ? ` · ${tmLabel(e.tm)}` : ''}`;
+    const calCells = Array.from({ length: nDays }, (_, i) => {
+      const dd = new Date(cy, cmo, i + 1, 12), day = iso(dd), col = (lead + i) % 7, row = Math.floor((lead + i) / 7);
+      const evs = eventsOn(day), imp = evs.some(e => e.imp), per = !!s.period[day], pred = !!(pInfo && pInfo.pred.has(day));
+      const big = day === zDay, inRow = !!zDay && !big && row === zRow, squeezed = !!zDay && !big && col !== zCol && !inRow, today = day === tIso;
+      const show = squeezed ? 1 : inRow ? 3 : 2, icons = [...(per ? ['🩸'] : []), ...evs.map(e => CAL_KIND[e.k].e)];
+      const marks = icons.slice(0, show).join('') + (icons.length > show ? '+' : '');
+      return {
+        col: String(col + 1), row: String(row + 1), num: String(i + 1), big, compact: !big,
+        wd: `${FDAYS[col]} · ${MON[cmo]}`,
+        bg: big ? '#FFF7EC' : imp ? '#FFE08A' : per ? '#FFD6DF' : col >= 5 ? '#FFF9F1' : '#fff',
+        border: big ? '2px solid #3B2A20' : pred ? '2px dashed #F28BA0' : imp ? '2px solid #E8B93A' : per ? '2px solid #F28BA0' : '1.5px solid #EAD9C6',
+        shadow: big ? '3px 3px 0 #3B2A20' : 'none',
+        numFs: squeezed ? '11px' : '14px', markFs: squeezed ? '9px' : '12px',
+        numBg: today ? '#FF6B57' : 'transparent', numFg: today ? '#fff' : '#3B2A20', marks, markWs: inRow ? 'normal' : 'nowrap',
+        aria: `${FDAYSL[col]}, ${MON[cmo]} ${i + 1}${today ? ', today' : ''}${evs.length ? `, ${evs.length} event${evs.length > 1 ? 's' : ''}` : ''}${per ? ', period day' : pred ? ', period estimate' : ''}${imp ? ', important' : ''}`,
+        onClick: () => this.calPick(day),
+        events: big ? evs.map(e => ({ e: CAL_KIND[e.k].e, t: evText(e), bg: CAL_KIND[e.k].bg, border: e.imp ? '2px solid #E8B93A' : '1.5px solid transparent',
+          aria: `Change ${e.t}`, onEdit: () => this.calOpen(day, e.src, e.idx) })) : [],
+        noEvents: big && !evs.length, emptyText: per ? 'Period day' : pred ? 'Period may come around now' : 'Nothing yet',
+        onAdd: () => this.calOpen(day, day, -1), onPeriod: () => this.calPeriod(day),
+        periodPressed: per ? 'true' : 'false', periodAria: per ? 'Remove period day' : 'Mark as a period day',
+        periodBg: per ? '#FF8FA8' : '#fff', periodBorder: per ? '#3B2A20' : '#E8D3BC'
+      };
+    });
+    const soon = [];
+    for (let i = 0; i < 31 && soon.length < 3; i++) {
+      const dd = add(nowD, i), day = iso(dd);
+      eventsOn(day).forEach(e => { if (soon.length < 3) soon.push({ e, day, dd, i }); });
+    }
+    const csh = s.calSheet, cshKind = csh ? CAL_KIND[csh.k] || CAL_KIND.other : null, cshD = csh ? new Date(csh.day + 'T12:00') : null;
+    const calView = {
+      calHint: zDay ? 'Tap + Add for an event, or 🩸 for a period day.' : 'Tap a date to zoom in.',
+      calMonthLabel: cm.toLocaleDateString('en-US', { month: 'long', year: 'numeric' }),
+      calShowToday: mKey !== tIso.slice(0, 7) || !!zDay, calToday: () => this.setState({ calM: firstOfMonth(nowD), calSel: null }),
+      calPrev: () => this.calShift(-1), calNext: () => this.calShift(1),
+      calCols: Array.from({ length: 7 }, (_, i) => i === zCol ? '4.6fr' : '1fr').join(' '),
+      calRows: Array.from({ length: nRows }, (_, r) => zRow < 0 ? '50px' : r === zRow ? '196px' : '38px').join(' '),
+      calWd: FDAYS.map((d, i) => ({ label: i === zCol ? FDAYSL[i] : d.charAt(0), color: i === zCol ? '#E2553F' : i >= 5 ? '#B49A86' : '#8A6E5A' })),
+      calCells,
+      calHasSoon: soon.length > 0,
+      calSoon: soon.map(({ e, day, dd, i }) => ({
+        e: CAL_KIND[e.k].e, t: `${e.imp ? '⭐ ' : ''}${evText(e)}`, bg: e.imp ? '#FFF3C4' : '#FFF9F1', border: e.imp ? '#E8B93A' : '#EAD9C6',
+        when: i === 0 ? 'Today' : i === 1 ? 'Tomorrow' : `${FDAYS[(dd.getDay() + 6) % 7]}, ${MON[dd.getMonth()]} ${dd.getDate()}`,
+        onClick: () => this.calGo(day)
+      })),
+      calHasPeriod: !!pInfo,
+      calPeriodLine: !pInfo ? '' : (() => {
+        const n = dayDiff(tIso, pInfo.next), nd = new Date(pInfo.next + 'T12:00');
+        if (s.period[tIso]) return '🩸 Period day today';
+        if (n <= 0) return '🩸 Your period may come around now';
+        return `🩸 Next period: about ${FDAYS[(nd.getDay() + 6) % 7]}, ${MON[nd.getMonth()]} ${nd.getDate()} (in ${n} day${n === 1 ? '' : 's'})`;
+      })(),
+      calPeriodNote: !pInfo ? '' : pInfo.gaps >= 1
+        ? `An estimate from your last ${pInfo.gaps + 1} periods: about every ${pInfo.cycle} days, ${pInfo.len} days long. Dashed days show the estimate.`
+        : `An estimate using a 28-day cycle. Mark a few more periods and it gets closer to yours. Dashed days show the estimate.`,
+      calHasSheet: !!csh, calClose: () => this.setState({ calSheet: null }),
+      calSh: csh ? { title: csh.idx >= 0 ? 'Change event' : 'Add an event', sub: `${FDAYS[(cshD.getDay() + 6) % 7]}, ${MON[cshD.getMonth()]} ${cshD.getDate()}` } : {},
+      calShT: csh ? csh.t : '', onCalT: e => this.setCalSheet({ t: e.target.value.slice(0, 40) }), calShPh: cshKind ? `e.g. ${{ bday: 'Grandma’s birthday', test: 'Math test', game: 'Soccer game', show: 'Band concert', doctor: 'Dentist', trip: 'Trip to the beach', school: 'Field trip', party: 'Sleepover', other: 'Bring library books' }[cshKind.id]}` : '',
+      calKinds: CAL_KINDS.map(([id, e, label, bg]) => { const on = csh && csh.k === id; return { e, label, pressed: on ? 'true' : 'false', bg: on ? bg : '#fff', border: on ? '#3B2A20' : '#E8D3BC', shadow: on ? '0 3px 0 #3B2A20' : 'none', onClick: () => this.setCalSheet({ k: id }) }; }),
+      calShImpPressed: csh && csh.imp ? 'true' : 'false', calToggleImp: () => this.setCalSheet({ imp: csh && csh.imp ? 0 : 1 }),
+      calShImpBg: csh && csh.imp ? '#FFF3C4' : '#fff', calShImpBorder: csh && csh.imp ? '#E8B93A' : '#E8D3BC', calShImpBox: csh && csh.imp ? '#FFD166' : '#fff', calShImpMark: csh && csh.imp ? '✓' : '',
+      calShTm: csh ? csh.tm : '', onCalTm: e => this.setCalSheet({ tm: /^\d{2}:\d{2}$/.test(e.target.value) ? e.target.value : '' }),
+      calShRepeats: !!(csh && csh.k === 'bday'), calShEditing: !!(csh && csh.idx >= 0),
+      calSave: () => this.calSave(), calRemove: () => this.calRemove(),
+      calSaveLabel: csh ? `${csh.idx >= 0 ? 'Save' : 'Add'} ${cshKind.e} ${(csh.t.trim() || cshKind.label).slice(0, 22)}` : ''
     };
     const pushTexts = {
       unknown: 'Checking this device…',
@@ -3580,7 +3874,7 @@ class Component extends DCLogic {
       pipHero: s.tab === 'game' ? (curLv >= 0 ? guideOf(curLv) : GUIDES.pip).el('happy', 68, 'lb-bob 2.2s ease-in-out infinite') : null,
       peckPts: pk.pts || 0, peckStars: Object.values(pbest).reduce((a, b) => a + b, 0), peckStarsMax: LEVELS.length * 3,
       peckToday: (pk.log || {})[today] || 0, peckAllDone: curLv < 0, units,
-      ...gv, ...fpView, planPts: st.planPts,
+      ...gv, ...fpView, ...calView, planPts: st.planPts,
       nav: tabs.map(([id, e, label]) => {
         const badge = id === 'family' ? famUnread : id === 'plan' ? notesNew : 0;
         return { e, label, bg: s.tab === id ? '#FFD166' : 'transparent', fg: s.tab === id ? '#3B2A20' : '#FFF7EC', onClick: () => this.goTab(id),
