@@ -1661,7 +1661,7 @@ const EMO = [
   [/pancake/i, '🥞'], [/waffle/i, '🧇'], [/biscuit|roll|bread|toast|bun|garlic/i, '🍞'], [/cookie/i, '🍪'], [/cake|brownie/i, '🧁'],
   [/fish|shrimp|tuna/i, '🐟'], [/soup/i, '🍲'], [/yogurt|parfait/i, '🥣'], [/cucumber|pickle/i, '🥒'], [/tomato|salsa/i, '🍅'],
   [/steak|beef|meatball|pork|bbq|rib/i, '🍖'], [/pretzel/i, '🥨'], [/cracker|chip/i, '🍘'], [/ranch|sauce|dressing|ketchup/i, '🫙'],
-  [/turkey|ham/i, '🥓'], [/hummus/i, '🥙'], [/veg|spinach|mixed/i, '🥬'], [/peanut|pb/i, '🥜'], [/water/i, '💧']
+  [/turkey/i, '🦃'], [/ham/i, '🥓'], [/hummus/i, '🥙'], [/veg|spinach|mixed/i, '🥬'], [/peanut|pb/i, '🥜'], [/water/i, '💧']
 ];
 const emojiFor = s => { for (const [r, e] of EMO) if (r.test(s)) return e; const m = iconMatches(s)[0]; return m && m.sc >= 3 ? m.e : '🍴'; };
 const GROUPS = [
