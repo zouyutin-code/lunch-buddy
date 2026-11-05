@@ -526,13 +526,33 @@ input::placeholder{color:#B49A86}
         </button>
         <sc-if value="{{ showForm }}" hint-placeholder-val="{{ false }}">
           <div style="display:flex;flex-direction:column;gap:10px;margin-top:10px">
-            <div style="font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#7A4B12">Pick an icon</div>
+            <input value="{{ draftTitle }}" sc-camel-on-change="{{ onDraftTitle }}" maxlength="60" aria-label="Idea name" placeholder="Idea name, e.g. Grandma's chicken salad" style="height:48px;border-radius:16px;border:2px solid #3B2A20;padding:0 14px;font-family:inherit;font-size:16px;font-weight:700;color:#3B2A20;background:#fff;outline:none;min-width:0">
+            <div style="display:flex;align-items:baseline;justify-content:space-between;gap:8px">
+              <span style="font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#7A4B12;flex:none">Pick an icon</span>
+              <sc-if value="{{ iconHasMatch }}" hint-placeholder-val="{{ false }}">
+                <span style="font-size:12px;font-weight:700;color:#8A6E5A;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0">{{ iconMatchLine }}</span>
+              </sc-if>
+            </div>
             <div style="display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:6px">
               <sc-for list="{{ emojiOpts }}" as="eo" hint-placeholder-count="12">
-                <button sc-camel-on-click="{{ eo.onClick }}" style="height:44px;border-radius:14px;border:2px solid {{ eo.border }};background:{{ eo.bg }};font-size:22px;cursor:pointer">{{ eo.e }}</button>
+                <button aria-label="{{ eo.label }}" aria-pressed="{{ eo.pressed }}" sc-camel-on-click="{{ eo.onClick }}" style="height:44px;border-radius:14px;border:2px solid {{ eo.border }};background:{{ eo.bg }};font-size:22px;cursor:pointer">{{ eo.e }}</button>
               </sc-for>
             </div>
-            <input value="{{ draftTitle }}" sc-camel-on-change="{{ onDraftTitle }}" maxlength="60" aria-label="Idea name" placeholder="Idea name, e.g. Grandma's chicken salad" style="height:48px;border-radius:16px;border:2px solid #3B2A20;padding:0 14px;font-family:inherit;font-size:16px;font-weight:700;color:#3B2A20;background:#fff;outline:none;min-width:0">
+            <button aria-expanded="{{ iconAllOpen }}" sc-camel-on-click="{{ toggleIconAll }}" style="align-self:flex-start;min-height:36px;padding:0 12px;border-radius:999px;border:2px solid #3B2A20;background:#fff;color:#3B2A20;font-family:inherit;font-weight:800;font-size:13px;cursor:pointer">{{ iconAllLabel }}</button>
+            <sc-if value="{{ iconShowAll }}" hint-placeholder-val="{{ false }}">
+              <div style="display:flex;flex-direction:column;gap:10px;background:#fff;border:2px solid #E8D3BC;border-radius:18px;padding:10px">
+                <sc-for list="{{ iconGroups }}" as="ig" hint-placeholder-count="3">
+                  <div>
+                    <div style="font-size:12px;font-weight:800;color:#8A6E5A;margin:0 0 6px 2px">{{ ig.title }}</div>
+                    <div style="display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:6px">
+                      <sc-for list="{{ ig.icons }}" as="gi" hint-placeholder-count="6">
+                        <button aria-label="{{ gi.label }}" aria-pressed="{{ gi.pressed }}" sc-camel-on-click="{{ gi.onClick }}" style="height:44px;border-radius:14px;border:2px solid {{ gi.border }};background:{{ gi.bg }};font-size:22px;cursor:pointer">{{ gi.e }}</button>
+                      </sc-for>
+                    </div>
+                  </div>
+                </sc-for>
+              </div>
+            </sc-if>
             <textarea value="{{ draftHow }}" sc-camel-on-change="{{ onDraftHow }}" placeholder="How to make it (optional)" rows="3" style="border-radius:16px;border:2px solid #3B2A20;padding:10px 14px;font-family:inherit;font-size:15px;font-weight:600;color:#3B2A20;background:#fff;outline:none;resize:vertical;min-width:0"></textarea>
             <div style="font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#7A4B12">Food groups</div>
             <div style="display:flex;flex-wrap:wrap;gap:6px">
@@ -1522,7 +1542,7 @@ const EMO = [
   [/steak|beef|meatball|pork|bbq|rib/i, '🍖'], [/pretzel/i, '🥨'], [/cracker|chip/i, '🍘'], [/ranch|sauce|dressing|ketchup/i, '🫙'],
   [/turkey|ham/i, '🥓'], [/hummus/i, '🥙'], [/veg|spinach|mixed/i, '🥬'], [/peanut|pb/i, '🥜'], [/water/i, '💧']
 ];
-const emojiFor = s => { for (const [r, e] of EMO) if (r.test(s)) return e; return '🍴'; };
+const emojiFor = s => { for (const [r, e] of EMO) if (r.test(s)) return e; const m = iconMatches(s)[0]; return m && m.sc >= 3 ? m.e : '🍴'; };
 const GROUPS = [
   { id: 'fruit', e: '🍎', label: 'Fruit', on: '#FFB4A2' }, { id: 'veggie', e: '🥦', label: 'Veggie', on: '#9BE3B8' },
   { id: 'protein', e: '🍗', label: 'Protein', on: '#FFD08A' }, { id: 'grain', e: '🍞', label: 'Grain', on: '#F5DFA0' },
@@ -1804,6 +1824,78 @@ const SAVANNA_FOODS = [
   food('🧀', 'Cheese', 'dairy', '1½ oz', [['Calcium', 2], ['Protein', 2]], 'A tasty way to get calcium and protein.', { tip: 'Cheese can be salty, so a little goes a long way.' }),
   food('🍚', 'Quinoa', 'grain', '1 cup, cooked', [['Manganese', 3], ['Magnesium', 2], ['Protein', 2], ['Fiber', 2]], 'A seed you cook like a grain, with complete protein and fiber.')
 ];
+// Icons for kids' own ideas: lunch dishes plus every food from Peck Patch, grouped. Words after the label suggest the icon.
+const ICON_SETS = [
+  ['Lunch', [
+    ['🥪', 'sandwich,sub,hoagie,blt,club,panini,pb&j,grilled cheese'], ['🌯', 'wrap,burrito,roll up,rollup,pinwheel'], ['🌮', 'taco,nacho,tostada'],
+    ['🫔', 'tamale,enchilada'], ['🍕', 'pizza,calzone'], ['🥗', 'salad,caesar,coleslaw,slaw'], ['🍝', 'pasta,spaghetti,mac,macaroni,noodle,lasagna,ravioli,penne,tortellini'],
+    ['🍜', 'ramen,noodle soup,udon,pho,soba,lo mein'], ['🍲', 'soup,stew,chili,hot pot,miso'], ['🍛', 'curry,curry rice'], ['🍚', 'rice,rice bowl,fried rice,grain bowl'],
+    ['🍙', 'rice ball,onigiri,musubi'], ['🍣', 'sushi,sushi roll,maki,nigiri,sashimi,california roll,roll,poke'], ['🍱', 'bento,bento box,lunch box,lunchbox,snack box'],
+    ['🥟', 'dumpling,gyoza,potsticker,wonton,pierogi,spring roll,egg roll'], ['🍤', 'tempura,fried shrimp'], ['🥙', 'pita,pita pocket,gyro,shawarma'],
+    ['🫓', 'flatbread,naan,quesadilla,tortilla,arepa'], ['🍔', 'burger,hamburger,cheeseburger,slider'], ['🌭', 'hot dog,corn dog,sausage'], ['🥘', 'paella,casserole,skillet'],
+    ['🍢', 'skewer,kebab,kabob,yakitori,oden'], ['🍳', 'omelet,omelette,scrambled egg,fried egg,frittata,breakfast'], ['🥞', 'pancake'], ['🧇', 'waffle'],
+    ['🍞', 'bread,toast,roll,bun,biscuit'], ['🥖', 'baguette,french bread'], ['🥯', 'bagel'], ['🥐', 'croissant'], ['🥨', 'pretzel'], ['🥡', 'takeout,leftover']
+  ]],
+  ['Fruits', [
+    ['🍎', 'apple'], ['🍏', 'green apple,granny smith'], ['🍌', 'banana'], ['🍇', 'grape'], ['🍓', 'strawberry,berry'], ['🫐', 'blueberry,berry'], ['🍒', 'cherry'],
+    ['🍊', 'orange,mandarin,clementine,tangerine,cutie'], ['🍋', 'lemon,lime,citrus'], ['🍐', 'pear'], ['🍑', 'peach,nectarine,apricot,plum'], ['🍉', 'watermelon'],
+    ['🍈', 'melon,cantaloupe,honeydew'], ['🍍', 'pineapple'], ['🥭', 'mango'], ['🥝', 'kiwi'], ['🥥', 'coconut'], ['🥑', 'avocado,guacamole,guac'], ['🫒', 'olive']
+  ]],
+  ['Veggies', [
+    ['🥦', 'broccoli'], ['🥕', 'carrot,baby carrot'], ['🌽', 'corn'], ['🥒', 'cucumber,pickle'], ['🫑', 'bell pepper,pepper'], ['🌶️', 'chili pepper,jalapeno,hot pepper'],
+    ['🥬', 'lettuce,romaine,greens,spinach,kale,cabbage,bok choy,collard'], ['🍅', 'tomato,cherry tomato,salsa'], ['🍆', 'eggplant'], ['🍠', 'sweet potato,yam'],
+    ['🥔', 'potato,mashed potato,baked potato'], ['🧅', 'onion'], ['🧄', 'garlic'], ['🫚', 'ginger'], ['🍄', 'mushroom'],
+    ['🫛', 'pea,snap pea,edamame,green bean'], ['🫘', 'bean,black bean,pinto,refried bean,kidney bean']
+  ]],
+  ['From the sea', [
+    ['🐟', 'fish,salmon,salmon steak,salmon fillet,fish steak,fillet,tuna,cod,tilapia,fish stick'], ['🍥', 'fish cake,kamaboko,naruto'], ['🦐', 'shrimp,prawn'],
+    ['🦀', 'crab,crab stick'], ['🦞', 'lobster'], ['🦑', 'squid,calamari'], ['🐙', 'octopus'], ['🦪', 'oyster'], ['🐚', 'clam,scallop,shellfish,mussel'],
+    ['🥫', 'sardine,canned fish,canned tuna'], ['🌿', 'kombu,kelp,seaweed']
+  ]],
+  ['Protein', [
+    ['🍗', 'chicken,drumstick,nugget,wing,tender,fried chicken'], ['🦃', 'turkey'], ['🥩', 'steak,beef,roast beef'], ['🍖', 'meat,rib,pork,bbq,meatball'],
+    ['🥓', 'bacon,ham'], ['🥚', 'egg,boiled egg,hard boiled egg,deviled egg'], ['🧆', 'falafel,chickpea,hummus'], ['🥜', 'peanut,peanut butter,pb'],
+    ['🌰', 'almond,nut,trail mix,walnut,cashew'], ['🎃', 'pumpkin seed,pumpkin']
+  ]],
+  ['Dairy & grains', [
+    ['🥛', 'milk,chocolate milk'], ['🧀', 'cheese,string cheese,cheese stick,cheddar,mozzarella'], ['🥣', 'yogurt,greek yogurt,parfait,cereal,oatmeal,granola'],
+    ['🧈', 'butter'], ['🌾', 'whole grain,oat,wheat,granola bar']
+  ]],
+  ['Snacks & drinks', [
+    ['🍿', 'popcorn'], ['🍘', 'rice cracker,cracker,chip,rice cake'], ['🍡', 'mochi,dango'], ['🍯', 'honey'], ['🫙', 'dip,sauce,dressing,ranch,jar'],
+    ['🧃', 'juice,juice box'], ['🥤', 'smoothie,shake'], ['🍵', 'tea,matcha'], ['💧', 'water,water bottle'], ['🧁', 'muffin,cupcake'], ['🍪', 'cookie']
+  ]]
+];
+// Singular, lowercase words, so "Grapes", "cherries" and "potatoes" match "grape", "cherry" and "potato".
+const normWord = w => w.length < 4 ? w : w.endsWith('ies') ? w.slice(0, -3) + 'y' : /(oes|ches|shes|xes)$/.test(w) ? w.slice(0, -2) : /[^s]s$/.test(w) ? w.slice(0, -1) : w;
+const normWords = t => String(t).toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^a-z0-9]+/g, ' ').trim().split(' ').filter(Boolean).map(normWord);
+const ICON_LIB = (() => {
+  const by = new Map(), lib = [];
+  const put = (g, e, words) => {
+    let ic = by.get(e);
+    if (!ic) { ic = { e, g, label: '', k: [] }; by.set(e, ic); lib.push(ic); }
+    words.forEach(w => { const n = normWords(w).join(' '); if (n && !ic.k.includes(n)) ic.k.push(n); if (!ic.label && w) ic.label = w.charAt(0).toUpperCase() + w.slice(1); });
+  };
+  ICON_SETS.forEach(([g, list]) => list.forEach(([e, w]) => put(g, e, w.split(','))));
+  // Every Peck Patch food is here too, under its own name, even ones added to the game later.
+  const groupOf = (f, sea) => f.g === 'fruit' ? 'Fruits' : f.g === 'veggie' ? 'Veggies' : f.g === 'protein' ? (sea ? 'From the sea' : 'Protein') : 'Dairy & grains';
+  [[GARDEN_FOODS, false], [SEA_FOODS, true], [SAVANNA_FOODS, false]].forEach(([list, sea]) => list.forEach(f => put(groupOf(f, sea), f.e, [f.name, f.short || ''])));
+  return lib;
+})();
+// Icons that fit an idea's name, best first: whole words and phrases count, and the word being typed counts a little.
+const iconMatches = title => {
+  const words = normWords(title); if (!words.length) return [];
+  const t = ` ${words.join(' ')} `, last = words[words.length - 1];
+  return ICON_LIB.map((ic, i) => {
+    let sc = 0, part = false;
+    ic.k.forEach((kw, j) => {
+      if (t.includes(` ${kw} `)) sc += (kw.includes(' ') ? 4 : 3) + (j === 0 ? 1 : 0);
+      else if (last.length >= 3 && kw.split(' ').some(x => x.startsWith(last))) part = true;
+    });
+    return { ic, sc: sc + (part ? 1 : 0), i };
+  }).filter(x => x.sc > 0).sort((a, b) => b.sc - a.sc || a.i - b.i).map(x => ({ ...x.ic, sc: x.sc }));
+};
+const ICON_POPULAR = ['🥪', '🌯', '🍕', '🥗', '🍝', '🍱', '🍙', '🥙', '🍎', '🍓', '🥕', '🧁'];
 const JUNK = [['🍩', 'Donut'], ['🍭', 'Lollipop'], ['🍬', 'Candy'], ['🥤', 'Soda'], ['🧁', 'Cupcake'], ['🍫', 'Candy bar'], ['🍪', 'Cookie'], ['🍰', 'Cake'], ['🍦', 'Ice cream'], ['🍟', 'Fries']]
   .map(([e, name]) => ({ e, name }));
 // c×r covered tiles; junk = sometimes foods (cost a heart), gold = golden finds; goal = healthy finds to clear; peek in ms.
@@ -2199,7 +2291,7 @@ class Component extends DCLogic {
       tab: 'menu', weekStart: ws, dayIdx: wd >= 1 && wd <= 5 ? wd - 1 : 0,
       menus: {}, source: {}, loading: false, pv: PARSE_V,
       favs: saved.favs || {}, eaten: saved.eaten || {}, badges: saved.badges || {},
-      myIdeas: saved.myIdeas || [], showForm: false, draft: { title: '', how: '', emoji: '🥪', g: [], time: '5 min' },
+      myIdeas: saved.myIdeas || [], showForm: false, draft: { title: '', how: '', emoji: '🥪', picked: false, g: [], time: '5 min' }, iconAll: false,
       input: '', quickSeed: 0, filter: 'all', toast: '', celebrate: null, queue: [], seenMs: saved.seenMs || null,
       questDone: saved.questDone || {}, holos: saved.holos || {},
       stickers: Object.fromEntries(Object.entries(saved.stickers || {}).map(([d, id]) => [d, LEGACY_Q[id] || id])),
@@ -2607,7 +2699,7 @@ class Component extends DCLogic {
     if (!title) { this.flash('✏️ Give your idea a name first'); return; }
     if ([...this.state.myIdeas, ...IDEAS].some(i => i.title.toLowerCase() === title.toLowerCase())) { this.flash('🙈 That idea already exists'); return; }
     const idea = { emoji: d.emoji, title, time: d.time, g: d.g, how: d.how.trim() || 'Your own lunch creation!', mine: true, created: this.curKey() };
-    this.setState(s => ({ myIdeas: [idea, ...s.myIdeas], draft: { title: '', how: '', emoji: '🥪', g: [], time: '5 min' }, showForm: false, filter: 'all' }),
+    this.setState(s => ({ myIdeas: [idea, ...s.myIdeas], draft: { title: '', how: '', emoji: '🥪', picked: false, g: [], time: '5 min' }, iconAll: false, showForm: false, filter: 'all' }),
       () => { this.persist(); this.flash(`${idea.emoji} Idea saved!`); this.checkMilestones(); });
   }
   deleteIdea(title) { this.setState(s => ({ myIdeas: s.myIdeas.filter(i => i.title !== title) }), () => { this.persist(); this.flash('🗑️ Idea removed'); }); }
@@ -3122,6 +3214,12 @@ class Component extends DCLogic {
       };
     });
     const counts = {}; Object.values(s.badges).forEach(b => counts[b] = (counts[b] || 0) + 1);
+    // Idea icons: the best matches for the name being typed (or the popular ones), plus the one picked.
+    const iconHits = iconMatches(s.draft.title).slice(0, 6).map(ic => ic.e);
+    const iconRow = iconHits.length ? iconHits : ICON_POPULAR.slice();
+    if (!iconRow.includes(s.draft.emoji)) iconRow.unshift(s.draft.emoji);
+    const iconBtn = x => { const e = typeof x === 'string' ? x : x.e, ic = ICON_LIB.find(i => i.e === e), on = s.draft.emoji === e;
+      return { e, label: ic ? ic.label : 'Icon', pressed: on ? 'true' : 'false', bg: on ? '#FFD166' : '#fff', border: on ? '#3B2A20' : '#E8D3BC', onClick: () => this.setDraft({ emoji: e, picked: true }) }; };
     const total = Object.keys(s.badges).length;
     const yum = ['🥄', '🍴', '🍽️', '😋', '🤩'];
     const tabs = [['menu', '🍽️', 'Menu'], ['ideas', '💡', 'Ideas'], ['nest', '🐣', 'Nest'], ['plan', '🗓️', 'Plan'], ['game', '🎮', 'Game']];
@@ -3429,11 +3527,13 @@ class Component extends DCLogic {
       }) : [],
       ideas, noIdeas: s.filter === 'mine' && !ideas.length,
       showForm: s.showForm, formIcon: s.showForm ? '–' : '+', toggleForm: () => this.setState(x => ({ showForm: !x.showForm })),
-      emojiOpts: ['🥪', '🌯', '🍕', '🥗', '🍝', '🍱', '🍙', '🥙', '🍎', '🍓', '🥕', '🧁'].map(e => ({
-        e, bg: s.draft.emoji === e ? '#FFD166' : '#fff', border: s.draft.emoji === e ? '#3B2A20' : '#E8D3BC', onClick: () => this.setDraft({ emoji: e })
-      })),
+      emojiOpts: iconRow.map(iconBtn), iconHasMatch: iconHits.length > 0, iconMatchLine: `Best matches for “${s.draft.title.trim()}”`,
+      iconShowAll: s.iconAll, iconAllOpen: s.iconAll ? 'true' : 'false', toggleIconAll: () => this.setState(x => ({ iconAll: !x.iconAll })),
+      iconAllLabel: s.iconAll ? '▲ Hide all icons' : `🔎 See all ${ICON_LIB.length} icons`,
+      iconGroups: s.iconAll ? ICON_SETS.map(([title]) => ({ title, icons: ICON_LIB.filter(ic => ic.g === title).map(iconBtn) })) : [],
       draftTitle: s.draft.title, draftHow: s.draft.how,
-      onDraftTitle: e => this.setDraft({ title: e.target.value }), onDraftHow: e => this.setDraft({ how: e.target.value }),
+      onDraftTitle: e => { const title = e.target.value; this.setState(x => { const d = { ...x.draft, title }; if (!d.picked) { const m = iconMatches(title)[0]; d.emoji = m ? m.e : '🥪'; } return { draft: d }; }); },
+      onDraftHow: e => this.setDraft({ how: e.target.value }),
       draftGroups: GROUPS.filter(g => g.id !== 'water').map(g => {
         const on = s.draft.g.includes(g.id);
         return { e: g.e, label: g.label, bg: on ? g.on : '#fff', onClick: () => this.setDraft({ g: on ? s.draft.g.filter(x => x !== g.id) : [...s.draft.g, g.id] }) };
