@@ -1650,6 +1650,52 @@ input::placeholder{color:#B49A86}
 const SCHOOL = 'SoutheastBullochMiddle';
 const KEY = 'lunchbuddy-v1';
 const TILE = ['#FFE3D8', '#DDF5E8', '#FFF1C2', '#E1F0FB', '#F3E3FA', '#FFE3EC'];
+// A roast turkey drawn to sit with the phone's emoji (there's no roast turkey emoji; 🦃 is a live bird).
+// Soft gradients and no outlines, like the emoji next to it. `id` keeps each copy's gradients apart.
+const roastTurkey = id => {
+  const h = React.createElement, g = n => `rt${id}${n}`, u = n => `url(#${g(n)})`;
+  const stop = (o, c, op) => h('stop', { offset: o, stopColor: c, ...(op != null ? { stopOpacity: op } : {}) });
+  const M = 'translate(64 0) scale(-1 1)';
+  // Drumstick: round end at the front, narrow end up and out, with the bone poking out.
+  const STICK = 'M11.5 25.5 C15 24.5 18.5 27.5 21.5 32 C25 37.5 24.5 45 18.5 47.5 C12.5 50 7 46 7.5 39.5 C8 34 8.5 27 11.5 25.5 Z';
+  const leg = (mirror) => {
+    const t = mirror ? M : undefined;
+    return [
+      h('path', { d: 'M12.6 27 L8 18.5', stroke: u('bone'), strokeWidth: 4.4, strokeLinecap: 'round', fill: 'none', transform: t }),
+      h('circle', { cx: 5.6, cy: 18.8, r: 3.1, fill: u('bone'), transform: t }), h('circle', { cx: 8.4, cy: 15.6, r: 3.1, fill: u('bone'), transform: t }),
+      h('path', { d: STICK, fill: u(mirror ? 'legR' : 'leg'), transform: t })
+    ];
+  };
+  const spots = [[20, 34], [26, 38], [33, 35], [40, 39], [44, 33], [30, 43], [37, 45], [27, 31], [38, 28.5]];
+  return h('svg', { viewBox: '0 0 64 64', width: '1.15em', height: '1.15em', role: 'img', 'aria-label': 'Roast turkey', style: { display: 'inline-block', verticalAlign: '-0.16em', margin: '-0.075em 0', flex: 'none' } },
+    h('defs', null,
+      h('linearGradient', { id: g('plate'), x1: 0, y1: 0, x2: 0, y2: 1 }, stop(0, '#FFFFFF'), stop(1, '#C3CDD8')),
+      h('radialGradient', { id: g('body'), cx: 0.38, cy: 0.28, r: 0.8 }, stop(0, '#FFE19A'), stop(0.4, '#EEA04A'), stop(0.8, '#C4652A'), stop(1, '#9A4519')),
+      h('radialGradient', { id: g('leg'), cx: 0.36, cy: 0.42, r: 0.72 }, stop(0, '#FBC274'), stop(0.55, '#D9802F'), stop(1, '#8F4217')),
+      h('radialGradient', { id: g('legR'), cx: 0.64, cy: 0.42, r: 0.72 }, stop(0, '#FBC274'), stop(0.55, '#D9802F'), stop(1, '#8F4217')),
+      h('linearGradient', { id: g('bone'), x1: 0, y1: 0, x2: 1, y2: 1 }, stop(0, '#FFFDF6'), stop(1, '#DCCBAE')),
+      h('radialGradient', { id: g('berry'), cx: 0.35, cy: 0.35, r: 0.7 }, stop(0, '#FF7A7A'), stop(1, '#B3122E')),
+      h('linearGradient', { id: g('leaf'), x1: 0, y1: 0, x2: 1, y2: 1 }, stop(0, '#8BD45A'), stop(1, '#3E8E2C')),
+      h('radialGradient', { id: g('shine'), cx: 0.5, cy: 0.5, r: 0.5 }, stop(0, '#FFFFFF', 0.7), stop(1, '#FFFFFF', 0))
+    ),
+    // platter and greens
+    h('ellipse', { cx: 32, cy: 52, rx: 30.5, ry: 9, fill: u('plate') }),
+    h('ellipse', { cx: 32, cy: 50.8, rx: 25.5, ry: 6.3, fill: '#EDF1F5' }),
+    h('path', { d: 'M2.5 50 C5 44.5 10.5 43 14 45.5 C11.5 50 6.5 51.5 2.5 50 Z', fill: u('leaf') }),
+    h('path', { d: 'M61.5 50 C59 44.5 53.5 43 50 45.5 C52.5 50 57.5 51.5 61.5 50 Z', fill: u('leaf') }),
+    // body
+    h('path', { d: 'M5.5 42 C4.5 29 17 20 32 20 C47 20 59.5 29 58.5 42 C58 49.5 47 53 32 53 C17 53 6 49.5 5.5 42 Z', fill: u('body') }),
+    ...spots.map(([x, y]) => h('ellipse', { cx: x, cy: y, rx: 1.5, ry: 1, fill: '#A9521F', opacity: 0.35 })),
+    h('ellipse', { cx: 24, cy: 27, rx: 9, ry: 4.2, fill: u('shine'), transform: 'rotate(-14 24 27)' }),
+    // drumsticks
+    ...leg(false), ...leg(true),
+    h('ellipse', { cx: 13, cy: 37, rx: 2.4, ry: 3.6, fill: u('shine'), transform: 'rotate(-25 13 37)' }),
+    h('ellipse', { cx: 47.5, cy: 36, rx: 2.4, ry: 3.6, fill: u('shine'), transform: 'rotate(-25 47.5 36)' }),
+    // cranberries in front
+    ...[[24, 56.5], [28, 58], [40, 56.5], [36, 58]].map(([x, y]) => h('circle', { cx: x, cy: y, r: 2.5, fill: u('berry') }))
+  );
+};
+const TURKEY_RE = /turkey/i;
 const EMO = [
   [/pizza/i, '🍕'], [/nugget|tender|wing|drumstick|chicken|popcorn chick/i, '🍗'], [/burger|cheeseburger|hamburger/i, '🍔'],
   [/taco|nacho/i, '🌮'], [/burrito|wrap/i, '🌯'], [/hot ?dog|corn ?dog/i, '🌭'], [/sandwich|sub|hoagie|sliders?/i, '🥪'],
@@ -1661,9 +1707,11 @@ const EMO = [
   [/pancake/i, '🥞'], [/waffle/i, '🧇'], [/biscuit|roll|bread|toast|bun|garlic/i, '🍞'], [/cookie/i, '🍪'], [/cake|brownie/i, '🧁'],
   [/fish|shrimp|tuna/i, '🐟'], [/soup/i, '🍲'], [/yogurt|parfait/i, '🥣'], [/cucumber|pickle/i, '🥒'], [/tomato|salsa/i, '🍅'],
   [/steak|beef|meatball|pork|bbq|rib/i, '🍖'], [/pretzel/i, '🥨'], [/cracker|chip/i, '🍘'], [/ranch|sauce|dressing|ketchup/i, '🫙'],
-  [/turkey/i, '🦃'], [/ham/i, '🥓'], [/hummus/i, '🥙'], [/veg|spinach|mixed/i, '🥬'], [/peanut|pb/i, '🥜'], [/water/i, '💧']
+  [TURKEY_RE, '🍗'], [/ham/i, '🥓'], [/hummus/i, '🥙'], [/veg|spinach|mixed/i, '🥬'], [/peanut|pb/i, '🥜'], [/water/i, '💧']
 ];
 const emojiFor = s => { for (const [r, e] of EMO) if (r.test(s)) return e; const m = iconMatches(s)[0]; return m && m.sc >= 3 ? m.e : '🍴'; };
+// On the menu, turkey dishes get the roast turkey picture; text (like toasts) keeps 🍗.
+const foodPic = (s, id) => { const r = EMO.find(([re]) => re.test(s)); return r && r[0] === TURKEY_RE ? roastTurkey(id) : emojiFor(s); };
 const GROUPS = [
   { id: 'fruit', e: '🍎', label: 'Fruit', on: '#FFB4A2' }, { id: 'veggie', e: '🥦', label: 'Veggie', on: '#9BE3B8' },
   { id: 'protein', e: '🍗', label: 'Protein', on: '#FFD08A' }, { id: 'grain', e: '🍞', label: 'Grain', on: '#F5DFA0' },
@@ -3368,13 +3416,13 @@ class Component extends DCLogic {
     const days = DOW.map((label, i) => {
       const dk = iso(add(ws, i)), m = s.menus[dk], sel = i === s.dayIdx;
       return {
-        label, date: add(ws, i).getDate(), emoji: m ? emojiFor(m[0].items[0]) : '🍽️', hasBadge: !!s.badges[dk],
+        label, date: add(ws, i).getDate(), emoji: m ? foodPic(m[0].items[0], `d${i}`) : '🍽️', hasBadge: !!s.badges[dk],
         bg: sel ? '#FF6B57' : '#fff', fg: sel ? '#fff' : '#3B2A20', shadow: sel ? '0 4px 0 #3B2A20' : 'none',
         onClick: () => this.setState({ dayIdx: i })
       };
     });
     let ti = 0;
-    const lines = (menu || []).map(l => ({ line: `${catEmoji(l.line)} ${l.line}`, items: l.items.map(n => ({ name: n, emoji: emojiFor(n), bg: TILE[ti++ % TILE.length] })) }));
+    const lines = (menu || []).map(l => ({ line: `${catEmoji(l.line)} ${l.line}`, items: l.items.map(n => ({ name: n, emoji: foodPic(n, `t${ti}`), bg: TILE[ti++ % TILE.length] })) }));
     const favList = s.favs[k] || [];
     const used = new Set(favList);
     const ALL = [...s.myIdeas, ...IDEAS];
@@ -3769,7 +3817,7 @@ class Component extends DCLogic {
       pickDays: s.pickIdea ? DOWL.map((name, d) => {
         const dt = add(ws, d), dk = iso(dt), m = s.menus[dk], on = (s.favs[dk] || []).includes(s.pickIdea.title);
         return {
-          label: `${name}, ${MON[dt.getMonth()]} ${dt.getDate()}`, emoji: m ? emojiFor(m[0].items[0]) : '🍽️',
+          label: `${name}, ${MON[dt.getMonth()]} ${dt.getDate()}`, emoji: m ? foodPic(m[0].items[0], `p${d}`) : '🍽️',
           sub: m ? `School: ${m[0].items[0]}` : 'No school menu yet',
           bg: on ? '#DDF5E8' : '#fff', check: on ? '✓' : '', checkBg: on ? '#3DBE8B' : '#fff',
           onClick: () => { this.setState({ dayIdx: d }); this.toggleFavOn(dk, s.pickIdea.title, DOW[d]); }
