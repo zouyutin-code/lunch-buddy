@@ -1650,6 +1650,228 @@ input::placeholder{color:#B49A86}
 const SCHOOL = 'SoutheastBullochMiddle';
 const KEY = 'lunchbuddy-v1';
 const TILE = ['#FFE3D8', '#DDF5E8', '#FFF1C2', '#E1F0FB', '#F3E3FA', '#FFE3EC'];
+// ── Menu food icons: proteins and veggies, drawn like the activity stickers ──
+// Menu food icons: proteins and veggies, drawn as little sticker tiles (same style as the activity icons).
+const FOOD_TILE = { protein: '#FFE3D8', veggie: '#DDF5E8' };
+const FOODS_ICON = [
+  // [id, name, group, words that pick it (checked in this order: proteins first, so "Ham Salad" is ham)]
+  ['pb', 'Peanut butter', 'protein', /peanut|\bpb\b|pb&j|\bpbj\b/i],
+  ['chicken', 'Chicken', 'protein', /chicken(?! fried steak)|\bchix\b|\bwings?\b|nugget|tender/i],
+  ['turkey', 'Turkey', 'protein', /turkey/i],
+  ['beef', 'Beef', 'protein', /beef|steak|(?<!veggie |bean )burger|meatball|meatloaf|brisket|sloppy joe/i],
+  ['pork', 'Pork', 'protein', /pork|\bham\b|bacon|\bribs?\b/i],
+  ['sausage', 'Sausage', 'protein', /sausage|pepperoni|hot ?dog|corn ?dog|\bfranks?\b|bratwurst|kielbasa/i],
+  ['fish', 'Fish', 'protein', /fish|salmon|tuna|\bcod\b|tilapia|catfish|shrimp|crab/i],
+  ['egg', 'Egg', 'protein', /\beggs?\b(?! ?rolls?)|omelet|scrambl|frittata/i],
+  ['salad', 'Salad', 'veggie', /salad|slaw|lettuce|romaine/i],
+  ['stirfry', 'Mixed veggies', 'veggie', /stir ?fry|mixed veg|medley|veggie blend|vegetable blend|california blend|normandy/i],
+  ['broccoli', 'Broccoli', 'veggie', /broccoli/i],
+  ['cauliflower', 'Cauliflower', 'veggie', /cauliflower/i],
+  ['carrot', 'Carrots', 'veggie', /carrot/i],
+  ['corn', 'Corn', 'veggie', /\bcorn\b(?! ?(dog|muffin|bread|chip|flake))|\bcob\b/i],
+  ['greenbeans', 'Green beans', 'veggie', /green beans?|string beans?/i],
+  ['beans', 'Beans', 'veggie', /bean|blackeye|black-eyed|lentil|chickpea|hummus|legume/i],
+  ['peas', 'Peas', 'veggie', /\bpeas?\b|snap pea|edamame/i],
+  ['sweetpotato', 'Sweet potato', 'veggie', /sweet potato|\byams?\b/i],
+  ['potato', 'Potato', 'veggie', /potato|\btots\b|fries|hash ?browns?|wedges/i],
+  ['greens', 'Greens', 'veggie', /greens|collard|spinach|kale|turnip|cabbage/i],
+  ['squash', 'Squash', 'veggie', /squash|zucchini|pumpkin/i],
+  ['okra', 'Okra', 'veggie', /okra/i],
+  ['tomato', 'Tomato', 'veggie', /tomato/i],
+  ['cucumber', 'Cucumber', 'veggie', /cucumber|pickle/i],
+  ['stirfry', 'Mixed veggies', 'veggie', /\bveg(gie|etable)s?\b/i]
+];
+const FOOD_DRAW = (() => {
+  const ink = '#3B2A20', S = { stroke: ink, strokeWidth: 2.2, strokeLinejoin: 'round', strokeLinecap: 'round' };
+  const L = (d, stroke, w = 1.6) => ({ d, fill: 'none', stroke, strokeWidth: w, strokeLinecap: 'round', strokeLinejoin: 'round' });
+  const pt = (cx, cy, r, deg) => `${(cx + r * Math.cos(deg * Math.PI / 180)).toFixed(1)} ${(cy + r * Math.sin(deg * Math.PI / 180)).toFixed(1)}`;
+  const star = (cx, cy, R, r, n = 5) => 'M' + Array.from({ length: n * 2 }, (_, i) => pt(cx, cy, i % 2 ? r : R, -90 + i * 180 / n)).join(' L') + ' Z';
+  // A thick rounded stroke with an ink outline (pods, bones, strips).
+  const tube = (h, d, w, fill) => [h('path', { d, fill: 'none', stroke: ink, strokeWidth: w + 4.4, strokeLinecap: 'round' }), h('path', { d, fill: 'none', stroke: fill, strokeWidth: w, strokeLinecap: 'round' })];
+  return {
+    chicken: h => [
+      h('circle', { cx: 36.5, cy: 33, r: 3.2, fill: '#fff', ...S }), h('circle', { cx: 33, cy: 37.5, r: 3.2, fill: '#fff', ...S }),
+      ...tube(h, 'M25 25 L34.5 35', 2.8, '#fff'),
+      h('path', { d: 'M9.5 20 C9.5 11 19.5 6.5 27 10.5 C34.5 14.5 34.5 24 29.5 28.5 L26.5 31 C21 35.5 9.5 32 9.5 20 Z', fill: '#E39B4A', ...S }),
+      h('path', L('M14.5 18 C15.5 14 19 11.8 22.5 12.5', '#F7CC8F', 2.4)),
+      h('circle', { cx: 21, cy: 22, r: 1.2, fill: '#C0743A' }), h('circle', { cx: 26, cy: 18, r: 1.2, fill: '#C0743A' }), h('circle', { cx: 17, cy: 27, r: 1.2, fill: '#C0743A' }), h('circle', { cx: 25, cy: 25.5, r: 1.2, fill: '#C0743A' })
+    ],
+    beef: h => [
+      h('path', { d: 'M7.5 25.5 C6.5 16 14.5 9.5 23.5 10.5 C30.5 11.3 33 15.2 36.8 15.6 C41 16 42.3 22 39.8 27 C36.8 33.5 29.5 38.6 20.8 38.2 C12.8 37.8 8 32.5 7.5 25.5 Z', fill: '#FFF1E6', ...S }),
+      h('path', { d: 'M7.5 25.5 C6.5 16 14.5 9.5 23.5 10.5 C30.5 11.3 33 15.2 36.8 15.6 C41 16 42.3 22 39.8 27 C36.8 33.5 29.5 38.6 20.8 38.2 C12.8 37.8 8 32.5 7.5 25.5 Z', fill: '#D9534F', stroke: ink, strokeWidth: 1.9, transform: 'translate(24 24.5) scale(.78) translate(-24 -24.5)' }),
+      h('path', L('M14.5 22 Q18.5 19.6 22 22.6', '#F4A6A3', 1.7)), h('path', L('M22.5 29.5 Q26.5 27.3 30 30.1', '#F4A6A3', 1.7)), h('path', L('M13.8 29.2 Q16 28 18 29.8', '#F4A6A3', 1.7)),
+      h('circle', { cx: 30.5, cy: 21, r: 2.7, fill: '#fff', stroke: ink, strokeWidth: 1.5 })
+    ],
+    pork: h => [
+      h('circle', { cx: 36, cy: 8.5, r: 2.7, fill: '#fff', ...S }), h('circle', { cx: 39.5, cy: 12, r: 2.7, fill: '#fff', ...S }),
+      ...tube(h, 'M28.5 19.5 L37 11', 2.6, '#fff'),
+      h('path', { d: 'M8 30 C8 21 15 14 24 14 C28 14 31 15.5 33 17.5 C35.5 20 36 24 35 28 C33.5 35 27 40 19 40 C12 40 8 36 8 30 Z', fill: '#F29BAE', ...S }),
+      h('path', L('M13 25 L23 35 M17 20 L28 31 M23 17 L32 26 M12 31 L22 21 M15 36 L27 24 M22 38.4 L32 28.5', '#D9707F', 1.4)),
+      h('path', L('M11.8 27.5 C12 23 14.5 19.8 18.5 18', '#FFD3DC', 2.2))
+    ],
+    turkey: h => [
+      h('ellipse', { cx: 24, cy: 35.5, rx: 18, ry: 5.2, fill: '#fff', ...S }),
+      h('path', { d: 'M9.5 32 C9.5 21.5 16 15.5 24 15.5 C32 15.5 38.5 21.5 38.5 32 Z', fill: '#D98A45', ...S }),
+      ...tube(h, 'M14.5 21 L10.5 14', 2.4, '#fff'), ...tube(h, 'M33.5 21 L37.5 14', 2.4, '#fff'),
+      h('circle', { cx: 8.6, cy: 14.6, r: 2.2, fill: '#fff', ...S }), h('circle', { cx: 11, cy: 11.8, r: 2.2, fill: '#fff', ...S }),
+      h('circle', { cx: 39.4, cy: 14.6, r: 2.2, fill: '#fff', ...S }), h('circle', { cx: 37, cy: 11.8, r: 2.2, fill: '#fff', ...S }),
+      h('path', { d: 'M18 28.5 C12.5 28.5 10 23 12 19.5 C14 16.5 18.5 18.5 19.6 23 Z', fill: '#B9652F', ...S }),
+      h('path', { d: 'M30 28.5 C35.5 28.5 38 23 36 19.5 C34 16.5 29.5 18.5 28.4 23 Z', fill: '#B9652F', ...S }),
+      h('path', L('M20.5 21 C22 19 24.5 18.3 27 18.6', '#F2B57A', 2.2))
+    ],
+    sausage: h => [
+      h('rect', { x: 5, y: 21.5, width: 19, height: 11, rx: 5.5, fill: '#B5643A', ...S, transform: 'rotate(14 14.5 27)' }),
+      h('rect', { x: 23.5, y: 15, width: 19, height: 11, rx: 5.5, fill: '#C46E40', ...S, transform: 'rotate(-14 33 20.5)' }),
+      h('circle', { cx: 23.6, cy: 24, r: 2, fill: '#8E4A2A', stroke: ink, strokeWidth: 1.4 }),
+      h('path', L('M9.2 24.6 L16.5 26.4', '#E7A07A', 2)), h('path', L('M28 18.4 L35.5 16.6', '#EBA982', 2)),
+      h('path', L('M12.5 30 L14 27.6 M16.5 31 L18 28.6 M29 23.5 L30.5 21.2 M33 22.6 L34.5 20.3', '#8E4A2A', 1.3))
+    ],
+    fish: h => [
+      h('path', { d: 'M33 24 L42.5 15.5 L41.5 32.5 Z', fill: '#5AA9E6', ...S }),
+      h('path', { d: 'M17 17 Q22 10.5 29 15.5', fill: '#5AA9E6', ...S }),
+      h('path', { d: 'M5.5 24 C11 14 26 12.5 35.5 24 C26 35.5 11 34 5.5 24 Z', fill: '#8CC8F0', ...S }),
+      h('circle', { cx: 12.5, cy: 22, r: 2.3, fill: '#fff', stroke: ink, strokeWidth: 1.5 }), h('circle', { cx: 12.9, cy: 22.2, r: 1, fill: ink }),
+      h('path', L('M17 18.4 Q20.5 24 17 29.6', ink, 1.7)),
+      h('path', L('M22.5 20.5 q2 2 0 4 M26.5 19.8 q2.2 2.6 0 5.2 M24.5 26 q2 2 0 4', '#4C8FC6', 1.5))
+    ],
+    egg: h => [
+      h('path', { d: 'M8 25 C6 16 14 10 21 12 C25 8 34 9 37 15 C42 18 42 27 37 31 C35 37 27 40 21 37 C14 40 7 34 8 25 Z', fill: '#fff', ...S }),
+      h('circle', { cx: 24, cy: 24, r: 7.2, fill: '#FFC93C', ...S }),
+      h('path', L('M20.4 22 Q21.4 19.3 24.2 18.8', '#FFE8A6', 2.1))
+    ],
+    pb: h => [
+      h('rect', { x: 12, y: 8.5, width: 24, height: 7, rx: 2.5, fill: '#C0743A', ...S }),
+      h('rect', { x: 10, y: 14.5, width: 28, height: 26, rx: 6, fill: '#E3A55C', ...S }),
+      h('rect', { x: 14, y: 20.5, width: 20, height: 14, rx: 4, fill: '#FFF7EC', stroke: ink, strokeWidth: 1.6 }),
+      h('path', { d: 'M20 27.5 C17 27.5 17 23.3 20 23.3 C21.6 23.3 22.4 24.4 24 24.4 C25.6 24.4 26.4 23.3 28 23.3 C31 23.3 31 27.5 28 27.5 C26.4 27.5 25.6 26.4 24 26.4 C22.4 26.4 21.6 27.5 20 27.5 Z', fill: '#D9A15E', stroke: ink, strokeWidth: 1.4, transform: 'translate(0 2)' }),
+      h('path', L('M14.5 11.5 H20', '#E39B6A', 1.8))
+    ],
+    broccoli: h => [
+      h('path', { d: 'M19 41.5 C20 35.5 21 30 19 25 L29 25 C27 30 28 35.5 29 41.5 Z', fill: '#9BD67B', ...S }),
+      h('circle', { cx: 24, cy: 14.5, r: 8, fill: '#3E9E5A', ...S }),
+      h('circle', { cx: 15.5, cy: 20.5, r: 7, fill: '#3E9E5A', ...S }), h('circle', { cx: 32.5, cy: 20.5, r: 7, fill: '#3E9E5A', ...S }),
+      h('circle', { cx: 24, cy: 22.5, r: 6.8, fill: '#47A863', ...S }),
+      ...[[21, 12], [27.5, 15], [13, 19], [33.5, 18], [22, 21], [26.5, 24]].map(([x, y]) => h('circle', { cx: x, cy: y, r: 1.5, fill: '#6CC383' }))
+    ],
+    cauliflower: h => [
+      h('path', { d: 'M8 26 C10 34 16 40 24 40 C32 40 38 34 40 26 C35 30 29 31 24 31 C19 31 13 30 8 26 Z', fill: '#56B870', ...S }),
+      h('circle', { cx: 24, cy: 16, r: 7.5, fill: '#FFF7EC', ...S }),
+      h('circle', { cx: 16, cy: 21, r: 6.8, fill: '#FFF7EC', ...S }), h('circle', { cx: 32, cy: 21, r: 6.8, fill: '#FFF7EC', ...S }),
+      h('circle', { cx: 24, cy: 24, r: 6.8, fill: '#FFFDF8', ...S }),
+      ...[[21.5, 13.5], [27, 16], [14, 19.5], [33, 19], [22.5, 23], [26.5, 25.5]].map(([x, y]) => h('circle', { cx: x, cy: y, r: 1.4, fill: '#E9DCC6' }))
+    ],
+    carrot: h => [
+      h('path', { d: 'M30 16 C30 9 33 6 36 6 C36 10 34 14 30 16 Z', fill: '#56B870', ...S }),
+      h('path', { d: 'M31 17 C36 13 41 13 43 15 C40 18 36 19 31 17 Z', fill: '#3E9E5A', ...S }),
+      h('path', { d: 'M30 16 C26 11 26 7 28 5 C31 8 32 12 30 16 Z', fill: '#3E9E5A', ...S }),
+      h('path', { d: 'M8 41 C6 39 13 28 22 19 C26 15 31 15 33 17 C35 19 35 24 31 28 C22 37 10 43 8 41 Z', fill: '#FF9A3C', ...S }),
+      h('path', L('M16 30 L20 33 M21.5 24 L25.5 27.5 M12.5 36 L15.5 38', '#D9762A', 1.7))
+    ],
+    corn: h => [
+      h('path', { d: 'M24 6 C30 6 32 14 31 24 C30 32 28 37 24 37 C20 37 18 32 17 24 C16 14 18 6 24 6 Z', fill: '#FFD34E', ...S }),
+      h('path', L('M19 12 H29 M18 17 H30 M17.6 22 H30.4 M18 27 H30 M22 9 V35 M26 9 V35', '#E0A82E', 1.4)),
+      h('path', { d: 'M14 42 C9.5 34 10.5 25 15 17.5 C17 26.5 20 34.5 25.5 42 Z', fill: '#56B870', ...S }),
+      h('path', { d: 'M34 42 C38.5 34 37.5 25 33 17.5 C31 26.5 28 34.5 22.5 42 Z', fill: '#3E9E5A', ...S })
+    ],
+    greenbeans: h => [
+      ...tube(h, 'M8 27 C13 20 18 13.5 25 8.5', 4.4, '#56B870'),
+      ...tube(h, 'M10 35 C16 27 25 15 37 10.5', 4.4, '#6CC070'),
+      ...tube(h, 'M13 41 C21 33 30 23 40.5 19.5', 4.4, '#47A863'),
+      h('path', L('M25 8.5 L27.5 6 M37 10.5 L40 9 M40.5 19.5 L43.5 19', ink, 2)),
+      ...[[13.5, 20.5], [17.5, 15.5], [17, 27], [22, 20.5], [27.5, 15], [21, 32.5], [27, 26.5], [33, 22.5]].map(([x, y]) => h('circle', { cx: x, cy: y, r: 1, fill: '#B8E6A0' }))
+    ],
+    peas: h => [
+      h('path', L('M41.5 16.5 Q45 13 43.8 9.5', ink, 2.2)),
+      h('path', { d: 'M5.5 28 C12 18 30 12 42 16.5 C36 28.5 18 36 5.5 28 Z', fill: '#56B870', ...S }),
+      h('path', { d: 'M10 27.3 C16 20.5 30 16.5 38 18.4 C33 26 19 32 10 27.3 Z', fill: '#B8E6A0', stroke: ink, strokeWidth: 1.4 }),
+      ...[[15, 25.6, 3.3], [21.4, 23.3, 3.6], [28, 21.4, 3.6], [33.8, 19.8, 2.9]].map(([x, y, r]) => h('circle', { cx: x, cy: y, r, fill: '#3E9E5A', stroke: ink, strokeWidth: 1.4 })),
+      ...[[14, 24.6], [20.3, 22.2], [26.9, 20.3], [33, 19]].map(([x, y]) => h('circle', { cx: x, cy: y, r: 0.9, fill: '#B8E6A0' }))
+    ],
+    beans: h => [
+      h('ellipse', { cx: 24, cy: 18, rx: 8, ry: 5.4, fill: '#9A4E2C', ...S, transform: 'rotate(6 24 18)' }),
+      h('ellipse', { cx: 15.5, cy: 29, rx: 8, ry: 5.4, fill: '#B5653A', ...S, transform: 'rotate(-24 15.5 29)' }),
+      h('ellipse', { cx: 32, cy: 30.5, rx: 8, ry: 5.4, fill: '#C9824F', ...S, transform: 'rotate(22 32 30.5)' }),
+      h('ellipse', { cx: 24, cy: 20.6, rx: 2.4, ry: 1.1, fill: '#F2D3B2', transform: 'rotate(6 24 20.6)' }),
+      h('ellipse', { cx: 16.6, cy: 31.4, rx: 2.4, ry: 1.1, fill: '#F2D3B2', transform: 'rotate(-24 16.6 31.4)' }),
+      h('ellipse', { cx: 31, cy: 33, rx: 2.4, ry: 1.1, fill: '#F2D3B2', transform: 'rotate(22 31 33)' }),
+      ...[[20.5, 16.5], [27.5, 16.8], [12, 27.5], [18, 26.5], [29, 28], [35, 30]].map(([x, y]) => h('circle', { cx: x, cy: y, r: 0.9, fill: '#E9C29A' }))
+    ],
+    potato: h => [
+      h('path', { d: 'M9 27 C8 18 16 12 25 12 C34 12 41 17 40 25 C39 33 32 38 23 37.5 C14 37.5 10 34 9 27 Z', fill: '#D9A76A', ...S }),
+      h('path', L('M17 21.5 q1.5 -1 3 0 M29.5 19 q1.5 -1 3 0 M24 29.5 q1.5 -1 3 0 M15.5 30.5 q1 -0.8 2 0 M33.5 28 q1 -0.8 2 0', '#A8743F', 1.7)),
+      h('path', L('M13.8 20.5 C15.3 17.3 18 15.6 21.2 15.1', '#F0CB97', 2.3))
+    ],
+    sweetpotato: h => [
+      h('path', L('M6.5 33 L3.5 35.5', ink, 2.2)),
+      h('path', { d: 'M6.5 33 C8.5 26 18 17 28 14 C35 12 41 14 42 18 C43 23 37 28 30 31 C21 35 12.5 38 6.5 33 Z', fill: '#C8553D', ...S }),
+      h('ellipse', { cx: 38.4, cy: 19, rx: 3.7, ry: 5.2, fill: '#FF9A3C', stroke: ink, strokeWidth: 1.6, transform: 'rotate(-28 38.4 19)' }),
+      h('path', L('M14.5 29.5 q3 -1 5 -3 M23.5 24.5 q3 -1 5 -3 M19 33 q2 -0.6 3.5 -2', '#9E3B2A', 1.5))
+    ],
+    greens: h => [
+      h('path', { d: 'M24 40 C14 38 7 28 10 15.5 C18 17.5 24 28 24 40 Z', fill: '#3E9E5A', ...S }),
+      h('path', L('M23 38 C20 31 16 24 11.5 18', '#8FD18A', 1.5)),
+      h('path', { d: 'M24 40 C34 38 41 28 38 15.5 C30 17.5 24 28 24 40 Z', fill: '#4CAF62', ...S }),
+      h('path', L('M25 38 C28 31 32 24 36.5 18', '#8FD18A', 1.5)),
+      h('path', { d: 'M24 41.5 C16.5 33 16.5 17 24 6.5 C31.5 17 31.5 33 24 41.5 Z', fill: '#2E8B4E', ...S }),
+      h('path', L('M24 40 V12 M24 21 L20.5 17.5 M24 21 L27.5 17.5 M24 29 L20.5 25.5 M24 29 L27.5 25.5', '#8FD18A', 1.5))
+    ],
+    salad: h => [
+      h('path', { d: 'M8 25 C8 18 13 15 17 17 C19 12 26 11 29 15 C33 12 40 16 40 25 Z', fill: '#56B870', ...S }),
+      h('path', L('M14 20 C16 18.5 18 18.8 19 20.5 M27 17.5 C29 16.5 31 17 32 18.8', '#9BD67B', 1.6)),
+      h('circle', { cx: 17.5, cy: 22, r: 4, fill: '#F25C54', stroke: ink, strokeWidth: 1.6 }),
+      h('circle', { cx: 30.5, cy: 21.5, r: 3.8, fill: '#C9EBA8', stroke: '#2E8B4E', strokeWidth: 1.6 }), h('circle', { cx: 30.5, cy: 21.5, r: 1, fill: '#7CC47A' }),
+      h('path', L('M23 18.5 L26 23', '#FF9A3C', 2.2)),
+      h('path', { d: 'M5.5 25 H42.5 C42.5 34 34.5 40.5 24 40.5 C13.5 40.5 5.5 34 5.5 25 Z', fill: '#fff', ...S }),
+      h('path', L('M9 31 H39', '#5AA9E6', 2.4))
+    ],
+    stirfry: h => [
+      h('path', L('M38.5 28 L45 24.5', ink, 4)),
+      h('path', L('M16 14.5 q-2 -3 0 -6 M23.5 13 q-2 -3 0 -6 M31 14.5 q-2 -3 0 -6', '#8CC2A6', 1.8)),
+      h('circle', { cx: 13.5, cy: 21.5, r: 4.6, fill: '#3E9E5A', ...S }), h('circle', { cx: 17.5, cy: 19.5, r: 3.6, fill: '#47A863', ...S }),
+      h('ellipse', { cx: 25, cy: 21.8, rx: 4.6, ry: 3.4, fill: '#FF9A3C', ...S }),
+      ...tube(h, 'M29.5 22 C30.5 18 34.5 16.6 37.5 18.4', 2.6, '#F25C54'),
+      h('path', { d: 'M5.5 24.5 H41 C41 33 33.5 38.5 23.3 38.5 C13 38.5 5.5 33 5.5 24.5 Z', fill: '#5A4334', ...S }),
+      h('path', L('M9.5 27.5 H37', '#7A6150', 1.8))
+    ],
+    squash: h => [
+      h('path', { d: 'M24 9 C28 9 29 13 29 18 C29 22 36 25 36 32 C36 38 31 41.5 24 41.5 C17 41.5 12 38 12 32 C12 25 19 22 19 18 C19 13 20 9 24 9 Z', fill: '#F2B05E', ...S }),
+      h('rect', { x: 22.5, y: 4.5, width: 3, height: 6, rx: 1.2, fill: '#7A9A3B', ...S }),
+      h('path', L('M18 31 q6 4 12 0', '#D98F3E', 1.7)),
+      h('path', L('M15.8 31 C15.8 27.5 17.8 25.6 20.4 24.6', '#FBD39A', 2.2))
+    ],
+    okra: h => [
+      h('path', { d: 'M30 8.5 C36 10.5 37 16.5 34 24 C31 32 22 40 14 42 C12 42.5 11 41 12 39 C17 32 24 22 26 14.5 C27 10.5 28 8.5 30 8.5 Z', fill: '#6CC070', ...S }),
+      h('path', L('M30.5 12.5 C29.5 22 23.5 32 15 39.5', '#3E9E5A', 1.6)), h('path', L('M33.2 14 C32.5 22 27.5 30 20.5 36.5', '#A8DE8E', 1.6)),
+      h('path', { d: 'M26.5 10 C27.5 6.2 32.5 5 35 8 C34 11.2 29.8 12.3 26.5 10 Z', fill: '#3E9E5A', ...S }),
+      h('path', L('M33.2 6.6 L36 3.8', ink, 2.2))
+    ],
+    tomato: h => [
+      h('path', { d: 'M24 13 C34 13 40.5 19 40.5 27.5 C40.5 35.5 33 40.5 24 40.5 C15 40.5 7.5 35.5 7.5 27.5 C7.5 19 14 13 24 13 Z', fill: '#F25C54', ...S }),
+      h('path', { d: star(24, 15.5, 7.5, 2.8), fill: '#3E9E5A', ...S, strokeWidth: 1.8 }),
+      h('path', L('M24 13 L24.6 7.5', ink, 2.2)),
+      h('path', L('M13.5 25 C14.5 21.2 17.5 19 20.8 18.6', '#FFA79F', 2.4))
+    ],
+    cucumber: h => [
+      h('path', { d: 'M8.5 30 C5.5 26 10 20 18 15 C26 10 35 7 39 10 C42 13 38 20 30 25 C22 30 11.5 34 8.5 30 Z', fill: '#3E9E5A', ...S }),
+      ...[[14, 25], [20, 20], [27, 15.5], [33, 12.5], [18, 27]].map(([x, y]) => h('circle', { cx: x, cy: y, r: 1, fill: '#9BD67B' })),
+      h('circle', { cx: 31, cy: 32, r: 8.2, fill: '#C9EBA8', ...S }),
+      h('circle', { cx: 31, cy: 32, r: 5.8, fill: '#E8F7D8', stroke: '#7CC47A', strokeWidth: 1.2 }),
+      ...[0, 60, 120, 180, 240, 300].map(a => h('ellipse', { cx: +pt(31, 32, 2.8, a).split(' ')[0], cy: +pt(31, 32, 2.8, a).split(' ')[1], rx: 1.1, ry: 0.65, fill: '#A8CF7E', transform: `rotate(${a} ${pt(31, 32, 2.8, a)})` }))
+    ]
+  };
+})();
+const FOOD_BY_ID = Object.fromEntries(FOODS_ICON.map(([id, name, g]) => [id, { id, name, g }]));
+const foodFor = name => { if (/pizza/i.test(name)) return null; const r = FOODS_ICON.find(([, , , re]) => re.test(name)); return r ? FOOD_BY_ID[r[0]] : null; };
+// A menu item's drawn icon (or null when there's no protein or veggie to show). size in px.
+const foodIcon = (id, size) => {
+  const h = React.createElement, f = FOOD_BY_ID[id];
+  if (!f) return null;
+  return h('svg', { viewBox: '0 0 48 48', width: size, height: size, role: 'img', 'aria-label': f.name, style: { display: 'block', flex: 'none' } },
+    h('rect', { x: 1.25, y: 1.25, width: 45.5, height: 45.5, rx: 13, fill: FOOD_TILE[f.g], stroke: '#3B2A20', strokeWidth: 2.5 }),
+    ...FOOD_DRAW[id](h));
+};
+// Menu items: a drawn protein or veggie icon when there is one, else the emoji.
+const menuPic = (name, size) => { const f = foodFor(name); return f ? foodIcon(f.id, size) : emojiFor(name); };
 const EMO = [
   [/pizza/i, '🍕'], [/nugget|tender|wing|drumstick|chicken|popcorn chick/i, '🍗'], [/burger|cheeseburger|hamburger/i, '🍔'],
   [/taco|nacho/i, '🌮'], [/burrito|wrap/i, '🌯'], [/hot ?dog|corn ?dog/i, '🌭'], [/sandwich|sub|hoagie|sliders?/i, '🥪'],
@@ -3368,13 +3590,13 @@ class Component extends DCLogic {
     const days = DOW.map((label, i) => {
       const dk = iso(add(ws, i)), m = s.menus[dk], sel = i === s.dayIdx;
       return {
-        label, date: add(ws, i).getDate(), emoji: m ? emojiFor(m[0].items[0]) : '🍽️', hasBadge: !!s.badges[dk],
+        label, date: add(ws, i).getDate(), emoji: m ? menuPic(m[0].items[0], 28) : '🍽️', hasBadge: !!s.badges[dk],
         bg: sel ? '#FF6B57' : '#fff', fg: sel ? '#fff' : '#3B2A20', shadow: sel ? '0 4px 0 #3B2A20' : 'none',
         onClick: () => this.setState({ dayIdx: i })
       };
     });
     let ti = 0;
-    const lines = (menu || []).map(l => ({ line: `${catEmoji(l.line)} ${l.line}`, items: l.items.map(n => ({ name: n, emoji: emojiFor(n), bg: TILE[ti++ % TILE.length] })) }));
+    const lines = (menu || []).map(l => ({ line: `${catEmoji(l.line)} ${l.line}`, items: l.items.map(n => ({ name: n, emoji: menuPic(n, 34), bg: TILE[ti++ % TILE.length] })) }));
     const favList = s.favs[k] || [];
     const used = new Set(favList);
     const ALL = [...s.myIdeas, ...IDEAS];
@@ -3769,7 +3991,7 @@ class Component extends DCLogic {
       pickDays: s.pickIdea ? DOWL.map((name, d) => {
         const dt = add(ws, d), dk = iso(dt), m = s.menus[dk], on = (s.favs[dk] || []).includes(s.pickIdea.title);
         return {
-          label: `${name}, ${MON[dt.getMonth()]} ${dt.getDate()}`, emoji: m ? emojiFor(m[0].items[0]) : '🍽️',
+          label: `${name}, ${MON[dt.getMonth()]} ${dt.getDate()}`, emoji: m ? menuPic(m[0].items[0], 28) : '🍽️',
           sub: m ? `School: ${m[0].items[0]}` : 'No school menu yet',
           bg: on ? '#DDF5E8' : '#fff', check: on ? '✓' : '', checkBg: on ? '#3DBE8B' : '#fff',
           onClick: () => { this.setState({ dayIdx: d }); this.toggleFavOn(dk, s.pickIdea.title, DOW[d]); }
