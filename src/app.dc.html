@@ -923,7 +923,6 @@ input::placeholder{color:#B49A86}
                   </div>
                   <div style="display:flex;gap:4px;flex:none">
                     <button sc-camel-on-click="{{ c.onAdd }}" style="flex:1;min-width:0;height:34px;border-radius:10px;border:2px solid #3B2A20;background:#FFD166;color:#3B2A20;font-family:inherit;font-weight:800;font-size:13px;cursor:pointer;padding:0">+ Add</button>
-                    <button aria-label="{{ c.periodAria }}" aria-pressed="{{ c.periodPressed }}" sc-camel-on-click="{{ c.onPeriod }}" style="flex:none;width:38px;height:34px;border-radius:10px;border:2px solid {{ c.periodBorder }};background:{{ c.periodBg }};font-size:15px;cursor:pointer;padding:0">🩸</button>
                   </div>
                 </div>
               </sc-if>
@@ -942,16 +941,8 @@ input::placeholder{color:#B49A86}
             </sc-for>
           </div>
         </sc-if>
-        <sc-if value="{{ calHasPeriod }}" hint-placeholder-val="{{ false }}">
-          <div style="background:#FFE8EE;border:2px solid #F7B6C5;border-radius:16px;padding:10px 12px">
-            <div style="font-size:14px;font-weight:800;color:#9C2F4C">{{ calPeriodLine }}</div>
-            <div style="font-size:12px;font-weight:700;color:#A86478;margin-top:2px;text-wrap:pretty">{{ calPeriodNote }}</div>
-          </div>
-        </sc-if>
         <div style="display:flex;flex-wrap:wrap;gap:4px 10px;font-size:11px;font-weight:700;color:#8A6E5A;padding:0 2px">
           <span><span style="display:inline-block;width:10px;height:10px;border-radius:3px;background:#FFE08A;border:1px solid #E8B93A;vertical-align:-1px"></span> Important</span>
-          <span><span style="display:inline-block;width:10px;height:10px;border-radius:3px;background:#FFD6DF;border:1px solid #F28BA0;vertical-align:-1px"></span> Period</span>
-          <span><span style="display:inline-block;width:10px;height:10px;border-radius:3px;background:#fff;border:1.5px dashed #F28BA0;vertical-align:-1px;box-sizing:border-box"></span> Period estimate</span>
           <span style="flex-basis:100%">🔒 Only you see your calendar. It’s saved on this phone and in your backup.</span>
         </div>
       </section>
@@ -1815,7 +1806,7 @@ const unionList = (a, b) => [...new Set([...(Array.isArray(a) ? a : []), ...(Arr
 const mergeDays = (a, b) => { const o = { ...(isObj(b) ? b : {}) }; Object.entries(isObj(a) ? a : {}).forEach(([k, v]) => { o[k] = Array.isArray(v) ? unionList(v, o[k]) : v; }); return o; };
 const mergeKeep = (a, b) => ({ ...(isObj(b) ? b : {}), ...(isObj(a) ? a : {}) });
 const maxMap = (a, b) => { const o = { ...(isObj(b) ? b : {}) }; Object.entries(isObj(a) ? a : {}).forEach(([k, v]) => { o[k] = Math.max(Number(v) || 0, Number(o[k]) || 0); }); return o; };
-// ── My calendar (Plan tab): events, important days and period days. Private to each person. ──
+// ── My calendar (Plan tab): events and important days. Private to each person, never shared with the family. ──
 const CAL_KINDS = [
   ['bday', '🎂', 'Birthday', '#FFE3EC'], ['test', '📝', 'Test or quiz', '#E1F0FB'], ['game', '🏆', 'Game or meet', '#DDF5E8'],
   ['show', '🎭', 'Show or recital', '#F3E3FA'], ['doctor', '🩺', 'Appointment', '#E3F4F1'], ['trip', '✈️', 'Trip', '#E1F0FB'],
@@ -1835,7 +1826,6 @@ const cleanCal = o => {
   });
   return out;
 };
-const cleanPeriod = o => { const out = {}; if (isObj(o)) Object.keys(o).forEach(d => { if (DAY_KEY.test(d) && o[d]) out[d] = 1; }); return out; };
 // Events are merged one by one (by id), so a backup never loses an event made on another phone.
 const mergeCal = (a, b) => {
   const out = cleanCal(b);
@@ -1843,23 +1833,7 @@ const mergeCal = (a, b) => {
   return out;
 };
 const tmLabel = tm => { const [h, m] = tm.split(':').map(Number); return `${(h + 11) % 12 + 1}:${pad(m)} ${h < 12 ? 'AM' : 'PM'}`; };
-const dayDiff = (a, b) => Math.round((new Date(b + 'T12:00') - new Date(a + 'T12:00')) / 864e5);
 const firstOfMonth = d => new Date(d.getFullYear(), d.getMonth(), 1, 12);
-// Period estimate from the days logged: average gap between starts (default 28 days) and average length (default 5).
-const periodInfo = (period, today) => {
-  const days = Object.keys(period).sort(); if (!days.length) return null;
-  const set = new Set(days), starts = [], lens = [];
-  days.forEach(d => { if (!set.has(iso(add(new Date(d + 'T12:00'), -1)))) { starts.push(d); lens.push(0); } lens[lens.length - 1]++; });
-  const gaps = starts.slice(1).map((d, i) => dayDiff(starts[i], d)).filter(n => n >= 18 && n <= 45).slice(-6);
-  const cycle = gaps.length ? Math.round(gaps.reduce((x, y) => x + y, 0) / gaps.length) : 28;
-  const recent = lens.slice(-6), len = Math.min(8, Math.max(2, Math.round(recent.reduce((x, y) => x + y, 0) / recent.length)));
-  const last = starts[starts.length - 1];
-  let next = add(new Date(last + 'T12:00'), cycle);
-  while (iso(add(next, len - 1)) < today) next = add(next, cycle);
-  const pred = new Set();
-  for (let k = 0; k < 3; k++) for (let j = 0; j < len; j++) { const d = iso(add(next, k * cycle + j)); if (!set.has(d) && d > last) pred.add(d); }
-  return { next: iso(next), cycle, len, gaps: gaps.length, pred };
-};
 function mergeSaved(loc, rem) {
   rem = isObj(rem) ? rem : {};
   const titles = new Set((loc.myIdeas || []).map(i => i.title));
@@ -1882,10 +1856,10 @@ function mergeSaved(loc, rem) {
     myIdeas, seenMs: unionList(loc.seenMs, rem.seenMs), questDone: mergeDays(loc.questDone, rem.questDone),
     stickers, holos: mergeKeep(loc.holos, rem.holos), peck, myBadges,
     sched: cleanSched(mergeKeep(cleanSched(loc.sched), cleanSched(rem.sched))),
-    cal: mergeCal(loc.cal, rem.cal), period: cleanPeriod(mergeKeep(cleanPeriod(loc.period), cleanPeriod(rem.period)))
+    cal: mergeCal(loc.cal, rem.cal)
   };
 }
-const hasStuff = d => !!d && (['favs', 'eaten', 'badges', 'questDone', 'stickers', 'holos', 'sched', 'cal', 'period'].some(k => isObj(d[k]) && Object.keys(d[k]).length)
+const hasStuff = d => !!d && (['favs', 'eaten', 'badges', 'questDone', 'stickers', 'holos', 'sched', 'cal'].some(k => isObj(d[k]) && Object.keys(d[k]).length)
   || ['myIdeas', 'myBadges'].some(k => Array.isArray(d[k]) && d[k].length) || (isObj(d.peck) && (Number(d.peck.pts) > 0 || Object.keys(d.peck.best || {}).length > 0)));
 const fmtMove = v => { const c = String(v || '').toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 8); return c.length > 4 ? c.slice(0, 4) + '-' + c.slice(4) : c; };
 // ── Badges kids design themselves ──
@@ -2474,7 +2448,7 @@ class Component extends DCLogic {
       stickers: Object.fromEntries(Object.entries(saved.stickers || {}).map(([d, id]) => [d, LEGACY_Q[id] || id])),
       peck: { pts: 0, best: {}, log: {}, plays: 0, ...migratePeck(saved.peck) }, myBadges: saved.myBadges || [],
       nestView: 'quests', bSheet: false, bDraft: { ...MB_BLANK }, game: null,
-      sched: cleanSched(saved.sched), cal: cleanCal(saved.cal), period: cleanPeriod(saved.period), calM: firstOfMonth(now), calSel: null, calSheet: null, fpWs: monOf(now), fpIdx: (wd + 6) % 7, fpSheet: null, fpKid: null, fpKidSched: {}, fpNotes: [], fpTag: '',
+      sched: cleanSched(saved.sched), cal: cleanCal(saved.cal), calM: firstOfMonth(now), calSel: null, calSheet: null, fpWs: monOf(now), fpIdx: (wd + 6) % 7, fpSheet: null, fpKid: null, fpKidSched: {}, fpNotes: [], fpTag: '',
       fpNoteDraft: '', fpNoteEdit: false, fpReplyFor: null, fpReplyDraft: '', fpReplyEdit: null, fpBusy: false, tick: 0,
       famOk: false, fam: null, famBusy: false, famErr: '', famEvents: [], famLastSeen: 0, famPlans: [], pushState: 'unknown',
       backupAt: ((lsGet(FKEY, {}) || {}).token ? (lsGet(FKEY, {}) || {}).bAt : (lsGet(VKEY, {}) || {}).bAt) || 0, moveCode: null,
@@ -2771,8 +2745,8 @@ class Component extends DCLogic {
     return { emoji, text, when: ago(e.at), isNew, bg: isNew ? '#FFF1C2' : '#FFF7EC' };
   }
   saveData() {
-    const { favs, eaten, badges, myIdeas, seenMs, questDone, stickers, holos, peck, myBadges, sched, cal, period } = this.state;
-    return { v: 2, favs, eaten, badges, myIdeas, seenMs, questDone, stickers, holos, peck, myBadges, sched, cal, period };
+    const { favs, eaten, badges, myIdeas, seenMs, questDone, stickers, holos, peck, myBadges, sched, cal } = this.state;
+    return { v: 2, favs, eaten, badges, myIdeas, seenMs, questDone, stickers, holos, peck, myBadges, sched, cal };
   }
   persist() {
     try { localStorage.setItem(KEY, JSON.stringify(this.saveData())); } catch (e) {}
@@ -3282,11 +3256,6 @@ class Component extends DCLogic {
     const cal = { ...this.state.cal }; cal[f.src] = (cal[f.src] || []).filter((_, i) => i !== f.idx);
     this.setState({ cal: cleanCal(cal), calSheet: null }, () => { this.persist(); this.flash('🗑️ Event deleted'); });
   }
-  calPeriod(day) {
-    const period = { ...this.state.period }, on = !period[day];
-    if (on) period[day] = 1; else delete period[day];
-    this.setState({ period }, () => { this.persist(); this.flash(on ? '🩸 Marked as a period day' : 'Period day removed'); });
-  }
   // ── Peck Patch ──
   setGame(p) { this.setState(s => s.game ? { game: { ...s.game, ...(typeof p === 'function' ? p(s.game) : p) } } : null); }
   startLevel(i) {
@@ -3566,7 +3535,6 @@ class Component extends DCLogic {
     const zDay = s.calSel && s.calSel.slice(0, 7) === mKey ? s.calSel : null;
     const zD = zDay ? new Date(zDay + 'T12:00') : null;
     const zCol = zD ? (zD.getDay() + 6) % 7 : -1, zRow = zD ? Math.floor((lead + zD.getDate() - 1) / 7) : -1;
-    const pInfo = periodInfo(s.period, tIso);
     // Birthdays come back every year: index them by month-day.
     const bdays = {};
     Object.entries(s.cal).forEach(([d, list]) => list.forEach((e, i) => { if (e.k === 'bday') (bdays[d.slice(5)] = bdays[d.slice(5)] || []).push({ ...e, src: d, idx: i }); }));
@@ -3575,26 +3543,24 @@ class Component extends DCLogic {
     const evText = e => `${e.t}${e.tm ? ` · ${tmLabel(e.tm)}` : ''}`;
     const calCells = Array.from({ length: nDays }, (_, i) => {
       const dd = new Date(cy, cmo, i + 1, 12), day = iso(dd), col = (lead + i) % 7, row = Math.floor((lead + i) / 7);
-      const evs = eventsOn(day), imp = evs.some(e => e.imp), per = !!s.period[day], pred = !!(pInfo && pInfo.pred.has(day));
+      const evs = eventsOn(day), imp = evs.some(e => e.imp);
       const big = day === zDay, inRow = !!zDay && !big && row === zRow, squeezed = !!zDay && !big && col !== zCol && !inRow, today = day === tIso;
-      const show = squeezed ? 1 : inRow ? 3 : 2, icons = [...(per ? ['🩸'] : []), ...evs.map(e => CAL_KIND[e.k].e)];
+      const show = squeezed ? 1 : inRow ? 3 : 2, icons = evs.map(e => CAL_KIND[e.k].e);
       const marks = icons.slice(0, show).join('') + (icons.length > show ? '+' : '');
       return {
         col: String(col + 1), row: String(row + 1), num: String(i + 1), big, compact: !big,
         wd: `${FDAYS[col]} · ${MON[cmo]}`,
-        bg: big ? '#FFF7EC' : imp ? '#FFE08A' : per ? '#FFD6DF' : col >= 5 ? '#FFF9F1' : '#fff',
-        border: big ? '2px solid #3B2A20' : pred ? '2px dashed #F28BA0' : imp ? '2px solid #E8B93A' : per ? '2px solid #F28BA0' : '1.5px solid #EAD9C6',
+        bg: big ? '#FFF7EC' : imp ? '#FFE08A' : col >= 5 ? '#FFF9F1' : '#fff',
+        border: big ? '2px solid #3B2A20' : imp ? '2px solid #E8B93A' : '1.5px solid #EAD9C6',
         shadow: big ? '3px 3px 0 #3B2A20' : 'none',
         numFs: squeezed ? '11px' : '14px', markFs: squeezed ? '9px' : '12px',
         numBg: today ? '#FF6B57' : 'transparent', numFg: today ? '#fff' : '#3B2A20', marks, markWs: inRow ? 'normal' : 'nowrap',
-        aria: `${FDAYSL[col]}, ${MON[cmo]} ${i + 1}${today ? ', today' : ''}${evs.length ? `, ${evs.length} event${evs.length > 1 ? 's' : ''}` : ''}${per ? ', period day' : pred ? ', period estimate' : ''}${imp ? ', important' : ''}`,
+        aria: `${FDAYSL[col]}, ${MON[cmo]} ${i + 1}${today ? ', today' : ''}${evs.length ? `, ${evs.length} event${evs.length > 1 ? 's' : ''}` : ''}${imp ? ', important' : ''}`,
         onClick: () => this.calPick(day),
         events: big ? evs.map(e => ({ e: CAL_KIND[e.k].e, t: evText(e), bg: CAL_KIND[e.k].bg, border: e.imp ? '2px solid #E8B93A' : '1.5px solid transparent',
           aria: `Change ${e.t}`, onEdit: () => this.calOpen(day, e.src, e.idx) })) : [],
-        noEvents: big && !evs.length, emptyText: per ? 'Period day' : pred ? 'Period may come around now' : 'Nothing yet',
-        onAdd: () => this.calOpen(day, day, -1), onPeriod: () => this.calPeriod(day),
-        periodPressed: per ? 'true' : 'false', periodAria: per ? 'Remove period day' : 'Mark as a period day',
-        periodBg: per ? '#FF8FA8' : '#fff', periodBorder: per ? '#3B2A20' : '#E8D3BC'
+        noEvents: big && !evs.length, emptyText: 'Nothing yet',
+        onAdd: () => this.calOpen(day, day, -1)
       };
     });
     const soon = [];
@@ -3604,7 +3570,7 @@ class Component extends DCLogic {
     }
     const csh = s.calSheet, cshKind = csh ? CAL_KIND[csh.k] || CAL_KIND.other : null, cshD = csh ? new Date(csh.day + 'T12:00') : null;
     const calView = {
-      calHint: zDay ? 'Tap + Add for an event, or 🩸 for a period day.' : 'Tap a date to zoom in.',
+      calHint: zDay ? 'Tap + Add to put something on this day.' : 'Tap a date to zoom in.',
       calMonthLabel: cm.toLocaleDateString('en-US', { month: 'long', year: 'numeric' }),
       calShowToday: mKey !== tIso.slice(0, 7) || !!zDay, calToday: () => this.setState({ calM: firstOfMonth(nowD), calSel: null }),
       calPrev: () => this.calShift(-1), calNext: () => this.calShift(1),
@@ -3618,16 +3584,6 @@ class Component extends DCLogic {
         when: i === 0 ? 'Today' : i === 1 ? 'Tomorrow' : `${FDAYS[(dd.getDay() + 6) % 7]}, ${MON[dd.getMonth()]} ${dd.getDate()}`,
         onClick: () => this.calGo(day)
       })),
-      calHasPeriod: !!pInfo,
-      calPeriodLine: !pInfo ? '' : (() => {
-        const n = dayDiff(tIso, pInfo.next), nd = new Date(pInfo.next + 'T12:00');
-        if (s.period[tIso]) return '🩸 Period day today';
-        if (n <= 0) return '🩸 Your period may come around now';
-        return `🩸 Next period: about ${FDAYS[(nd.getDay() + 6) % 7]}, ${MON[nd.getMonth()]} ${nd.getDate()} (in ${n} day${n === 1 ? '' : 's'})`;
-      })(),
-      calPeriodNote: !pInfo ? '' : pInfo.gaps >= 1
-        ? `An estimate from your last ${pInfo.gaps + 1} periods: about every ${pInfo.cycle} days, ${pInfo.len} days long. Dashed days show the estimate.`
-        : `An estimate using a 28-day cycle. Mark a few more periods and it gets closer to yours. Dashed days show the estimate.`,
       calHasSheet: !!csh, calClose: () => this.setState({ calSheet: null }),
       calSh: csh ? { title: csh.idx >= 0 ? 'Change event' : 'Add an event', sub: `${FDAYS[(cshD.getDay() + 6) % 7]}, ${MON[cshD.getMonth()]} ${cshD.getDate()}` } : {},
       calShT: csh ? csh.t : '', onCalT: e => this.setCalSheet({ t: e.target.value.slice(0, 40) }), calShPh: cshKind ? `e.g. ${{ bday: 'Grandma’s birthday', test: 'Math test', game: 'Soccer game', show: 'Band concert', doctor: 'Dentist', trip: 'Trip to the beach', school: 'Field trip', party: 'Sleepover', other: 'Bring library books' }[cshKind.id]}` : '',
