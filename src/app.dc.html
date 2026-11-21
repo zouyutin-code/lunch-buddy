@@ -605,7 +605,7 @@ input::placeholder{color:#B49A86}
         <section aria-label="Weekly review" style="background:#E1F0FB;border:2px solid #3B2A20;border-radius:24px;padding:14px;box-shadow:4px 4px 0 #3B2A20;display:flex;flex-direction:column;gap:8px">
           <div style="font-family:'Baloo 2',sans-serif;font-size:19px;font-weight:800;line-height:1.1">📈 Weekly review</div>
           <div style="font-size:13px;font-weight:700;color:#4A6A85;line-height:1.4;text-wrap:pretty">{{ nrPointerText }}</div>
-          <button sc-camel-on-click="{{ frGoFamily }}" style="align-self:flex-start;min-height:44px;padding:0 16px;border-radius:999px;border:2px solid #3B2A20;background:#fff;color:#3B2A20;font-family:inherit;font-weight:800;font-size:14px;cursor:pointer;box-shadow:0 3px 0 #3B2A20">Open the 👪 Family tab ›</button>
+          <button sc-camel-on-click="{{ nrPointerGo }}" style="align-self:flex-start;min-height:44px;padding:0 16px;border-radius:999px;border:2px solid #3B2A20;background:#fff;color:#3B2A20;font-family:inherit;font-weight:800;font-size:14px;cursor:pointer;box-shadow:0 3px 0 #3B2A20">{{ nrPointerBtn }}</button>
         </section>
       </sc-if>
 
@@ -682,12 +682,14 @@ input::placeholder{color:#B49A86}
                 <span style="font-size:11px;font-weight:700;color:#8A6E5A">{{ nb.n }}</span><span style="min-width:30px;text-align:right">{{ nb.val }}</span>
               </div>
             </sc-for>
+            <sc-if value="{{ nrHasAlso }}" hint-placeholder-val="{{ true }}">
             <div style="font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#8A6E5A;margin-top:8px">Also this week · not part of credits</div>
             <sc-for list="{{ nrAlso }}" as="na" hint-placeholder-count="2">
               <button sc-camel-on-click="{{ na.onClick }}" style="display:flex;align-items:center;gap:8px;width:100%;min-height:44px;padding:0 10px;border-radius:14px;border:2px solid #E8D3BC;background:#FFF9F1;font-family:inherit;font-size:13px;font-weight:800;color:#3B2A20;cursor:pointer;text-align:left">
                 <span aria-hidden="true" style="font-size:16px">{{ na.e }}</span><span style="flex:1;min-width:0">{{ na.label }}</span><span>{{ na.val }}</span><span aria-hidden="true" style="color:#B49A86">›</span>
               </button>
             </sc-for>
+            </sc-if>
           </div>
 
           <div style="background:#E1F0FB;border:2px solid #3B2A20;border-radius:18px;padding:10px 12px;display:flex;flex-direction:column;gap:6px">
@@ -697,6 +699,7 @@ input::placeholder{color:#B49A86}
             <button sc-camel-on-click="{{ nrUseSuggest }}" style="align-self:flex-start;min-height:44px;padding:0 16px;border-radius:999px;border:2px solid #3B2A20;background:#fff;color:#3B2A20;font-family:inherit;font-weight:800;font-size:14px;cursor:pointer;box-shadow:0 3px 0 #3B2A20">🎯 Use this goal</button>
           </div>
 
+          <sc-if value="{{ nrShowRefl }}" hint-placeholder-val="{{ true }}">
           <div style="background:#FFE3EC;border:2px solid #3B2A20;border-radius:18px;padding:6px 12px 10px;display:flex;flex-direction:column;gap:8px">
             <button aria-expanded="{{ nrReflAria }}" sc-camel-on-click="{{ nrReflToggle }}" style="display:flex;align-items:center;justify-content:space-between;gap:8px;min-height:44px;width:100%;border:none;background:none;padding:0;font-family:inherit;color:#3B2A20;cursor:pointer;text-align:left">
               <span style="min-width:0"><span style="display:block;font-family:'Baloo 2',sans-serif;font-size:18px;font-weight:800;line-height:1.1">🪞 Weekly reflection</span><span style="display:block;font-size:12px;font-weight:700;color:#8A4A5E">{{ nrReflCount }}</span></span>
@@ -722,6 +725,7 @@ input::placeholder{color:#B49A86}
               </sc-if>
             </sc-if>
           </div>
+          </sc-if>
         </section>
       </sc-if>
 
@@ -1272,6 +1276,21 @@ input::placeholder{color:#B49A86}
               <sc-for list="{{ frCrChips }}" as="cc" hint-placeholder-count="2">
                 <button aria-pressed="{{ cc.pressed }}" sc-camel-on-click="{{ cc.onClick }}" style="min-height:44px;padding:0 14px;border-radius:999px;border:2px solid #3B2A20;background:{{ cc.bg }};color:{{ cc.fg }};font-family:inherit;font-weight:800;font-size:14px;cursor:pointer">{{ cc.label }}</button>
               </sc-for>
+            </div>
+          </sc-if>
+          <sc-if value="{{ frArtKidsEdit }}" hint-placeholder-val="{{ false }}">
+            <div style="background:#fff;border:2px dashed #3B2A20;border-radius:18px;padding:10px;display:flex;flex-direction:column;gap:6px">
+              <div style="font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#2E6B4F">👪 Your kids</div>
+              <sc-for list="{{ frArtKids }}" as="ak" hint-placeholder-count="2">
+                <div style="display:flex;align-items:center;gap:8px;min-height:44px">
+                  <span style="flex:1;min-width:0;font-size:15px;font-weight:800;overflow-wrap:anywhere">🧒 {{ ak.name }}</span>
+                  <button aria-label="{{ ak.aria }}" sc-camel-on-click="{{ ak.onRemove }}" style="flex:none;width:44px;height:44px;border-radius:50%;border:2px solid #3B2A20;background:{{ ak.bg }};font-size:16px;cursor:pointer;padding:0">🗑️</button>
+                </div>
+              </sc-for>
+              <div style="display:flex;gap:8px">
+                <input value="{{ frArtKidDraft }}" sc-camel-on-change="{{ onFrArtKidDraft }}" maxlength="24" aria-label="Kid’s name" placeholder="Kid’s name" style="flex:1;min-width:0;height:44px;box-sizing:border-box;border-radius:14px;border:2px solid #3B2A20;padding:0 12px;font-family:inherit;font-size:16px;font-weight:700;color:#3B2A20;background:#fff;outline:none">
+                <button sc-camel-on-click="{{ frArtKidAdd }}" style="flex:none;height:44px;padding:0 16px;border-radius:14px;border:2px solid #3B2A20;background:#FFD166;font-family:inherit;font-weight:800;font-size:15px;color:#3B2A20;cursor:pointer">+ Add</button>
+              </div>
             </div>
           </sc-if>
           <sc-for list="{{ frCrItems }}" as="ci" hint-placeholder-count="4">
@@ -2950,6 +2969,8 @@ const fpDay = blocks => {
 // Credits are points a parent gives a kid for a day, −3 to +3 with a reason. Only parents give them.
 const CR_ITEMS = [['breakfast', '🍳', 'Breakfast', 3], ['dinner', '🍽️', 'Dinner', 3], ['sleep', '😴', 'Sleep', 3], ['plan', '✅', 'Fulfill the plan', 3]];
 const CR_ITEM = Object.fromEntries(CR_ITEMS.map(([id, e, label, pts]) => [id, { id, e, label, pts }]));
+// In the claude.ai artifact copy (no family server) credits, goals and the kids list live in the artifact's own db under this document.
+const ART_FAM = 'rhythm/family';
 const CR_PTS = [-3, -2, -1, 0, 1, 2, 3];
 const sgn = n => n > 0 ? `+${n}` : n < 0 ? `−${-n}` : '0';
 const TASK_TYPES = [['plan', '🙋', 'My plan'], ['family', '👪', 'Family event'], ['activity', '🎒', 'After-school']];
@@ -2999,6 +3020,7 @@ class Component extends DCLogic {
       sched: cleanSched(saved.sched), cal: cleanCal(saved.cal), calM: firstOfMonth(now), calSel: null, calSheet: null, fpWs: monOf(now), fpIdx: (wd + 6) % 7, fpSheet: null, fpKid: null, fpKidSched: {}, fpNotes: [], fpTag: '',
       fpNoteDraft: '', fpNoteEdit: false, fpReplyFor: null, fpReplyDraft: '', fpReplyEdit: null, fpBusy: false, tick: 0,
       frWeeks: {}, frBoard: [], frTotals: {}, frSheet: null, frBusy: false, frBoardOpen: false, frPost: '', frReflOpen: false, nestWs: monOf(now),
+      art: null, frArtEdit: false, frArtKidDraft: '', frArtDel: null,
       famOk: false, fam: null, famBusy: false, famErr: '', famEvents: [], famLastSeen: 0, famPlans: [], pushState: 'unknown',
       backupAt: ((lsGet(FKEY, {}) || {}).token ? (lsGet(FKEY, {}) || {}).bAt : (lsGet(VKEY, {}) || {}).bAt) || 0, moveCode: null,
       famForm: { familyName: '', startName: '', code: '', joinName: '', role: 'kid', moveCode: '' }
@@ -3028,6 +3050,7 @@ class Component extends DCLogic {
   backupDirty() { const m = this.backupMode(); return m === 'family' ? !!this.famSession().bDirty : m === 'vault' ? !!this.vSession().bDirty : false; }
   famDirty() { return lsGet(FDIRTY, {}) || {}; }
   async api(method, path, body, keepalive, token) {
+    if (this.state.art && !this.state.famOk) return this.artApi(method, path, body);
     const tok = token !== undefined ? token : this.famToken();
     let r;
     try {
@@ -3061,7 +3084,7 @@ class Component extends DCLogic {
     if (join || tab) { try { history.replaceState(null, '', location.pathname); } catch (e) {} }
     let ok = false;
     try { const r = await fetch('/api/health', { cache: 'no-store' }); const j = await r.json(); ok = !!(r.ok && j && j.family); } catch (e) {}
-    if (!ok) { if (this.state.tab === 'family') this.setState({ tab: 'menu' }); return; }
+    if (!ok) { if (this.state.tab === 'family') this.setState({ tab: 'menu' }); this.artInit(); return; }
     this.setState({ famOk: true });
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('/sw.js').catch(() => {});
@@ -3780,12 +3803,104 @@ class Component extends DCLogic {
   // ── Family Rhythm: the shared day (schedule, breakfast/dinner, credits, board) and the weekly review ──
   frMe() { return this.famActive() ? this.state.fam.me : null; }
   async frLoad(ws) {
-    if (!this.famActive() || !ws) return;
+    if (!ws) return;
+    if (this.state.art) return this.artLoad(ws);
+    if (!this.famActive()) return;
     const k = iso(ws);
     try {
       const r = await this.api('GET', `rhythm?start=${k}&end=${iso(add(ws, 6))}`);
       this.setState(s => ({ frWeeks: { ...s.frWeeks, [k]: r }, frBoard: r.board || [], frTotals: { ...s.frTotals, ...(r.totals || {}) } }));
     } catch (e) { this.famFail(e, true); }
+  }
+  // ── The claude.ai artifact copy: no family server, so parent credits, weekly goals and the kids list live in the
+  // artifact's own db. People who can edit the artifact (its owner and Editors) are the parents; everyone else reads.
+  artDb() {
+    if (!this._dbP) this._dbP = (window.claude && typeof window.claude.use === 'function') ? window.claude.use('db').catch(() => null) : Promise.resolve(null);
+    return this._dbP;
+  }
+  async artInit() {
+    const db = await this.artDb();
+    if (!db) return;
+    let user = null; try { user = await window.claude.use('user'); } catch (e) {}
+    let parent = false, me = null;
+    try { if (user) { parent = !!(await user.canEdit()); me = (await user.id()) || null; } } catch (e) {}
+    let kids = [];
+    try {
+      const d = await db.doc(ART_FAM).get(), v = d.exists ? d.data() : null;
+      if (v && Array.isArray(v.kids)) kids = v.kids.filter(k => k && k.id && k.name).slice(0, 8).map(k => ({ id: String(k.id), nickname: String(k.name).slice(0, 24), role: 'kid', status: 'active' }));
+    } catch (e) {}
+    this._artDb = db;
+    this.setState({ art: { parent, me, kids }, frArtEdit: parent && !kids.length }, () => {
+      const t = this.state.tab;
+      if (t === 'plan') this.frLoad(this.state.fpWs);
+      if (t === 'nest') this.frLoad(this.state.nestWs);
+    });
+  }
+  async artLoad(ws) {
+    const db = this._artDb, a = this.state.art; if (!db || !a) return;
+    const k = iso(ws), end = iso(add(ws, 6));
+    try {
+      const [cs, gs] = await Promise.all([db.collection(ART_FAM + '/credits').limit(1000).get(), db.collection(ART_FAM + '/goals').limit(1000).get()]);
+      const kidIds = new Set(this.state.art.kids.map(x => x.id)), me = this.state.art.me;
+      const credits = cs.docs.map(d => ({ id: d.id, ...(d.data() || {}) })).filter(c => kidIds.has(c.kidId) && /^\d{4}-\d{2}-\d{2}$/.test(String(c.day)))
+        .map(c => ({ id: c.id, kidId: c.kidId, day: String(c.day), item: CR_ITEM[c.item] ? c.item : '', reason: String(c.reason || '').slice(0, 80),
+          pts: Math.max(-3, Math.min(3, Math.round(Number(c.pts) || 0))), by: c.by || null, byName: me && c.by === me ? 'you' : 'a parent', at: Number(c.at) || 0 }))
+        .sort((x, y) => x.at - y.at);
+      const goals = gs.docs.map(d => ({ id: d.id, ...(d.data() || {}) })).filter(g => kidIds.has(g.kidId))
+        .map(g => ({ id: g.id, memberId: g.kidId, week: String(g.week), title: String(g.title || '').slice(0, 80), done: !!g.done, at: Number(g.at) || 0 })).sort((x, y) => x.at - y.at);
+      const totals = {}; kidIds.forEach(id => { totals[id] = 0; }); credits.forEach(c => { totals[c.kidId] += c.pts; });
+      const wk = { start: k, credits: credits.filter(c => c.day >= k && c.day <= end), goals, reflections: [], tasks: [], meals: [], board: [], plans: [], addons: [] };
+      this.setState(s => ({ frWeeks: { ...s.frWeeks, [k]: wk }, frTotals: { ...s.frTotals, ...totals } }));
+    } catch (e) {}
+  }
+  // The few writes the artifact supports, shaped like the family server's routes so the screens don't change.
+  async artApi(method, path, body) {
+    const a = this.state.art, db = this._artDb, b = body || {};
+    if (!a || !db) throw new Error('That isn’t available here.');
+    if (!a.parent) throw new Error('Only parents can change this here.');
+    const route = method + ' ' + path.split('?')[0], kidOk = id => a.kids.some(x => x.id === id), t = Date.now();
+    const credits = db.collection(ART_FAM + '/credits'), goals = db.collection(ART_FAM + '/goals');
+    if (route === 'PUT credits') {
+      if (!kidOk(b.kid)) throw new Error('Pick a kid first.');
+      const day = String(b.day || '');
+      if (!/^\d{4}-\d{2}-\d{2}$/.test(day) || day > iso(new Date())) throw new Error('Credits can be given once the day comes.');
+      const pts = Math.round(Number(b.pts)); if (!(pts >= -3 && pts <= 3)) throw new Error('Points go from −3 to +3.');
+      const reason = String(b.reason || '').trim().slice(0, 80); if (!reason) throw new Error('Add a reason first.');
+      await (b.id ? credits.doc(String(b.id)) : credits.doc()).set({ kidId: b.kid, day, item: CR_ITEM[b.item] ? b.item : '', reason, pts, by: a.me, at: t });
+      return { ok: true };
+    }
+    if (route === 'POST credits/delete') { await credits.doc(String(b.id || '')).delete(); return { ok: true }; }
+    if (route === 'POST rhythm/goal') {
+      if (!kidOk(b.kid)) throw new Error('Pick a kid first.');
+      const title = String(b.title || '').trim().slice(0, 80); if (!title) throw new Error('Write the goal first.');
+      const week = iso(monOf(new Date(String(b.week) + 'T12:00')));
+      await goals.doc().set({ kidId: b.kid, week, title, done: false, by: a.me, at: t });
+      return { ok: true };
+    }
+    if (route === 'POST rhythm/goal/done') { await goals.doc(String(b.id || '')).update({ done: !!b.done }); return { ok: true }; }
+    if (route === 'POST rhythm/goal/delete') { await goals.doc(String(b.id || '')).delete(); return { ok: true }; }
+    throw new Error('That needs the Lunch Buddy family app.');
+  }
+  async artKidsSave(kids, msg) {
+    const db = this._artDb; if (!db || !this.state.art || !this.state.art.parent) return;
+    try {
+      await db.doc(ART_FAM).set({ kids: kids.map(k => ({ id: k.id, name: k.nickname })) });
+      this.setState(s => ({ art: { ...s.art, kids }, frArtDel: null }), () => this.frShown());
+      this.flash(msg);
+    } catch (e) { this.flash('⚠️ Couldn’t save that. Please try again.'); }
+  }
+  artKidAdd() {
+    const a = this.state.art; if (!a || !a.parent) return;
+    const name = this.state.frArtKidDraft.trim().slice(0, 24);
+    if (!name) { this.flash('✏️ Type a name first'); return; }
+    if (a.kids.length >= 8) { this.flash('8 kids is the most here'); return; }
+    const id = 'k' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+    this.setState({ frArtKidDraft: '', fpKid: id });
+    this.artKidsSave([...a.kids, { id, nickname: name, role: 'kid', status: 'active' }], `🧒 Added ${name}`);
+  }
+  artKidRemove(k) {
+    if (this.state.frArtDel !== k.id) { this.setState({ frArtDel: k.id }); this.flash(`Tap 🗑️ again to remove ${k.nickname}`); return; }
+    this.artKidsSave(this.state.art.kids.filter(x => x.id !== k.id), `Removed ${k.nickname}`);
   }
   // After a change, reload the weeks on screen (and another week, like next week's goals).
   frShown(extra) {
@@ -3799,7 +3914,7 @@ class Component extends DCLogic {
     catch (e) { if (e && e.code === 'no_session') this.famFail(e, true); this.flash(`⚠️ ${(e && e.message) || 'Something went wrong'}`); }
     finally { this._frBusy = false; this.setState({ frBusy: false }); }
   }
-  frAsk(q) { let ok = true; try { ok = window.confirm(q); } catch (e) {} return ok; }
+  frAsk(q) { if (this.state.art) return true; let ok = true; try { ok = window.confirm(q); } catch (e) {} return ok; }   // artifact pages can't show confirm boxes
   setFrSheet(p) { this.setState(s => s.frSheet ? { frSheet: { ...s.frSheet, ...p } } : null); }
   frTaskOpen(day, t) {
     const me = this.frMe(); if (!me) return;
@@ -4198,9 +4313,15 @@ class Component extends DCLogic {
     };
     // ── Family Rhythm: the family's day on the Plan tab, the weekly review in the Nest ──
     const frMe = famAct ? fam.me : null;
-    const frKid = famParent ? viewKid : famKid ? fam.me : null;   // whose credits, goals and review are shown
-    const frWk = famAct ? s.frWeeks[iso(s.fpWs)] : null;
-    const memOf = id => famMembersAll.find(m => m.id === id);
+    // In the claude.ai artifact copy (s.art) the kids come from the artifact's db and its editors are the parents.
+    const art = s.art, artPar = !!(art && art.parent);
+    const artKid = art ? (art.kids.find(k => k.id === s.fpKid) || art.kids[0] || null) : null;
+    const crPar = famParent || artPar, third = famParent || !!art;   // who scores; who sees a kid's week in the third person
+    const crKid = famParent ? viewKid : artKid, crName = crKid ? crKid.nickname : '';
+    const frKid = famParent ? viewKid : famKid ? fam.me : artKid;   // whose credits, goals and review are shown
+    const myId = frMe ? frMe.id : art ? art.me : null;
+    const frWk = famAct || art ? s.frWeeks[iso(s.fpWs)] : null;
+    const memOf = id => famMembersAll.find(m => m.id === id) || (art ? art.kids.find(k => k.id === id) : null);
     const memName = id => frMe && id === frMe.id ? 'You' : (memOf(id) || {}).nickname || 'Someone';
     const memEmo = id => ROLE_EMO[(memOf(id) || {}).role] || '🙂';
     const sumPts = list => list.reduce((a, c) => a + c.pts, 0);
@@ -4259,17 +4380,17 @@ class Component extends DCLogic {
     const crSample = famParent && !viewKid, crFuture = fk > tIso;
     const crList = crSample ? CR_SAMPLE.filter(r => r[0] === s.fpIdx).map(([, item, pts, reason], i) => ({ id: `x${i}`, item, pts, reason, by: frMe.id, byName: 'You' }))
       : frKid && frWk ? frWk.credits.filter(c => c.kidId === frKid.id && c.day === fk) : [];
-    const crCan = !!(famParent && viewKid && !crFuture);
+    const crCan = !!(crPar && crKid && !crFuture);
     const crRow = c => ({
-      pts: `${sgn(c.pts)} ⭐`, reason: c.reason, by: famParent ? (c.by === frMe.id ? 'by you' : `by ${c.byName}`) : `from ${c.byName}`,
+      pts: `${sgn(c.pts)} ⭐`, reason: c.reason, by: crPar ? (c.by === myId ? 'by you' : `by ${c.byName}`) : `from ${c.byName}`,
       ptsBg: c.pts > 0 ? '#DDF5E8' : c.pts < 0 ? '#FFE3E6' : '#F1E4D6', ptsFg: c.pts > 0 ? '#1F5E40' : c.pts < 0 ? '#8E2436' : '#6B5444',
       aria: crCan ? `Change ${sgn(c.pts)} for ${c.reason}` : `${sgn(c.pts)} for ${c.reason}`,
-      onClick: () => crSample ? this.flash('👀 This is just an example') : crCan ? this.frCreditOpen(viewKid.id, fk, c) : famParent ? this.flash('🗓️ Credits can be given once the day comes') : this.flash('⭐ Only parents give credits')
+      onClick: () => crSample ? this.flash('👀 This is just an example') : crCan ? this.frCreditOpen(crKid.id, fk, c) : crPar ? this.flash('🗓️ Credits can be given once the day comes') : this.flash('⭐ Only parents give credits')
     });
     const crItems = CR_ITEMS.map(([id, e, label]) => {
       const list = crList.filter(c => c.item === id), tot = sumPts(list);
       return { e, label, scored: list.length > 0, notScored: !list.length, total: list.length ? sgn(tot) : 'Not scored', totalBg: !list.length ? '#F6EEE6' : tot > 0 ? '#DDF5E8' : tot < 0 ? '#FFE3E6' : '#F1E4D6',
-        awards: list.map(crRow), canAdd: crCan, addAria: `Score ${label} for ${kidName}`, onAdd: () => this.frCreditOpen(viewKid.id, fk, null, id) };
+        awards: list.map(crRow), canAdd: crCan, addAria: `Score ${label} for ${crName}`, onAdd: () => this.frCreditOpen(crKid.id, fk, null, id) };
     });
     const crCustom = crList.filter(c => !c.item);
     const crDay = sumPts(crList);
@@ -4292,16 +4413,24 @@ class Component extends DCLogic {
       frTaskCount: dayTasks.length ? `${dayTasks.filter(t => t.done).length} of ${dayTasks.length} done` : '',
       frAddLabel: famParent ? '+ Add to the day' : '+ Add my plan',
       frVerse: verseFor(fk)[0], frVerseRef: verseFor(fk)[1],
-      frCrShow: famAct && (famParent || famKid),
+      frCrShow: (famAct && (famParent || famKid)) || !!art,
       frCrTitle: fk === tIso ? 'Today’s credits' : `${FDAYSL[s.fpIdx]}’s credits`,
-      frCrSub: crSample ? 'Example: once your kids join, you score their day here.' : famParent ? (viewKid ? `Score ${kidName}’s day · ${MON[fpD.getMonth()]} ${fpD.getDate()}` : '') : `From your parents · ${MON[fpD.getMonth()]} ${fpD.getDate()}`,
+      frCrSub: crSample ? 'Example: once your kids join, you score their day here.' : crPar ? (crKid ? `Score ${crName}’s day · ${MON[fpD.getMonth()]} ${fpD.getDate()}` : '') : art ? (crKid ? `${crName}’s day · ${MON[fpD.getMonth()]} ${fpD.getDate()}` : '') : `From your parents · ${MON[fpD.getMonth()]} ${fpD.getDate()}`,
       frCrChips: famParent ? fpKids.map(m => ({ label: `🧒 ${m.nickname}`, ...chip(viewKid && m.id === viewKid.id), onClick: () => this.setState({ fpKid: m.id, fpNotes: [], fpNoteEdit: false, fpNoteDraft: '' }, () => this.fpLoad()) }))
-        : famKid ? [{ label: `🧒 ${fam.me.nickname}`, ...chip(true), onClick: () => {} }] : [],
-      frCrHasChips: famKid || fpKids.length > 0,
+        : famKid ? [{ label: `🧒 ${fam.me.nickname}`, ...chip(true), onClick: () => {} }]
+        : art ? [...art.kids.map(k => ({ label: `🧒 ${k.nickname}`, ...chip(crKid && k.id === crKid.id), onClick: () => this.setState({ fpKid: k.id }) })),
+          ...(artPar ? [{ label: '✏️ Kids', ...chip(s.frArtEdit), onClick: () => this.setState(x => ({ frArtEdit: !x.frArtEdit, frArtDel: null })) }] : [])] : [],
+      frCrHasChips: famKid || fpKids.length > 0 || artPar || !!(art && art.kids.length),
       frCrDay: `${sgn(crDay)} ⭐`, frCrItems: crItems, frCrCustom: crCustom.map(crRow), frCrHasCustom: crCustom.length > 0,
-      frCrCan: crCan, frCrAddCustom: () => this.frCreditOpen(viewKid.id, fk, null, ''),
-      frCrNote: crSample ? `👀 This is an example. Once your kids join the family${fam && fam.family && fam.family.code ? ` with invite code ${fam.family.code}` : ''}, you can give them −3 to +3 for each part of their day, with a reason.`
-        : famParent && crFuture ? '🗓️ Credits can be given once the day comes.' : famParent ? 'Tap + to score. −3 to +3, with a reason; 0 means neutral. Only parents give credits.'
+      frCrCan: crCan, frCrAddCustom: () => this.frCreditOpen(crKid.id, fk, null, ''),
+      frArtKidsEdit: artPar && s.frArtEdit, frArtKidDraft: s.frArtKidDraft, onFrArtKidDraft: e => this.setState({ frArtKidDraft: e.target.value.slice(0, 24) }),
+      frArtKidAdd: () => this.artKidAdd(), frArtNoKids: !!(art && !art.kids.length),
+      frArtKids: art ? art.kids.map(k => ({ name: k.nickname, aria: s.frArtDel === k.id ? `Tap again to remove ${k.nickname}` : `Remove ${k.nickname}`,
+        bg: s.frArtDel === k.id ? '#FFD6DC' : '#fff', onRemove: () => this.artKidRemove(k) })) : [],
+      frCrNote: art && !art.kids.length ? (artPar ? '👪 Add your kids above, then score their day: −3 to +3 for each part, with a reason.' : 'No kids added yet. A parent adds them here.')
+        : art && !artPar ? (crFuture ? '🗓️ This day hasn’t come yet.' : '🔒 Only parents give credits. They add up in the Nest.')
+        : crSample ? `👀 This is an example. Once your kids join the family${fam && fam.family && fam.family.code ? ` with invite code ${fam.family.code}` : ''}, you can give them −3 to +3 for each part of their day, with a reason.`
+        : crPar && crFuture ? '🗓️ Credits can be given once the day comes.' : crPar ? 'Tap + to score. −3 to +3, with a reason; 0 means neutral. Only parents give credits.'
         : crFuture ? '🗓️ This day hasn’t come yet.' : '🔒 Only parents give credits. They show up here, and add up in your Nest.',
       frBoardOpen: s.frBoardOpen, frBoardAria: s.frBoardOpen ? 'true' : 'false', frBoardToggle: () => this.setState(x => ({ frBoardOpen: !x.frBoardOpen })),
       frBoardCount: frBoardList.length ? `${frBoardList.length} post${frBoardList.length > 1 ? 's' : ''}` : 'No posts yet', frBoardChevron: s.frBoardOpen ? '▲' : '▼',
@@ -4312,38 +4441,41 @@ class Component extends DCLogic {
       frPostLabel: s.frBusy ? 'Posting…' : '📌 Post', frBusyOp: s.frBusy ? 0.6 : 1
     };
     // ── The Nest's weekly review ──
-    const nWs = s.nestWs, nWe = add(nWs, 6), nWk = famAct ? s.frWeeks[iso(nWs)] : null, nSample = famParent && !viewKid;
+    const nWs = s.nestWs, nWe = add(nWs, 6), nWk = famAct || art ? s.frWeeks[iso(nWs)] : null, nSample = famParent && !viewKid;
     const nKidId = frKid ? frKid.id : '';
     const nCredits = nSample ? CR_SAMPLE.map(([d, item, pts, reason]) => ({ day: iso(add(nWs, d)), item, pts, reason })).filter(c => c.day <= tIso)
       : nKidId && nWk ? nWk.credits.filter(c => c.kidId === nKidId) : [];
     const nGoals = nSample ? [{ id: 'x', title: 'Read 20 minutes every day', done: false }, { id: 'y', title: 'Pack my lunch the night before', done: true }] : weekGoals(nWk, nKidId);
-    const nPlans = nSample ? {} : famParent ? Object.fromEntries((nWk ? nWk.plans : []).filter(p => p.memberId === nKidId).map(p => [p.day, p.blocks])) : s.sched;
+    const nPlans = nSample || art ? {} : famParent ? Object.fromEntries((nWk ? nWk.plans : []).filter(p => p.memberId === nKidId).map(p => [p.day, p.blocks])) : s.sched;
     const nDayKeys = FDAYS.map((_, i) => iso(add(nWs, i)));
     const nTotal = sumPts(nCredits);
     const nFpPts = nDayKeys.reduce((a, dk) => a + fpDay(nPlans[dk] || []).pts, 0);
-    const nGamePts = famParent ? null : nDayKeys.reduce((a, dk) => a + ((s.peck.log || {})[dk] || 0), 0);
+    const nGamePts = famParent || art ? null : nDayKeys.reduce((a, dk) => a + ((s.peck.log || {})[dk] || 0), 0);
     const nPlanDays = nDayKeys.filter(dk => dk <= tIso && ((nWk && nWk.tasks.some(t => t.day === dk && t.memberId === nKidId && t.type === 'plan' && t.done)) || (nPlans[dk] || []).some(b => b.d))).length;
     const nAim = Math.min(7, Math.max(3, nPlanDays + 1));
-    const nSuggest = famParent ? `Finish the plan on ${nAim} different days` : `Finish my plan on ${nAim} different days`;
+    const nSuggest = third ? `Finish the plan on ${nAim} different days` : `Finish my plan on ${nAim} different days`;
     const nRefl = nSample ? [] : nWk ? nWk.reflections.filter(r => r.memberId === nKidId && r.week === iso(nWs)) : [];
     const nMine = nRefl.find(r => r.mine);
     const nWkOff = Math.round((nWs - monOf(nowD)) / 6048e5);
     const nestReview = {
-      nrShow: famAct && (famKid || famParent), nrPointer: s.famOk && !famAct,
-      nrPointerText: famIn && !famAct ? 'Once a parent approves you, credits from your parents, weekly goals and reflections show up here.'
+      nrShow: (famAct && (famKid || famParent)) || !!(art && art.kids.length), nrPointer: (s.famOk && !famAct) || !!(art && !art.kids.length),
+      nrPointerBtn: art ? 'Open the 🗓️ Plan tab ›' : 'Open the 👪 Family tab ›', nrPointerGo: () => this.goTab(art ? 'plan' : 'family'),
+      nrPointerText: art ? (artPar ? 'Add your kids in the credits on the 🗓️ Plan tab, and their weekly review shows up here.' : 'Once a parent adds the kids on the 🗓️ Plan tab, the weekly review shows up here.')
+        : famIn && !famAct ? 'Once a parent approves you, credits from your parents, weekly goals and reflections show up here.'
         : 'Set up your family on the 👪 Family tab, and credits from parents, weekly goals and a weekly reflection show up here.',
       nrSample: nSample, nrSampleText: `👀 This is an example week. Once your kids join the family${fam && fam.family && fam.family.code ? ` with invite code ${fam.family.code}` : ''}, their real week shows up here.`,
-      nrChips: famParent ? fpKids.map(m => ({ label: `🧒 ${m.nickname}`, ...chip(viewKid && m.id === viewKid.id), onClick: () => this.setState({ fpKid: m.id, fpNotes: [], fpNoteEdit: false, fpNoteDraft: '' }) })) : [],
-      nrHasChips: famParent && fpKids.length > 1,
-      nrSub: nSample ? 'Example week' : famParent ? `${kidName}’s week` : 'Your week',
+      nrChips: famParent ? fpKids.map(m => ({ label: `🧒 ${m.nickname}`, ...chip(viewKid && m.id === viewKid.id), onClick: () => this.setState({ fpKid: m.id, fpNotes: [], fpNoteEdit: false, fpNoteDraft: '' }) }))
+        : art ? art.kids.map(k => ({ label: `🧒 ${k.nickname}`, ...chip(crKid && k.id === crKid.id), onClick: () => this.setState({ fpKid: k.id }) })) : [],
+      nrHasChips: (famParent && fpKids.length > 1) || !!(art && art.kids.length > 1),
+      nrSub: nSample ? 'Example week' : third ? `${crName}’s week` : 'Your week',
       nrWeek: `${MON[nWs.getMonth()]} ${nWs.getDate()} – ${MON[nWe.getMonth()]} ${nWe.getDate()}`,
       nrWeekNote: nWkOff === 0 ? 'This week' : nWkOff === 1 ? 'Next week' : nWkOff === -1 ? 'Last week' : nWkOff > 0 ? `In ${nWkOff} weeks` : `${-nWkOff} weeks ago`,
       nrPrev: () => this.nestShiftWeek(-1), nrNext: () => this.nestShiftWeek(1),
       nrGoals: nGoals.map(g => ({ title: g.title, pressed: g.done ? 'true' : 'false', check: g.done ? '✓' : '', checkBg: g.done ? '#3DBE8B' : '#fff', deco: g.done ? 'line-through' : 'none',
-        aria: g.done ? `Mark goal ${g.title} not done` : `Mark goal ${g.title} done`, onToggle: () => nSample ? this.flash('👀 This is just an example') : this.frGoalDone(g),
-        canDelete: !nSample, deleteAria: `Remove goal ${g.title}`, onDelete: () => this.frGoalDelete(g) })),
-      nrNoGoals: !nGoals.length, nrNoGoalsText: famParent ? `No goal for this week yet. Set one with ${kidName}, or let them set their own.` : 'No goal for this week yet. What would you like to work on?',
-      nrCanAddGoal: !nSample && !!nKidId && nGoals.length < 5, nrAddGoal: () => this.frGoalOpen(nKidId, nWs),
+        aria: g.done ? `Mark goal ${g.title} not done` : `Mark goal ${g.title} done`, onToggle: () => nSample ? this.flash('👀 This is just an example') : art && !artPar ? this.flash('🔒 Only parents change goals here') : this.frGoalDone(g),
+        canDelete: !nSample && (!art || artPar), deleteAria: `Remove goal ${g.title}`, onDelete: () => this.frGoalDelete(g) })),
+      nrNoGoals: !nGoals.length, nrNoGoalsText: artPar ? `No goal for this week yet. Set one with ${crName}.` : art ? 'No goal for this week yet.' : famParent ? `No goal for this week yet. Set one with ${kidName}, or let them set their own.` : 'No goal for this week yet. What would you like to work on?',
+      nrCanAddGoal: !nSample && !!nKidId && nGoals.length < 5 && (!art || artPar), nrAddGoal: () => this.frGoalOpen(nKidId, nWs),
       nrDays: FDAYS.map((label, i) => {
         const dk = nDayKeys[i], dd = add(nWs, i), fut = dk > tIso, list = nCredits.filter(c => c.day === dk), tot = sumPts(list), today = dk === tIso;
         return { label: today ? 'Today' : label, date: dd.getDate(), val: fut ? '–' : sgn(tot), sub: fut ? 'Upcoming' : list.length ? `${list.length} credit${list.length > 1 ? 's' : ''}` : 'Not scored',
@@ -4354,17 +4486,17 @@ class Component extends DCLogic {
       nrTotal: `${sgn(nTotal)} ⭐`, nrAllTime: nKidId && s.frTotals[nKidId] != null ? `${sgn(s.frTotals[nKidId])} ⭐ all time` : '',
       nrBreak: [...CR_ITEMS.map(([id, e, label]) => [e, label, nCredits.filter(c => c.item === id)]), ['🌟', 'Other credits', nCredits.filter(c => !c.item)]]
         .map(([e, label, list]) => ({ e, label, n: list.length ? `${list.length}×` : '', val: list.length ? sgn(sumPts(list)) : '–' })),
-      nrAlso: [{ e: '🗓️', label: 'Flight Plan points', val: `⭐ ${nFpPts}`, onClick: () => this.goTab('plan') }, ...(nGamePts == null ? [] : [{ e: '🎮', label: 'Peck Patch points', val: `⭐ ${nGamePts}`, onClick: () => this.goTab('game') }])],
-      nrSuggest: nSuggest, nrSuggestWhy: nSample ? 'Based on the days the plan was finished.' : `${famParent ? kidName : 'You'} finished ${famParent ? 'their' : 'your'} plan on ${nPlanDays} day${nPlanDays === 1 ? '' : 's'} this week. Next week, aim for ${nAim}.`,
-      nrUseSuggest: () => nSample ? this.flash('👀 This is just an example') : this.frGoalOpen(nKidId, add(nWs, 7), nSuggest),
-      nrReflOpen: s.frReflOpen, nrReflAria: s.frReflOpen ? 'true' : 'false', nrReflToggle: () => this.setState(x => ({ frReflOpen: !x.frReflOpen })), nrReflChevron: s.frReflOpen ? '▲' : '▼',
+      nrHasAlso: !art, nrAlso: [{ e: '🗓️', label: 'Flight Plan points', val: `⭐ ${nFpPts}`, onClick: () => this.goTab('plan') }, ...(nGamePts == null ? [] : [{ e: '🎮', label: 'Peck Patch points', val: `⭐ ${nGamePts}`, onClick: () => this.goTab('game') }])],
+      nrSuggest: nSuggest, nrSuggestWhy: nSample ? 'Based on the days the plan was finished.' : art ? `A good next step for ${crName}: aim for ${nAim} days.` : `${famParent ? kidName : 'You'} finished ${famParent ? 'their' : 'your'} plan on ${nPlanDays} day${nPlanDays === 1 ? '' : 's'} this week. Next week, aim for ${nAim}.`,
+      nrUseSuggest: () => nSample ? this.flash('👀 This is just an example') : art && !artPar ? this.flash('🔒 Only parents set goals here') : this.frGoalOpen(nKidId, add(nWs, 7), nSuggest),
+      nrShowRefl: !art, nrReflOpen: s.frReflOpen, nrReflAria: s.frReflOpen ? 'true' : 'false', nrReflToggle: () => this.setState(x => ({ frReflOpen: !x.frReflOpen })), nrReflChevron: s.frReflOpen ? '▲' : '▼',
       nrReflCount: nRefl.length ? `${nRefl.length} reflection${nRefl.length > 1 ? 's' : ''}` : 'Not written yet',
       nrRefls: nRefl.map(r => ({ who: r.mine ? 'You wrote' : `${r.authorName} wrote`, hasWin: !!r.win, win: r.win, hasAdjust: !!r.adjust, adjust: r.adjust })),
       nrNoRefl: !nRefl.length, nrNoReflText: famParent ? `Look back on ${kidName}’s week together: what went well, and what to adjust. ${kidName} and the parents in your family can read it.` : 'Look back on your week: what went well, and what to adjust. You and your parents can read it.',
       nrCanRefl: !nSample && !!nKidId, nrReflLabel: nMine ? '✏️ Edit my reflection' : '🪞 Write a reflection', nrWriteRefl: () => this.frReflOpen(nKidId, nWs, nMine),
-      nestSubtitle: famAct && (famKid || famParent) ? 'Credits from parents lead the way here, then quests, badges you’ve earned, badges you design, and points from Peck Patch and your Flight Plan.'
+      nestSubtitle: (famAct && (famKid || famParent)) || art ? 'Credits from parents lead the way here, then quests, badges you’ve earned, badges you design, and points from Peck Patch and your Flight Plan.'
         : 'Every badge and point lives here: quests, badges you’ve earned, badges you design, and points from Peck Patch and your Flight Plan.',
-      nrTile: famAct && !!nKidId, nrTileVal: `⭐ ${sgn(nTotal)}`, nrTileSub: famParent ? `${kidName}’s family credits this week` : 'family credits this week',
+      nrTile: (famAct || !!art) && !!nKidId, nrTileVal: `⭐ ${sgn(nTotal)}`, nrTileSub: third ? `${crName}’s family credits this week` : 'family credits this week',
       nrTileAll: nKidId && s.frTotals[nKidId] != null ? `${sgn(s.frTotals[nKidId])} all time` : '', nrGoReview: () => { const el = document.getElementById('lb-review'); if (el) el.scrollIntoView({ block: 'start', behavior: 'smooth' }); }
     };
     // One sheet for everything Family Rhythm adds (a plan, a meal, a credit, a goal, a reflection).
