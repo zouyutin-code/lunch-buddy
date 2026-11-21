@@ -129,3 +129,88 @@ CREATE TABLE IF NOT EXISTS rate (
 );
 CREATE INDEX IF NOT EXISTS rate_key ON rate(key, ts);
 CREATE INDEX IF NOT EXISTS rate_ts ON rate(ts);
+
+-- Family Rhythm (the shared day on the Plan tab and the weekly review in the Nest). The API also creates
+-- these on first use. Day-based rows are kept 120 days; the board keeps each family's latest 50 posts.
+CREATE TABLE IF NOT EXISTS tasks (          -- the day's schedule: plans, family events, after-school activities
+  id TEXT PRIMARY KEY,
+  family_id TEXT NOT NULL,
+  member_id TEXT NOT NULL REFERENCES members(id) ON DELETE CASCADE,
+  day TEXT NOT NULL,
+  title TEXT NOT NULL,
+  tm TEXT NOT NULL DEFAULT '',              -- start time HH:MM, or '' for flexible
+  est INTEGER NOT NULL DEFAULT 30,          -- planned minutes
+  actual INTEGER NOT NULL DEFAULT 0,        -- minutes it really took
+  priority TEXT NOT NULL DEFAULT 'must',    -- must | like
+  kind TEXT NOT NULL DEFAULT 'plan',        -- plan | family | activity
+  pinned INTEGER NOT NULL DEFAULT 0,        -- the day's highlight (one per family per day)
+  goal_id TEXT,
+  done INTEGER NOT NULL DEFAULT 0,
+  created_by TEXT NOT NULL,
+  created_at INTEGER NOT NULL,
+  updated_at INTEGER NOT NULL
+);
+CREATE INDEX IF NOT EXISTS tasks_family_day ON tasks(family_id, day);
+
+CREATE TABLE IF NOT EXISTS meals (          -- breakfast and dinner ideas, votes and the chosen dish
+  id TEXT PRIMARY KEY,
+  family_id TEXT NOT NULL,
+  day TEXT NOT NULL,
+  slot TEXT NOT NULL,                       -- breakfast | dinner
+  title TEXT NOT NULL,
+  chosen INTEGER NOT NULL DEFAULT 0,
+  votes TEXT NOT NULL DEFAULT '[]',         -- JSON array of member ids
+  created_by TEXT NOT NULL,
+  created_at INTEGER NOT NULL
+);
+CREATE INDEX IF NOT EXISTS meals_family_day ON meals(family_id, day);
+
+CREATE TABLE IF NOT EXISTS credits (        -- points a parent gives a kid for a day, −3 to +3 with a reason
+  id TEXT PRIMARY KEY,
+  family_id TEXT NOT NULL,
+  kid_id TEXT NOT NULL REFERENCES members(id) ON DELETE CASCADE,
+  day TEXT NOT NULL,
+  item TEXT NOT NULL DEFAULT '',            -- breakfast | dinner | sleep | plan | '' (custom)
+  reason TEXT NOT NULL,
+  points INTEGER NOT NULL,
+  by_id TEXT NOT NULL,                      -- the parent who gave it
+  created_at INTEGER NOT NULL,
+  updated_at INTEGER NOT NULL
+);
+CREATE INDEX IF NOT EXISTS credits_family_day ON credits(family_id, day);
+CREATE INDEX IF NOT EXISTS credits_kid_day ON credits(kid_id, day);
+
+CREATE TABLE IF NOT EXISTS goals (          -- a kid's goals for one week (week = its Monday)
+  id TEXT PRIMARY KEY,
+  family_id TEXT NOT NULL,
+  member_id TEXT NOT NULL REFERENCES members(id) ON DELETE CASCADE,
+  week TEXT NOT NULL,
+  title TEXT NOT NULL,
+  done INTEGER NOT NULL DEFAULT 0,
+  created_by TEXT NOT NULL,
+  created_at INTEGER NOT NULL
+);
+CREATE INDEX IF NOT EXISTS goals_family_week ON goals(family_id, week);
+
+CREATE TABLE IF NOT EXISTS reflections (    -- what went well / what to adjust, about a kid's week, by the kid or a parent
+  id TEXT PRIMARY KEY,
+  family_id TEXT NOT NULL,
+  member_id TEXT NOT NULL REFERENCES members(id) ON DELETE CASCADE,
+  author_id TEXT NOT NULL,
+  week TEXT NOT NULL,
+  win TEXT NOT NULL DEFAULT '',
+  adjust TEXT NOT NULL DEFAULT '',
+  created_at INTEGER NOT NULL,
+  updated_at INTEGER NOT NULL,
+  UNIQUE (member_id, author_id, week)
+);
+CREATE INDEX IF NOT EXISTS reflections_family_week ON reflections(family_id, week);
+
+CREATE TABLE IF NOT EXISTS board (          -- the family board
+  id TEXT PRIMARY KEY,
+  family_id TEXT NOT NULL,
+  member_id TEXT NOT NULL REFERENCES members(id) ON DELETE CASCADE,
+  text TEXT NOT NULL,
+  created_at INTEGER NOT NULL
+);
+CREATE INDEX IF NOT EXISTS board_family ON board(family_id, created_at);

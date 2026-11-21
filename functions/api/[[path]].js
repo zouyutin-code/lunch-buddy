@@ -60,6 +60,53 @@ function ensureBackupTables(env) {
   }
   return tablesReady;
 }
+// Family Rhythm tables (the shared day on the Plan tab and the weekly review in the Nest), also created on first use.
+let rhythmReady = null;
+function ensureRhythmTables(env) {
+  if (!rhythmReady) {
+    rhythmReady = env.DB.batch([
+      env.DB.prepare("CREATE TABLE IF NOT EXISTS tasks (id TEXT PRIMARY KEY, family_id TEXT NOT NULL, member_id TEXT NOT NULL REFERENCES members(id) ON DELETE CASCADE, day TEXT NOT NULL, title TEXT NOT NULL, tm TEXT NOT NULL DEFAULT '', est INTEGER NOT NULL DEFAULT 30, actual INTEGER NOT NULL DEFAULT 0, priority TEXT NOT NULL DEFAULT 'must', kind TEXT NOT NULL DEFAULT 'plan', pinned INTEGER NOT NULL DEFAULT 0, goal_id TEXT, done INTEGER NOT NULL DEFAULT 0, created_by TEXT NOT NULL, created_at INTEGER NOT NULL, updated_at INTEGER NOT NULL)"),
+      env.DB.prepare('CREATE INDEX IF NOT EXISTS tasks_family_day ON tasks(family_id, day)'),
+      env.DB.prepare("CREATE TABLE IF NOT EXISTS meals (id TEXT PRIMARY KEY, family_id TEXT NOT NULL, day TEXT NOT NULL, slot TEXT NOT NULL, title TEXT NOT NULL, chosen INTEGER NOT NULL DEFAULT 0, votes TEXT NOT NULL DEFAULT '[]', created_by TEXT NOT NULL, created_at INTEGER NOT NULL)"),
+      env.DB.prepare('CREATE INDEX IF NOT EXISTS meals_family_day ON meals(family_id, day)'),
+      env.DB.prepare("CREATE TABLE IF NOT EXISTS credits (id TEXT PRIMARY KEY, family_id TEXT NOT NULL, kid_id TEXT NOT NULL REFERENCES members(id) ON DELETE CASCADE, day TEXT NOT NULL, item TEXT NOT NULL DEFAULT '', reason TEXT NOT NULL, points INTEGER NOT NULL, by_id TEXT NOT NULL, created_at INTEGER NOT NULL, updated_at INTEGER NOT NULL)"),
+      env.DB.prepare('CREATE INDEX IF NOT EXISTS credits_family_day ON credits(family_id, day)'),
+      env.DB.prepare('CREATE INDEX IF NOT EXISTS credits_kid_day ON credits(kid_id, day)'),
+      env.DB.prepare('CREATE TABLE IF NOT EXISTS goals (id TEXT PRIMARY KEY, family_id TEXT NOT NULL, member_id TEXT NOT NULL REFERENCES members(id) ON DELETE CASCADE, week TEXT NOT NULL, title TEXT NOT NULL, done INTEGER NOT NULL DEFAULT 0, created_by TEXT NOT NULL, created_at INTEGER NOT NULL)'),
+      env.DB.prepare('CREATE INDEX IF NOT EXISTS goals_family_week ON goals(family_id, week)'),
+      env.DB.prepare("CREATE TABLE IF NOT EXISTS reflections (id TEXT PRIMARY KEY, family_id TEXT NOT NULL, member_id TEXT NOT NULL REFERENCES members(id) ON DELETE CASCADE, author_id TEXT NOT NULL, week TEXT NOT NULL, win TEXT NOT NULL DEFAULT '', adjust TEXT NOT NULL DEFAULT '', created_at INTEGER NOT NULL, updated_at INTEGER NOT NULL, UNIQUE (member_id, author_id, week))"),
+      env.DB.prepare('CREATE INDEX IF NOT EXISTS reflections_family_week ON reflections(family_id, week)'),
+      env.DB.prepare('CREATE TABLE IF NOT EXISTS board (id TEXT PRIMARY KEY, family_id TEXT NOT NULL, member_id TEXT NOT NULL REFERENCES members(id) ON DELETE CASCADE, text TEXT NOT NULL, created_at INTEGER NOT NULL)'),
+      env.DB.prepare('CREATE INDEX IF NOT EXISTS board_family ON board(family_id, created_at)')
+    ]).catch((e) => { rhythmReady = null; throw e; });
+  }
+  return rhythmReady;
+}
+const CREDIT_ITEMS = ['breakfast', 'dinner', 'sleep', 'plan', ''];
+const TASK_KINDS = ['plan', 'family', 'activity'];
+const TM_RE = /^([01]\d|2[0-3]):[0-5]\d$/;
+const intIn = (v, lo, hi, d) => { const n = Math.round(Number(v)); return Number.isFinite(n) && n >= lo && n <= hi ? n : d; };
+const isMonday = (day) => new Date(day + 'T12:00:00Z').getUTCDay() === 1;
+// The week a goal or reflection belongs to: its Monday.
+function weekArg(v) {
+  const w = dayArg(v);
+  if (!isMonday(w)) throw new HttpError(400, 'bad_week', 'A week starts on a Monday');
+  return w;
+}
+// An active member of the caller's family (anyone, not just kids).
+async function memberIn(env, me, id) {
+  const m = await env.DB.prepare("SELECT id, nickname, role FROM members WHERE id = ? AND family_id = ? AND status = 'active'").bind(String(id || ''), me.family_id).first();
+  if (!m) throw new HttpError(404, 'no_member', 'That person isn’t in your family anymore.');
+  return m;
+}
+// The kid a goal or reflection is about: kids only for themselves, parents for any kid.
+async function goalKid(env, me, kidId) {
+  if (me.role === 'kid') {
+    if (kidId && kidId !== me.id) throw new HttpError(403, 'not_yours', 'You can only set your own goals.');
+    return me;
+  }
+  return kidFor(env, me, kidId);
+}
 function backupText(data) {
   if (!data || typeof data !== 'object' || Array.isArray(data)) throw new HttpError(400, 'bad_backup', 'Bad backup');
   const text = JSON.stringify(data);
@@ -611,6 +658,247 @@ const ROUTES = {
     if (!ids.length) return json({ ok: true });
     const q = me.role === 'kid' ? 'UPDATE notes SET kid_seen = 1 WHERE kid_id = ? AND id IN ' : 'UPDATE notes SET parent_seen = 1 WHERE parent_id = ? AND id IN ';
     await env.DB.prepare(q + `(${ids.map(() => '?').join(',')})`).bind(me.id, ...ids).run();
+    return json({ ok: true });
+  },
+
+  // ── Family Rhythm ──
+  // One request for a week on screen: the family's schedule, meal plans and board; credits, goals and
+  // reflections (a kid gets only their own, parents get every kid's); kids' Flight Plans and add-on picks (parents).
+  'GET rhythm': async ({ env, request, url }) => {
+    const me = await auth(env, request);
+    await ensureBackupTables(env);
+    await ensureRhythmTables(env);
+    const { start, end } = rangeArgs(url), fid = me.family_id, kid = me.role === 'kid';
+    const wkFrom = new Date(new Date(start + 'T12:00:00Z').getTime() - 6 * 86400000).toISOString().slice(0, 10);
+    const who = kid ? ' AND kid_id = ?' : '', whoM = kid ? ' AND member_id = ?' : '', mine = kid ? [me.id] : [];
+    const q = (sql, ...b) => env.DB.prepare(sql).bind(...b);
+    const stmts = [
+      q('SELECT * FROM tasks WHERE family_id = ? AND day BETWEEN ? AND ? ORDER BY day, tm, created_at', fid, start, end),
+      q('SELECT * FROM meals WHERE family_id = ? AND day BETWEEN ? AND ? ORDER BY created_at', fid, start, end),
+      q('SELECT c.*, b.nickname AS by_name FROM credits c LEFT JOIN members b ON b.id = c.by_id WHERE c.family_id = ? AND c.day BETWEEN ? AND ?' + (kid ? ' AND c.kid_id = ?' : '') + ' ORDER BY c.day, c.created_at', fid, start, end, ...mine),
+      q('SELECT * FROM goals WHERE family_id = ? AND week BETWEEN ? AND ?' + whoM + ' ORDER BY created_at', fid, wkFrom, end, ...mine),
+      q('SELECT r.*, a.nickname AS author_name FROM reflections r LEFT JOIN members a ON a.id = r.author_id WHERE r.family_id = ? AND r.week BETWEEN ? AND ?' + (kid ? ' AND r.member_id = ?' : '') + ' ORDER BY r.created_at', fid, wkFrom, end, ...mine),
+      q('SELECT p.*, m.nickname FROM board p LEFT JOIN members m ON m.id = p.member_id WHERE p.family_id = ? ORDER BY p.created_at DESC LIMIT 30', fid),
+      q('SELECT kid_id, SUM(points) AS pts FROM credits WHERE family_id = ?' + who + ' GROUP BY kid_id', fid, ...mine)
+    ];
+    if (!kid) {
+      stmts.push(q("SELECT p.member_id, p.day, p.blocks FROM plans p JOIN members m ON m.id = p.member_id WHERE p.family_id = ? AND m.role = 'kid' AND p.day BETWEEN ? AND ?", fid, start, end));
+      stmts.push(q("SELECT a.member_id, a.day, a.items FROM addons a JOIN members m ON m.id = a.member_id WHERE a.family_id = ? AND m.role = 'kid' AND a.day BETWEEN ? AND ?", fid, start, end));
+    }
+    const r = (await env.DB.batch(stmts)).map((x) => x.results || []);
+    const parse = (s, d) => { try { return JSON.parse(s); } catch (e) { return d; } };
+    return json({
+      start, end,
+      tasks: r[0].map((t) => ({ id: t.id, memberId: t.member_id, day: t.day, title: t.title, tm: t.tm, est: t.est, actual: t.actual, pri: t.priority, type: t.kind, pinned: !!t.pinned, goal: t.goal_id || '', done: !!t.done, by: t.created_by })),
+      meals: r[1].map((m) => ({ id: m.id, day: m.day, slot: m.slot, title: m.title, chosen: !!m.chosen, votes: parse(m.votes, []), by: m.created_by })),
+      credits: r[2].map((c) => ({ id: c.id, kidId: c.kid_id, day: c.day, item: c.item, reason: c.reason, pts: c.points, by: c.by_id, byName: c.by_name || 'A parent' })),
+      goals: r[3].map((g) => ({ id: g.id, memberId: g.member_id, week: g.week, title: g.title, done: !!g.done, by: g.created_by })),
+      reflections: r[4].map((x) => ({ id: x.id, memberId: x.member_id, week: x.week, win: x.win, adjust: x.adjust, author: x.author_id, authorName: x.author_name || 'Someone', mine: x.author_id === me.id })),
+      board: r[5].map((p) => ({ id: p.id, memberId: p.member_id, nickname: p.nickname || 'Someone', text: p.text, at: p.created_at })),
+      totals: Object.fromEntries(r[6].map((x) => [x.kid_id, x.pts || 0])),
+      plans: kid ? [] : r[7].map((p) => ({ memberId: p.member_id, day: p.day, blocks: parse(p.blocks, []) })),
+      addons: kid ? [] : r[8].map((a) => ({ memberId: a.member_id, day: a.day, items: parse(a.items, []) }))
+    });
+  },
+
+  // Add or change something on the day's schedule. Kids plan for themselves; parents for anyone.
+  'POST rhythm/task': async ({ env, request, body }) => {
+    const me = await auth(env, request);
+    await ensureRhythmTables(env);
+    await limit(env, 'rhythm:' + me.id, 150, 600);
+    const day = dayArg(body.day), title = clean(body.title, 80, 'Plan');
+    let member = me;
+    if (me.role === 'kid') { if (body.member && body.member !== me.id) throw new HttpError(403, 'not_yours', 'Kids can only add plans for themselves.'); }
+    else member = await memberIn(env, me, body.member || me.id);
+    const tm = TM_RE.test(String(body.tm || '')) ? String(body.tm) : '';
+    const est = intIn(body.est, 1, 1440, 30), pri = body.pri === 'like' ? 'like' : 'must';
+    const type = TASK_KINDS.includes(body.type) ? body.type : 'plan', pinned = body.pinned ? 1 : 0;
+    let goal = String(body.goal || '');
+    if (goal && !(await env.DB.prepare('SELECT 1 AS x FROM goals WHERE id = ? AND family_id = ?').bind(goal, me.family_id).first())) goal = '';
+    const t = now(), stmts = [];
+    if (pinned) stmts.push(env.DB.prepare('UPDATE tasks SET pinned = 0 WHERE family_id = ? AND day = ?').bind(me.family_id, day));
+    if (body.id) {
+      const old = await env.DB.prepare('SELECT * FROM tasks WHERE id = ? AND family_id = ?').bind(String(body.id), me.family_id).first();
+      if (!old) throw new HttpError(404, 'gone', 'That plan was removed.');
+      if (me.role !== 'parent' && old.member_id !== me.id && old.created_by !== me.id) throw new HttpError(403, 'not_yours', 'You can only change your own plans.');
+      stmts.push(env.DB.prepare('UPDATE tasks SET member_id = ?, day = ?, title = ?, tm = ?, est = ?, priority = ?, kind = ?, pinned = ?, goal_id = ?, updated_at = ? WHERE id = ?')
+        .bind(member.id, day, title, tm, est, pri, type, pinned, goal || null, t, old.id));
+    } else {
+      const n = await env.DB.prepare('SELECT COUNT(*) AS n FROM tasks WHERE family_id = ? AND day = ?').bind(me.family_id, day).first();
+      if (n.n >= 40) throw new HttpError(400, 'too_many', 'That day is full. Remove a plan first.');
+      stmts.push(env.DB.prepare('INSERT INTO tasks (id, family_id, member_id, day, title, tm, est, actual, priority, kind, pinned, goal_id, done, created_by, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, 0, ?, ?, ?, ?, 0, ?, ?, ?)')
+        .bind(uid(), me.family_id, member.id, day, title, tm, est, pri, type, pinned, goal || null, me.id, t, t));
+      stmts.push(env.DB.prepare('DELETE FROM tasks WHERE family_id = ? AND day < ?').bind(me.family_id, oldDay()));
+    }
+    await env.DB.batch(stmts);
+    return json({ ok: true });
+  },
+  'POST rhythm/task/done': async ({ env, request, body }) => {
+    const me = await auth(env, request);
+    await ensureRhythmTables(env);
+    const old = await env.DB.prepare('SELECT * FROM tasks WHERE id = ? AND family_id = ?').bind(String(body.id || ''), me.family_id).first();
+    if (!old) throw new HttpError(404, 'gone', 'That plan was removed.');
+    if (me.role !== 'parent' && old.member_id !== me.id && old.created_by !== me.id) throw new HttpError(403, 'not_yours', 'Only the person it’s for can check it off.');
+    const done = body.done === undefined ? old.done : (body.done ? 1 : 0), actual = body.actual === undefined ? old.actual : intIn(body.actual, 0, 1440, old.actual);
+    await env.DB.prepare('UPDATE tasks SET done = ?, actual = ?, updated_at = ? WHERE id = ?').bind(done, done ? actual : 0, now(), old.id).run();
+    return json({ ok: true });
+  },
+  'POST rhythm/task/delete': async ({ env, request, body }) => {
+    const me = await auth(env, request);
+    await ensureRhythmTables(env);
+    const old = await env.DB.prepare('SELECT * FROM tasks WHERE id = ? AND family_id = ?').bind(String(body.id || ''), me.family_id).first();
+    if (!old) return json({ ok: true });
+    if (me.role !== 'parent' && old.member_id !== me.id && old.created_by !== me.id) throw new HttpError(403, 'not_yours', 'You can only remove your own plans.');
+    await env.DB.prepare('DELETE FROM tasks WHERE id = ?').bind(old.id).run();
+    return json({ ok: true });
+  },
+
+  // Breakfast and dinner plans: anyone suggests a dish, votes ♡ as themselves, or picks the one to make.
+  'POST rhythm/meal': async ({ env, request, body }) => {
+    const me = await auth(env, request);
+    await ensureRhythmTables(env);
+    await limit(env, 'rhythm:' + me.id, 150, 600);
+    const day = dayArg(body.day), slot = body.slot === 'breakfast' ? 'breakfast' : body.slot === 'dinner' ? 'dinner' : null;
+    if (!slot) throw new HttpError(400, 'bad_slot', 'Pick breakfast or dinner');
+    const title = clean(body.title, 60, 'Dish'), idea = !!body.idea, t = now();
+    const n = await env.DB.prepare('SELECT COUNT(*) AS n FROM meals WHERE family_id = ? AND day = ? AND slot = ?').bind(me.family_id, day, slot).first();
+    if (n.n >= 12) throw new HttpError(400, 'too_many', 'That meal has lots of ideas already. Remove one first.');
+    const stmts = [];
+    if (!idea) stmts.push(env.DB.prepare('UPDATE meals SET chosen = 0 WHERE family_id = ? AND day = ? AND slot = ?').bind(me.family_id, day, slot));
+    stmts.push(env.DB.prepare("INSERT INTO meals (id, family_id, day, slot, title, chosen, votes, created_by, created_at) VALUES (?, ?, ?, ?, ?, ?, '[]', ?, ?)")
+      .bind(uid(), me.family_id, day, slot, title, idea ? 0 : 1, me.id, t));
+    stmts.push(env.DB.prepare('DELETE FROM meals WHERE family_id = ? AND day < ?').bind(me.family_id, oldDay()));
+    await env.DB.batch(stmts);
+    return json({ ok: true });
+  },
+  'POST rhythm/meal/vote': async ({ env, request, body }) => {
+    const me = await auth(env, request);
+    await ensureRhythmTables(env);
+    const m = await env.DB.prepare('SELECT * FROM meals WHERE id = ? AND family_id = ?').bind(String(body.id || ''), me.family_id).first();
+    if (!m) throw new HttpError(404, 'gone', 'That dish was removed.');
+    let votes = []; try { votes = JSON.parse(m.votes); } catch (e) {}
+    votes = votes.includes(me.id) ? votes.filter((v) => v !== me.id) : [...votes, me.id].slice(-MAX_MEMBERS);
+    await env.DB.prepare('UPDATE meals SET votes = ? WHERE id = ?').bind(JSON.stringify(votes), m.id).run();
+    return json({ ok: true });
+  },
+  'POST rhythm/meal/choose': async ({ env, request, body }) => {
+    const me = await auth(env, request);
+    await ensureRhythmTables(env);
+    const m = await env.DB.prepare('SELECT * FROM meals WHERE id = ? AND family_id = ?').bind(String(body.id || ''), me.family_id).first();
+    if (!m) throw new HttpError(404, 'gone', 'That dish was removed.');
+    await env.DB.batch([
+      env.DB.prepare('UPDATE meals SET chosen = 0 WHERE family_id = ? AND day = ? AND slot = ?').bind(me.family_id, m.day, m.slot),
+      env.DB.prepare('UPDATE meals SET chosen = ? WHERE id = ?').bind(m.chosen ? 0 : 1, m.id)
+    ]);
+    return json({ ok: true });
+  },
+  'POST rhythm/meal/delete': async ({ env, request, body }) => {
+    const me = await auth(env, request);
+    await ensureRhythmTables(env);
+    const m = await env.DB.prepare('SELECT * FROM meals WHERE id = ? AND family_id = ?').bind(String(body.id || ''), me.family_id).first();
+    if (!m) return json({ ok: true });
+    if (me.role !== 'parent' && m.created_by !== me.id) throw new HttpError(403, 'not_yours', 'Only the person who added it, or a parent, can remove it.');
+    await env.DB.prepare('DELETE FROM meals WHERE id = ?').bind(m.id).run();
+    return json({ ok: true });
+  },
+
+  // Credits: points a parent gives a kid for one day (−3 to +3, with a reason). Parents only.
+  'PUT credits': async ({ env, request, body }) => {
+    const me = await auth(env, request, { parent: true });
+    await ensureRhythmTables(env);
+    await limit(env, 'rhythm:' + me.id, 150, 600);
+    const kid = await kidFor(env, me, body.kid), day = dayArg(body.day);
+    if (day > new Date(now() + 86400000).toISOString().slice(0, 10)) throw new HttpError(400, 'future', 'Credits can be given once the day comes.');
+    const item = CREDIT_ITEMS.includes(body.item) ? body.item : '';
+    const reason = clean(body.reason, 80, 'Reason'), pts = Math.round(Number(body.pts));
+    if (!(pts >= -3 && pts <= 3)) throw new HttpError(400, 'bad_points', 'Points go from −3 to +3');
+    const t = now();
+    if (body.id) {
+      const r = await env.DB.prepare('UPDATE credits SET kid_id = ?, day = ?, item = ?, reason = ?, points = ?, by_id = ?, updated_at = ? WHERE id = ? AND family_id = ?')
+        .bind(kid.id, day, item, reason, pts, me.id, t, String(body.id), me.family_id).run();
+      if (!r.meta.changes) throw new HttpError(404, 'gone', 'That credit was removed.');
+    } else {
+      const n = await env.DB.prepare('SELECT COUNT(*) AS n FROM credits WHERE kid_id = ? AND day = ?').bind(kid.id, day).first();
+      if (n.n >= 20) throw new HttpError(400, 'too_many', 'That day has lots of credits already.');
+      await env.DB.prepare('INSERT INTO credits (id, family_id, kid_id, day, item, reason, points, by_id, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)')
+        .bind(uid(), me.family_id, kid.id, day, item, reason, pts, me.id, t, t).run();
+    }
+    return json({ ok: true });
+  },
+  'POST credits/delete': async ({ env, request, body }) => {
+    const me = await auth(env, request, { parent: true });
+    await ensureRhythmTables(env);
+    await env.DB.prepare('DELETE FROM credits WHERE id = ? AND family_id = ?').bind(String(body.id || ''), me.family_id).run();
+    return json({ ok: true });
+  },
+
+  // Weekly goals: kids set their own, parents can set one for any kid. Up to 5 a week.
+  'POST rhythm/goal': async ({ env, request, body }) => {
+    const me = await auth(env, request);
+    await ensureRhythmTables(env);
+    await limit(env, 'rhythm:' + me.id, 150, 600);
+    const kid = await goalKid(env, me, body.kid), week = weekArg(body.week), title = clean(body.title, 80, 'Goal');
+    const n = await env.DB.prepare('SELECT COUNT(*) AS n FROM goals WHERE member_id = ? AND week = ?').bind(kid.id, week).first();
+    if (n.n >= 5) throw new HttpError(400, 'too_many', 'Five goals a week is plenty!');
+    await env.DB.batch([
+      env.DB.prepare('INSERT INTO goals (id, family_id, member_id, week, title, done, created_by, created_at) VALUES (?, ?, ?, ?, ?, 0, ?, ?)').bind(uid(), me.family_id, kid.id, week, title, me.id, now()),
+      env.DB.prepare('DELETE FROM goals WHERE family_id = ? AND week < ?').bind(me.family_id, oldDay())
+    ]);
+    return json({ ok: true });
+  },
+  'POST rhythm/goal/done': async ({ env, request, body }) => {
+    const me = await auth(env, request);
+    await ensureRhythmTables(env);
+    const g = await env.DB.prepare('SELECT * FROM goals WHERE id = ? AND family_id = ?').bind(String(body.id || ''), me.family_id).first();
+    if (!g) throw new HttpError(404, 'gone', 'That goal was removed.');
+    if (me.role !== 'parent' && g.member_id !== me.id) throw new HttpError(403, 'not_yours', 'You can only check off your own goals.');
+    await env.DB.prepare('UPDATE goals SET done = ? WHERE id = ?').bind(body.done ? 1 : 0, g.id).run();
+    return json({ ok: true });
+  },
+  'POST rhythm/goal/delete': async ({ env, request, body }) => {
+    const me = await auth(env, request);
+    await ensureRhythmTables(env);
+    const g = await env.DB.prepare('SELECT * FROM goals WHERE id = ? AND family_id = ?').bind(String(body.id || ''), me.family_id).first();
+    if (!g) return json({ ok: true });
+    if (me.role !== 'parent' && g.member_id !== me.id) throw new HttpError(403, 'not_yours', 'You can only remove your own goals.');
+    await env.DB.prepare('DELETE FROM goals WHERE id = ?').bind(g.id).run();
+    return json({ ok: true });
+  },
+
+  // A weekly reflection about a kid's week, by the kid or a parent (one each per week; saving again replaces it).
+  'PUT rhythm/reflection': async ({ env, request, body }) => {
+    const me = await auth(env, request);
+    await ensureRhythmTables(env);
+    await limit(env, 'rhythm:' + me.id, 150, 600);
+    const kid = await goalKid(env, me, body.kid), week = weekArg(body.week);
+    const win = String(body.win || '').trim() ? clean(body.win, 400, 'What went well') : '';
+    const adjust = String(body.adjust || '').trim() ? clean(body.adjust, 400, 'What to adjust') : '';
+    if (!win && !adjust) throw new HttpError(400, 'missing', 'Write a few words first');
+    const t = now();
+    await env.DB.prepare('INSERT INTO reflections (id, family_id, member_id, author_id, week, win, adjust, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?) ON CONFLICT (member_id, author_id, week) DO UPDATE SET win = excluded.win, adjust = excluded.adjust, updated_at = excluded.updated_at')
+      .bind(uid(), me.family_id, kid.id, me.id, week, win, adjust, t, t).run();
+    return json({ ok: true });
+  },
+
+  // The family board: short updates anyone can post. Authors remove their own; parents can remove any.
+  'POST rhythm/board': async ({ env, request, body }) => {
+    const me = await auth(env, request);
+    await ensureRhythmTables(env);
+    await limit(env, 'rhythm:' + me.id, 150, 600);
+    const text = clean(body.text, 280, 'Update');
+    await env.DB.batch([
+      env.DB.prepare('INSERT INTO board (id, family_id, member_id, text, created_at) VALUES (?, ?, ?, ?, ?)').bind(uid(), me.family_id, me.id, text, now()),
+      env.DB.prepare('DELETE FROM board WHERE family_id = ?1 AND id NOT IN (SELECT id FROM board WHERE family_id = ?1 ORDER BY created_at DESC LIMIT 50)').bind(me.family_id)
+    ]);
+    return json({ ok: true });
+  },
+  'POST rhythm/board/delete': async ({ env, request, body }) => {
+    const me = await auth(env, request);
+    await ensureRhythmTables(env);
+    const p = await env.DB.prepare('SELECT * FROM board WHERE id = ? AND family_id = ?').bind(String(body.id || ''), me.family_id).first();
+    if (!p) return json({ ok: true });
+    if (me.role !== 'parent' && p.member_id !== me.id) throw new HttpError(403, 'not_yours', 'You can only remove your own posts.');
+    await env.DB.prepare('DELETE FROM board WHERE id = ?').bind(p.id).run();
     return json({ ok: true });
   },
 

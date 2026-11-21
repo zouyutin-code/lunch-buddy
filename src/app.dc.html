@@ -598,9 +598,140 @@ input::placeholder{color:#B49A86}
     <div style="padding:18px 16px 0;display:flex;flex-direction:column;gap:14px">
       <div>
         <h2 style="font-family:'Baloo 2',sans-serif;font-size:26px;margin:0;font-weight:800">🐣 The Nest</h2>
-        <div style="font-size:14px;font-weight:600;color:#8A6E5A">Every badge and point lives here: quests, badges you’ve earned, badges you design, and points from Peck Patch and your Flight Plan.</div>
+        <div style="font-size:14px;font-weight:600;color:#8A6E5A;text-wrap:pretty">{{ nestSubtitle }}</div>
       </div>
+
+      <sc-if value="{{ nrPointer }}" hint-placeholder-val="{{ false }}">
+        <section aria-label="Weekly review" style="background:#E1F0FB;border:2px solid #3B2A20;border-radius:24px;padding:14px;box-shadow:4px 4px 0 #3B2A20;display:flex;flex-direction:column;gap:8px">
+          <div style="font-family:'Baloo 2',sans-serif;font-size:19px;font-weight:800;line-height:1.1">📈 Weekly review</div>
+          <div style="font-size:13px;font-weight:700;color:#4A6A85;line-height:1.4;text-wrap:pretty">{{ nrPointerText }}</div>
+          <button sc-camel-on-click="{{ frGoFamily }}" style="align-self:flex-start;min-height:44px;padding:0 16px;border-radius:999px;border:2px solid #3B2A20;background:#fff;color:#3B2A20;font-family:inherit;font-weight:800;font-size:14px;cursor:pointer;box-shadow:0 3px 0 #3B2A20">Open the 👪 Family tab ›</button>
+        </section>
+      </sc-if>
+
+      <sc-if value="{{ nrShow }}" hint-placeholder-val="{{ false }}">
+        <section id="lb-review" aria-label="Weekly review" style="scroll-margin-top:12px;background:#fff;border:2px solid #3B2A20;border-radius:24px;padding:14px;box-shadow:4px 4px 0 #3B2A20;display:flex;flex-direction:column;gap:12px">
+          <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px">
+            <div style="min-width:0">
+              <h3 style="font-family:'Baloo 2',sans-serif;font-size:21px;margin:0;font-weight:800;line-height:1.1">📈 Weekly review</h3>
+              <div style="font-size:12px;font-weight:700;color:#8A6E5A">{{ nrSub }}</div>
+            </div>
+            <span aria-label="Week total" style="flex:none;background:#FFD166;border:2px solid #3B2A20;border-radius:999px;padding:2px 12px;font-family:'Baloo 2',sans-serif;font-size:18px;font-weight:800;white-space:nowrap">{{ nrTotal }}</span>
+          </div>
+          <sc-if value="{{ nrHasChips }}" hint-placeholder-val="{{ false }}">
+            <div role="group" aria-label="Whose week" style="display:flex;gap:6px;flex-wrap:wrap">
+              <sc-for list="{{ nrChips }}" as="nc" hint-placeholder-count="2">
+                <button aria-pressed="{{ nc.pressed }}" sc-camel-on-click="{{ nc.onClick }}" style="min-height:44px;padding:0 14px;border-radius:999px;border:2px solid #3B2A20;background:{{ nc.bg }};color:{{ nc.fg }};font-family:inherit;font-weight:800;font-size:14px;cursor:pointer">{{ nc.label }}</button>
+              </sc-for>
+            </div>
+          </sc-if>
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:8px">
+            <button aria-label="Previous week" sc-camel-on-click="{{ nrPrev }}" style="width:44px;height:44px;border-radius:50%;border:2px solid #3B2A20;background:#fff;font-size:18px;font-weight:800;cursor:pointer;color:#3B2A20;flex:none">‹</button>
+            <div style="text-align:center;min-width:0" aria-live="polite">
+              <div style="font-family:'Baloo 2',sans-serif;font-weight:700;font-size:18px">{{ nrWeek }}</div>
+              <div style="font-size:12px;font-weight:700;color:#8A6E5A">{{ nrWeekNote }}</div>
+            </div>
+            <button aria-label="Next week" sc-camel-on-click="{{ nrNext }}" style="width:44px;height:44px;border-radius:50%;border:2px solid #3B2A20;background:#fff;font-size:18px;font-weight:800;cursor:pointer;color:#3B2A20;flex:none">›</button>
+          </div>
+          <sc-if value="{{ nrSample }}" hint-placeholder-val="{{ false }}">
+            <div style="background:#F6EEE6;border-radius:12px;padding:8px 10px;font-size:12px;font-weight:700;color:#6B5444;line-height:1.35">{{ nrSampleText }}</div>
+          </sc-if>
+
+          <div style="background:#FFF7EC;border:2px solid #3B2A20;border-radius:18px;padding:10px;display:flex;flex-direction:column;gap:6px">
+            <div style="font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#7A4B12">🎯 Weekly goal</div>
+            <sc-if value="{{ nrNoGoals }}" hint-placeholder-val="{{ false }}">
+              <div style="font-size:13px;font-weight:700;color:#8A6E5A;line-height:1.4">{{ nrNoGoalsText }}</div>
+            </sc-if>
+            <sc-for list="{{ nrGoals }}" as="ng" hint-placeholder-count="1">
+              <div style="display:flex;align-items:center;gap:6px">
+                <button aria-label="{{ ng.aria }}" aria-pressed="{{ ng.pressed }}" sc-camel-on-click="{{ ng.onToggle }}" style="flex:1;min-width:0;display:flex;align-items:center;gap:10px;min-height:44px;padding:4px 8px;border-radius:14px;border:2px solid #3B2A20;background:#fff;font-family:inherit;color:#3B2A20;text-align:left;cursor:pointer">
+                  <span style="width:26px;height:26px;flex:none;border-radius:8px;border:2px solid #3B2A20;background:{{ ng.checkBg }};color:#fff;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:800">{{ ng.check }}</span>
+                  <span style="flex:1;min-width:0;font-size:14px;font-weight:800;text-decoration:{{ ng.deco }};overflow-wrap:anywhere">{{ ng.title }}</span>
+                </button>
+                <sc-if value="{{ ng.canDelete }}" hint-placeholder-val="{{ false }}">
+                  <button aria-label="{{ ng.deleteAria }}" sc-camel-on-click="{{ ng.onDelete }}" style="width:44px;height:44px;flex:none;border-radius:12px;border:2px solid #3B2A20;background:#fff;font-size:15px;cursor:pointer;padding:0">🗑️</button>
+                </sc-if>
+              </div>
+            </sc-for>
+            <sc-if value="{{ nrCanAddGoal }}" hint-placeholder-val="{{ false }}">
+              <button sc-camel-on-click="{{ nrAddGoal }}" style="min-height:44px;border-radius:14px;border:2px dashed #3B2A20;background:#fff;font-family:inherit;font-weight:800;font-size:14px;color:#3B2A20;cursor:pointer">+ Add goal</button>
+            </sc-if>
+          </div>
+
+          <div style="display:flex;flex-direction:column;gap:6px">
+            <div style="font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#7A4B12">⭐ Daily credits · tap a day to see it</div>
+            <sc-for list="{{ nrDays }}" as="nd" hint-placeholder-count="7">
+              <button aria-label="{{ nd.aria }}" sc-camel-on-click="{{ nd.onClick }}" style="display:flex;align-items:center;gap:10px;width:100%;min-height:46px;padding:4px 10px;border-radius:14px;border:2px solid {{ nd.border }};background:{{ nd.bg }};opacity:{{ nd.op }};font-family:inherit;color:#3B2A20;text-align:left;cursor:pointer">
+                <span style="flex:none;width:52px;line-height:1.05"><span style="display:block;font-size:12px;font-weight:800">{{ nd.label }}</span><span style="display:block;font-family:'Baloo 2',sans-serif;font-size:18px;font-weight:800">{{ nd.date }}</span></span>
+                <span style="flex:1;min-width:0;font-size:12px;font-weight:700;color:#6B5444">{{ nd.sub }}</span>
+                <span style="flex:none;font-family:'Baloo 2',sans-serif;font-size:19px;font-weight:800;min-width:34px;text-align:right">{{ nd.val }}</span>
+                <span aria-hidden="true" style="flex:none;font-size:18px;font-weight:800;color:#B49A86">›</span>
+              </button>
+            </sc-for>
+            <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;background:#FFF1C2;border:2px solid #3B2A20;border-radius:14px;padding:6px 12px">
+              <span style="font-size:14px;font-weight:800">Week total</span>
+              <span style="text-align:right"><span style="font-family:'Baloo 2',sans-serif;font-size:19px;font-weight:800">{{ nrTotal }}</span> <span style="font-size:11px;font-weight:800;color:#7A4B12;white-space:nowrap">{{ nrAllTime }}</span></span>
+            </div>
+          </div>
+
+          <div style="display:flex;flex-direction:column;gap:4px">
+            <div style="font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#7A4B12">Where the credits came from</div>
+            <sc-for list="{{ nrBreak }}" as="nb" hint-placeholder-count="5">
+              <div style="display:flex;align-items:center;gap:8px;min-height:30px;font-size:13px;font-weight:800;border-bottom:1.5px dashed #EAD9C6">
+                <span aria-hidden="true" style="font-size:16px">{{ nb.e }}</span><span style="flex:1;min-width:0">{{ nb.label }}</span>
+                <span style="font-size:11px;font-weight:700;color:#8A6E5A">{{ nb.n }}</span><span style="min-width:30px;text-align:right">{{ nb.val }}</span>
+              </div>
+            </sc-for>
+            <div style="font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#8A6E5A;margin-top:8px">Also this week · not part of credits</div>
+            <sc-for list="{{ nrAlso }}" as="na" hint-placeholder-count="2">
+              <button sc-camel-on-click="{{ na.onClick }}" style="display:flex;align-items:center;gap:8px;width:100%;min-height:44px;padding:0 10px;border-radius:14px;border:2px solid #E8D3BC;background:#FFF9F1;font-family:inherit;font-size:13px;font-weight:800;color:#3B2A20;cursor:pointer;text-align:left">
+                <span aria-hidden="true" style="font-size:16px">{{ na.e }}</span><span style="flex:1;min-width:0">{{ na.label }}</span><span>{{ na.val }}</span><span aria-hidden="true" style="color:#B49A86">›</span>
+              </button>
+            </sc-for>
+          </div>
+
+          <div style="background:#E1F0FB;border:2px solid #3B2A20;border-radius:18px;padding:10px 12px;display:flex;flex-direction:column;gap:6px">
+            <div style="font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#2F5A80">💡 Suggested goal for next week</div>
+            <div style="font-family:'Baloo 2',sans-serif;font-size:18px;font-weight:800;line-height:1.15">{{ nrSuggest }}</div>
+            <div style="font-size:12px;font-weight:700;color:#4A6A85;line-height:1.35">{{ nrSuggestWhy }}</div>
+            <button sc-camel-on-click="{{ nrUseSuggest }}" style="align-self:flex-start;min-height:44px;padding:0 16px;border-radius:999px;border:2px solid #3B2A20;background:#fff;color:#3B2A20;font-family:inherit;font-weight:800;font-size:14px;cursor:pointer;box-shadow:0 3px 0 #3B2A20">🎯 Use this goal</button>
+          </div>
+
+          <div style="background:#FFE3EC;border:2px solid #3B2A20;border-radius:18px;padding:6px 12px 10px;display:flex;flex-direction:column;gap:8px">
+            <button aria-expanded="{{ nrReflAria }}" sc-camel-on-click="{{ nrReflToggle }}" style="display:flex;align-items:center;justify-content:space-between;gap:8px;min-height:44px;width:100%;border:none;background:none;padding:0;font-family:inherit;color:#3B2A20;cursor:pointer;text-align:left">
+              <span style="min-width:0"><span style="display:block;font-family:'Baloo 2',sans-serif;font-size:18px;font-weight:800;line-height:1.1">🪞 Weekly reflection</span><span style="display:block;font-size:12px;font-weight:700;color:#8A4A5E">{{ nrReflCount }}</span></span>
+              <span aria-hidden="true" style="flex:none;width:34px;height:34px;border-radius:50%;border:2px solid #3B2A20;background:#fff;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800">{{ nrReflChevron }}</span>
+            </button>
+            <sc-if value="{{ nrReflOpen }}" hint-placeholder-val="{{ false }}">
+              <sc-if value="{{ nrNoRefl }}" hint-placeholder-val="{{ false }}">
+                <div style="font-size:13px;font-weight:700;color:#8A4A5E;line-height:1.4">{{ nrNoReflText }}</div>
+              </sc-if>
+              <sc-for list="{{ nrRefls }}" as="rf" hint-placeholder-count="1">
+                <div style="background:#fff;border:2px solid #3B2A20;border-radius:14px;padding:8px 10px;display:flex;flex-direction:column;gap:4px">
+                  <div style="font-size:12px;font-weight:800;color:#B23A6A">{{ rf.who }}</div>
+                  <sc-if value="{{ rf.hasWin }}" hint-placeholder-val="{{ true }}">
+                    <div style="font-size:13px;font-weight:700;line-height:1.35;overflow-wrap:anywhere"><b>🌈 What went well:</b> {{ rf.win }}</div>
+                  </sc-if>
+                  <sc-if value="{{ rf.hasAdjust }}" hint-placeholder-val="{{ true }}">
+                    <div style="font-size:13px;font-weight:700;line-height:1.35;overflow-wrap:anywhere"><b>🔧 What to adjust:</b> {{ rf.adjust }}</div>
+                  </sc-if>
+                </div>
+              </sc-for>
+              <sc-if value="{{ nrCanRefl }}" hint-placeholder-val="{{ false }}">
+                <button sc-camel-on-click="{{ nrWriteRefl }}" style="min-height:44px;border-radius:14px;border:2px solid #3B2A20;background:#FF6B8A;color:#fff;font-family:'Baloo 2',sans-serif;font-size:17px;font-weight:800;cursor:pointer;box-shadow:0 3px 0 #3B2A20">{{ nrReflLabel }}</button>
+              </sc-if>
+            </sc-if>
+          </div>
+        </section>
+      </sc-if>
+
       <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px">
+        <sc-if value="{{ nrTile }}" hint-placeholder-val="{{ false }}">
+          <button sc-camel-on-click="{{ nrGoReview }}" style="grid-column:1 / -1;background:#FFF1C2;border:2px solid #3B2A20;border-radius:18px;padding:10px 12px;text-align:left;font-family:inherit;color:#3B2A20;cursor:pointer;display:flex;align-items:center;gap:10px">
+            <span style="flex:1;min-width:0"><span style="display:block;font-family:'Baloo 2',sans-serif;font-size:28px;font-weight:800;line-height:1">{{ nrTileVal }}</span><span style="display:block;font-size:12px;font-weight:800">{{ nrTileSub }}</span></span>
+            <span style="flex:none;font-size:12px;font-weight:800;color:#7A4B12">{{ nrTileAll }}</span>
+          </button>
+        </sc-if>
         <div style="background:#FFD166;border:2px solid #3B2A20;border-radius:18px;padding:10px 12px"><div style="font-family:'Baloo 2',sans-serif;font-size:28px;font-weight:800;line-height:1">{{ badgeTotal }}</div><div style="font-size:12px;font-weight:800">badges</div></div>
         <div style="background:#FFB4A2;border:2px solid #3B2A20;border-radius:18px;padding:10px 12px"><div style="font-family:'Baloo 2',sans-serif;font-size:28px;font-weight:800;line-height:1">{{ streak }} 🔥</div><div style="font-size:12px;font-weight:800">day streak</div></div>
         <button sc-camel-on-click="{{ goPlan }}" style="background:#DDF5E8;border:2px solid #3B2A20;border-radius:18px;padding:10px 12px;text-align:left;font-family:inherit;color:#3B2A20;cursor:pointer"><div style="font-family:'Baloo 2',sans-serif;font-size:28px;font-weight:800;line-height:1">⭐ {{ planPts }}</div><div style="font-size:12px;font-weight:800">plan points ›</div></button>
@@ -968,6 +1099,98 @@ input::placeholder{color:#B49A86}
         </sc-for>
       </div>
 
+      <sc-if value="{{ frPointer }}" hint-placeholder-val="{{ false }}">
+        <section aria-label="Plan the day together" style="background:#E1F0FB;border:2px solid #3B2A20;border-radius:24px;padding:14px;box-shadow:4px 4px 0 #3B2A20;display:flex;flex-direction:column;gap:8px">
+          <div style="font-family:'Baloo 2',sans-serif;font-size:19px;font-weight:800;line-height:1.1">👪 Plan the day together</div>
+          <div style="font-size:13px;font-weight:700;color:#4A6A85;line-height:1.4;text-wrap:pretty">{{ frPointerText }}</div>
+          <button sc-camel-on-click="{{ frGoFamily }}" style="align-self:flex-start;min-height:44px;padding:0 16px;border-radius:999px;border:2px solid #3B2A20;background:#fff;color:#3B2A20;font-family:inherit;font-weight:800;font-size:14px;cursor:pointer;box-shadow:0 3px 0 #3B2A20">Open the 👪 Family tab ›</button>
+        </section>
+      </sc-if>
+
+      <sc-if value="{{ frShow }}" hint-placeholder-val="{{ false }}">
+        <section aria-label="Daily highlight" style="background:#FFD166;border:2px solid #3B2A20;border-radius:24px;padding:14px;box-shadow:4px 4px 0 #3B2A20;display:flex;flex-direction:column;gap:8px">
+          <div style="display:flex;align-items:baseline;justify-content:space-between;gap:8px">
+            <span style="font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#6B4210">{{ frHlEyebrow }}</span>
+            <span style="font-size:12px;font-weight:800;color:#6B4210;white-space:nowrap">{{ frDayLabel }}</span>
+          </div>
+          <sc-if value="{{ frHl }}" hint-placeholder-val="{{ false }}">
+            <button aria-label="{{ frHlView.aria }}" sc-camel-on-click="{{ frHlOpen }}" style="display:flex;align-items:center;gap:12px;background:#fff;border:2px solid #3B2A20;border-radius:18px;padding:10px 12px;font-family:inherit;color:#3B2A20;text-align:left;cursor:pointer;min-height:64px;width:100%;box-shadow:0 3px 0 #3B2A20">
+              <span aria-hidden="true" style="font-size:30px;line-height:1;flex:none">{{ frHlView.e }}</span>
+              <span style="flex:1;min-width:0">
+                <span style="display:block;font-family:'Baloo 2',sans-serif;font-size:20px;font-weight:800;line-height:1.15;overflow-wrap:anywhere;text-decoration:{{ frHlView.titleDeco }}">{{ frHlView.title }}</span>
+                <span style="display:block;font-size:12px;font-weight:700;color:#6B5444;line-height:1.3">{{ frHlView.sub }}</span>
+              </span>
+              <span style="flex:none;background:{{ frHlView.priBg }};border:2px solid #3B2A20;border-radius:999px;padding:1px 8px;font-size:11px;font-weight:800;white-space:nowrap">{{ frHlView.pri }}</span>
+            </button>
+          </sc-if>
+          <sc-if value="{{ frNoHl }}" hint-placeholder-val="{{ false }}">
+            <div style="background:#fff;border:2px dashed #3B2A20;border-radius:18px;padding:12px;display:flex;flex-direction:column;align-items:center;gap:8px;text-align:center">
+              <div aria-hidden="true" style="font-size:28px;line-height:1">🌤️</div>
+              <div style="font-weight:800;font-size:16px">No activities scheduled</div>
+              <button sc-camel-on-click="{{ frAddTask }}" style="min-height:44px;padding:0 18px;border-radius:999px;border:2px solid #3B2A20;background:#FF6B57;color:#fff;font-family:'Baloo 2',sans-serif;font-size:17px;font-weight:800;box-shadow:0 3px 0 #3B2A20;cursor:pointer">+ Add an activity</button>
+            </div>
+          </sc-if>
+        </section>
+      </sc-if>
+
+      <section aria-label="{{ frMenuTitle }}" style="background:#fff;border:2px solid #3B2A20;border-radius:24px;padding:14px;box-shadow:4px 4px 0 #3B2A20;display:flex;flex-direction:column;gap:8px">
+        <div style="display:flex;align-items:baseline;justify-content:space-between;gap:8px">
+          <h3 style="font-family:'Baloo 2',sans-serif;font-size:20px;margin:0;font-weight:800;line-height:1.1;min-width:0">🍴 {{ frMenuTitle }}</h3>
+          <span style="font-size:12px;font-weight:800;color:#8A6E5A;white-space:nowrap">{{ frDayLabel }}</span>
+        </div>
+        <sc-for list="{{ frMenu }}" as="mr" hint-placeholder-count="4">
+          <button aria-label="{{ mr.aria }}" sc-camel-on-click="{{ mr.onClick }}" style="display:flex;align-items:center;gap:10px;width:100%;min-height:58px;padding:6px 10px;border-radius:16px;border:2px solid #3B2A20;background:#FFF9F1;font-family:inherit;color:#3B2A20;text-align:left;cursor:pointer">
+            <span aria-hidden="true" style="width:40px;height:40px;flex:none;border-radius:12px;background:#fff;border:2px solid #E8D3BC;display:flex;align-items:center;justify-content:center;font-size:22px;line-height:1">{{ mr.e }}</span>
+            <span style="flex:1;min-width:0">
+              <span style="display:block;font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#7A4B12">{{ mr.label }}</span>
+              <span style="display:block;font-size:15px;font-weight:800;line-height:1.2;color:{{ mr.mainFg }};overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ mr.main }}</span>
+              <span style="display:block;font-size:11px;font-weight:700;color:#8A6E5A;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ mr.sub }}</span>
+            </span>
+            <span aria-hidden="true" style="flex:none;font-size:20px;font-weight:800;color:#B49A86">›</span>
+          </button>
+        </sc-for>
+        <sc-if value="{{ frHasMenuHint }}" hint-placeholder-val="{{ false }}">
+          <div style="font-size:12px;font-weight:700;color:#8A6E5A;line-height:1.35">{{ frMenuHint }}</div>
+        </sc-if>
+      </section>
+
+      <sc-if value="{{ frShow }}" hint-placeholder-val="{{ false }}">
+        <section aria-label="Day’s schedule" style="background:#fff;border:2px solid #3B2A20;border-radius:24px;padding:14px;box-shadow:4px 4px 0 #3B2A20;display:flex;flex-direction:column;gap:8px">
+          <div style="display:flex;align-items:baseline;justify-content:space-between;gap:8px">
+            <h3 style="font-family:'Baloo 2',sans-serif;font-size:20px;margin:0;font-weight:800;line-height:1.1">📋 Day’s schedule</h3>
+            <span style="font-size:12px;font-weight:800;color:#8A6E5A;white-space:nowrap">{{ frTaskCount }}</span>
+          </div>
+          <sc-if value="{{ frNoTasks }}" hint-placeholder-val="{{ false }}">
+            <div style="font-size:13px;font-weight:700;color:#8A6E5A;line-height:1.4">Nothing on the family schedule for this day yet. Plans, family events and after-school activities show up here for everyone.</div>
+          </sc-if>
+          <sc-for list="{{ frTasks }}" as="tk" hint-placeholder-count="2">
+            <div style="display:flex;border:2px solid #3B2A20;border-radius:16px;background:{{ tk.bg }};overflow:hidden;box-shadow:0 3px 0 #3B2A20;min-height:60px">
+              <button aria-label="{{ tk.aria }}" sc-camel-on-click="{{ tk.onOpen }}" style="flex:1;min-width:0;display:flex;align-items:flex-start;gap:10px;padding:8px 10px;border:none;background:none;font-family:inherit;color:#3B2A20;text-align:left;cursor:pointer">
+                <span aria-hidden="true" style="font-size:24px;line-height:1.2;flex:none">{{ tk.e }}</span>
+                <span style="min-width:0;flex:1">
+                  <span style="display:block;font-weight:800;font-size:15px;line-height:1.2;overflow-wrap:anywhere;text-decoration:{{ tk.titleDeco }}">{{ tk.title }}</span>
+                  <span style="display:block;font-size:12px;font-weight:700;color:#6B5444;line-height:1.3">{{ tk.sub }}</span>
+                  <span style="display:flex;flex-wrap:wrap;gap:4px;margin-top:4px">
+                    <span style="background:{{ tk.priBg }};border:1.5px solid #3B2A20;border-radius:999px;padding:0 7px;font-size:11px;font-weight:800;white-space:nowrap">{{ tk.pri }}</span>
+                    <span style="background:#FFF7EC;border:1.5px solid #D8C2AC;border-radius:999px;padding:0 7px;font-size:11px;font-weight:800;white-space:nowrap">{{ tk.type }}</span>
+                    <sc-if value="{{ tk.pinned }}" hint-placeholder-val="{{ false }}">
+                      <span style="background:#FFF1C2;border:1.5px solid #E8B93A;border-radius:999px;padding:0 7px;font-size:11px;font-weight:800;white-space:nowrap">📌 Pinned</span>
+                    </sc-if>
+                    <sc-if value="{{ tk.hasGoal }}" hint-placeholder-val="{{ false }}">
+                      <span style="background:#E1F0FB;border:1.5px solid #7FB8E6;border-radius:999px;padding:0 7px;font-size:11px;font-weight:800;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ tk.goal }}</span>
+                    </sc-if>
+                  </span>
+                </span>
+              </button>
+              <button aria-label="{{ tk.checkAria }}" aria-pressed="{{ tk.pressed }}" sc-camel-on-click="{{ tk.onCheck }}" style="width:52px;flex:none;border:none;border-left:2px solid #3B2A20;background:{{ tk.checkBg }};cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0">
+                <span style="width:28px;height:28px;border-radius:50%;border:2px solid #3B2A20;background:#fff;color:#1F5E40;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:800">{{ tk.check }}</span>
+              </button>
+            </div>
+          </sc-for>
+          <button sc-camel-on-click="{{ frAddTask }}" style="min-height:44px;border-radius:14px;border:2px dashed #3B2A20;background:#FFF7EC;font-family:inherit;font-weight:800;font-size:14px;color:#3B2A20;cursor:pointer">{{ frAddLabel }}</button>
+        </section>
+      </sc-if>
+
       <section style="background:#fff;border:2px solid #3B2A20;border-radius:24px;padding:14px;box-shadow:4px 4px 0 #3B2A20;display:flex;flex-direction:column;gap:10px">
         <div style="display:flex;align-items:center;justify-content:space-between;gap:8px">
           <h3 style="font-family:'Baloo 2',sans-serif;font-size:20px;margin:0;font-weight:800;line-height:1.1;min-width:0">{{ fpDayTitle }}</h3>
@@ -1025,6 +1248,100 @@ input::placeholder{color:#B49A86}
       </sc-if>
       <sc-if value="{{ fpLoadingKid }}" hint-placeholder-val="{{ false }}">
         <div style="text-align:center;padding:12px;color:#8A6E5A;font-weight:700">Loading {{ fpKidName }}’s plan…</div>
+      </sc-if>
+
+      <section aria-label="Verse for the day" style="background:#FFF1C2;border:2px solid #3B2A20;border-radius:24px;padding:14px 16px;box-shadow:4px 4px 0 #3B2A20;display:flex;gap:10px;align-items:flex-start">
+        <span aria-hidden="true" style="font-size:26px;line-height:1.1;flex:none">📖</span>
+        <div style="min-width:0">
+          <div style="font-size:16px;font-weight:800;line-height:1.4;text-wrap:pretty">“{{ frVerse }}”</div>
+          <div style="font-size:12px;font-weight:800;color:#7A4B12;margin-top:4px">{{ frVerseRef }} · KJV</div>
+        </div>
+      </section>
+
+      <sc-if value="{{ frCrShow }}" hint-placeholder-val="{{ false }}">
+        <section id="lb-credits" aria-label="{{ frCrTitle }}" style="scroll-margin-top:12px;background:#DDF5E8;border:2px solid #3B2A20;border-radius:24px;padding:14px;box-shadow:4px 4px 0 #3B2A20;display:flex;flex-direction:column;gap:10px">
+          <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px">
+            <div style="min-width:0">
+              <h3 style="font-family:'Baloo 2',sans-serif;font-size:20px;margin:0;font-weight:800;line-height:1.1">⭐ {{ frCrTitle }}</h3>
+              <div style="font-size:12px;font-weight:700;color:#2E6B4F">{{ frCrSub }}</div>
+            </div>
+            <span aria-label="Day total" style="flex:none;background:#FFD166;border:2px solid #3B2A20;border-radius:999px;padding:2px 12px;font-family:'Baloo 2',sans-serif;font-size:17px;font-weight:800;white-space:nowrap">{{ frCrDay }}</span>
+          </div>
+          <sc-if value="{{ frCrHasChips }}" hint-placeholder-val="{{ false }}">
+            <div role="group" aria-label="Whose credits" style="display:flex;gap:6px;flex-wrap:wrap">
+              <sc-for list="{{ frCrChips }}" as="cc" hint-placeholder-count="2">
+                <button aria-pressed="{{ cc.pressed }}" sc-camel-on-click="{{ cc.onClick }}" style="min-height:44px;padding:0 14px;border-radius:999px;border:2px solid #3B2A20;background:{{ cc.bg }};color:{{ cc.fg }};font-family:inherit;font-weight:800;font-size:14px;cursor:pointer">{{ cc.label }}</button>
+              </sc-for>
+            </div>
+          </sc-if>
+          <sc-for list="{{ frCrItems }}" as="ci" hint-placeholder-count="4">
+            <div style="background:#fff;border:2px solid #3B2A20;border-radius:18px;padding:8px 10px;display:flex;flex-direction:column;gap:6px">
+              <div style="display:flex;align-items:center;gap:8px;min-height:36px">
+                <span aria-hidden="true" style="font-size:22px;line-height:1;flex:none">{{ ci.e }}</span>
+                <span style="flex:1;min-width:0;font-size:15px;font-weight:800">{{ ci.label }}</span>
+                <span style="flex:none;background:{{ ci.totalBg }};border:2px solid #3B2A20;border-radius:999px;padding:0 9px;font-size:12px;font-weight:800;white-space:nowrap">{{ ci.total }}</span>
+                <sc-if value="{{ ci.canAdd }}" hint-placeholder-val="{{ false }}">
+                  <button aria-label="{{ ci.addAria }}" sc-camel-on-click="{{ ci.onAdd }}" style="width:44px;height:44px;flex:none;border-radius:50%;border:2px solid #3B2A20;background:#FFD166;color:#3B2A20;font-size:22px;font-weight:800;cursor:pointer;padding:0;box-shadow:0 2px 0 #3B2A20;line-height:1">+</button>
+                </sc-if>
+              </div>
+              <sc-for list="{{ ci.awards }}" as="aw" hint-placeholder-count="1">
+                <button aria-label="{{ aw.aria }}" sc-camel-on-click="{{ aw.onClick }}" style="display:flex;align-items:center;gap:8px;width:100%;min-height:44px;padding:4px 8px;border-radius:12px;border:1.5px solid #EAD9C6;background:#FFF9F1;font-family:inherit;color:#3B2A20;text-align:left;cursor:pointer">
+                  <span style="flex:none;background:{{ aw.ptsBg }};color:{{ aw.ptsFg }};border-radius:999px;padding:1px 8px;font-size:13px;font-weight:800;white-space:nowrap">{{ aw.pts }}</span>
+                  <span style="flex:1;min-width:0;font-size:13px;font-weight:800;overflow-wrap:anywhere">{{ aw.reason }}</span>
+                  <span style="flex:none;font-size:11px;font-weight:700;color:#8A6E5A;white-space:nowrap">{{ aw.by }}</span>
+                </button>
+              </sc-for>
+            </div>
+          </sc-for>
+          <sc-if value="{{ frCrHasCustom }}" hint-placeholder-val="{{ false }}">
+            <div style="background:#fff;border:2px solid #3B2A20;border-radius:18px;padding:8px 10px;display:flex;flex-direction:column;gap:6px">
+              <div style="display:flex;align-items:center;gap:8px;min-height:32px"><span aria-hidden="true" style="font-size:22px;line-height:1">🌟</span><span style="font-size:15px;font-weight:800">Other credits</span></div>
+              <sc-for list="{{ frCrCustom }}" as="aw" hint-placeholder-count="1">
+                <button aria-label="{{ aw.aria }}" sc-camel-on-click="{{ aw.onClick }}" style="display:flex;align-items:center;gap:8px;width:100%;min-height:44px;padding:4px 8px;border-radius:12px;border:1.5px solid #EAD9C6;background:#FFF9F1;font-family:inherit;color:#3B2A20;text-align:left;cursor:pointer">
+                  <span style="flex:none;background:{{ aw.ptsBg }};color:{{ aw.ptsFg }};border-radius:999px;padding:1px 8px;font-size:13px;font-weight:800;white-space:nowrap">{{ aw.pts }}</span>
+                  <span style="flex:1;min-width:0;font-size:13px;font-weight:800;overflow-wrap:anywhere">{{ aw.reason }}</span>
+                  <span style="flex:none;font-size:11px;font-weight:700;color:#8A6E5A;white-space:nowrap">{{ aw.by }}</span>
+                </button>
+              </sc-for>
+            </div>
+          </sc-if>
+          <sc-if value="{{ frCrCan }}" hint-placeholder-val="{{ false }}">
+            <button sc-camel-on-click="{{ frCrAddCustom }}" style="min-height:44px;border-radius:14px;border:2px dashed #2E6B4F;background:#fff;font-family:inherit;font-weight:800;font-size:14px;color:#1F5E40;cursor:pointer">🌟 + Custom credit</button>
+          </sc-if>
+          <div style="font-size:12px;font-weight:700;color:#2E6B4F;line-height:1.4;text-wrap:pretty">{{ frCrNote }}</div>
+        </section>
+      </sc-if>
+
+      <sc-if value="{{ frShow }}" hint-placeholder-val="{{ false }}">
+        <section aria-label="Family board" style="background:#fff;border:2px solid #3B2A20;border-radius:24px;padding:10px 14px;box-shadow:4px 4px 0 #3B2A20;display:flex;flex-direction:column;gap:10px">
+          <button aria-expanded="{{ frBoardAria }}" sc-camel-on-click="{{ frBoardToggle }}" style="display:flex;align-items:center;justify-content:space-between;gap:8px;min-height:48px;width:100%;border:none;background:none;padding:0;font-family:inherit;color:#3B2A20;cursor:pointer;text-align:left">
+            <span style="min-width:0">
+              <span style="display:block;font-family:'Baloo 2',sans-serif;font-size:20px;font-weight:800;line-height:1.1">📌 Family board</span>
+              <span style="display:block;font-size:12px;font-weight:700;color:#8A6E5A">{{ frBoardCount }}</span>
+            </span>
+            <span aria-hidden="true" style="flex:none;width:36px;height:36px;border-radius:50%;border:2px solid #3B2A20;background:#FFF7EC;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800">{{ frBoardChevron }}</span>
+          </button>
+          <sc-if value="{{ frBoardOpen }}" hint-placeholder-val="{{ false }}">
+            <div style="display:flex;flex-direction:column;gap:6px">
+              <textarea value="{{ frPost }}" sc-camel-on-change="{{ onFrPost }}" maxlength="280" rows="2" aria-label="Post to the family board" placeholder="Share an update with the family…" style="border-radius:16px;border:2px solid #3B2A20;padding:10px 14px;font-family:inherit;font-size:16px;font-weight:700;color:#3B2A20;background:#fff;outline:none;resize:vertical;min-width:0"></textarea>
+              <button sc-camel-on-click="{{ frPostNow }}" style="align-self:flex-end;min-height:44px;padding:0 18px;border-radius:999px;border:2px solid #3B2A20;background:#FFD166;color:#3B2A20;font-family:'Baloo 2',sans-serif;font-size:17px;font-weight:800;cursor:pointer;box-shadow:0 3px 0 #3B2A20;opacity:{{ frBusyOp }}">{{ frPostLabel }}</button>
+            </div>
+            <sc-if value="{{ frBoardEmpty }}" hint-placeholder-val="{{ false }}">
+              <div style="font-size:13px;font-weight:700;color:#8A6E5A">Nothing posted yet. Everyone in the family can post here.</div>
+            </sc-if>
+            <sc-for list="{{ frBoardPosts }}" as="bp" hint-placeholder-count="2">
+              <div style="background:#FFF9F1;border:2px solid #3B2A20;border-radius:16px;padding:8px 10px;display:flex;gap:8px;align-items:flex-start">
+                <div style="flex:1;min-width:0">
+                  <div style="font-size:12px;font-weight:800;color:#7A4B12">{{ bp.who }} <span style="font-weight:700;color:#B49A86">· {{ bp.when }}</span></div>
+                  <div style="font-size:14px;font-weight:700;line-height:1.35;overflow-wrap:anywhere;white-space:pre-wrap">{{ bp.text }}</div>
+                </div>
+                <sc-if value="{{ bp.canDelete }}" hint-placeholder-val="{{ false }}">
+                  <button aria-label="Remove this post" sc-camel-on-click="{{ bp.onDelete }}" style="width:44px;height:44px;flex:none;border-radius:12px;border:2px solid #3B2A20;background:#fff;font-size:15px;cursor:pointer;padding:0">🗑️</button>
+                </sc-if>
+              </div>
+            </sc-for>
+          </sc-if>
+        </section>
       </sc-if>
     </div>
   </sc-if>
@@ -1622,6 +1939,157 @@ input::placeholder{color:#B49A86}
             <button aria-label="Delete event" sc-camel-on-click="{{ calRemove }}" style="width:54px;height:54px;border-radius:18px;border:2px solid #3B2A20;background:#fff;font-size:20px;cursor:pointer;flex:none;padding:0">🗑️</button>
           </sc-if>
           <button sc-camel-on-click="{{ calSave }}" style="flex:1;height:54px;border-radius:18px;border:2px solid #3B2A20;background:#FFD166;color:#3B2A20;font-family:'Baloo 2',sans-serif;font-size:18px;font-weight:800;cursor:pointer;box-shadow:0 4px 0 #3B2A20">{{ calSaveLabel }}</button>
+        </div>
+      </div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ frHasSheet }}" hint-placeholder-val="{{ false }}">
+    <div style="position:fixed;inset:0;z-index:9;display:flex;flex-direction:column;justify-content:flex-end;align-items:center">
+      <div sc-camel-on-click="{{ frClose }}" style="position:absolute;inset:0;background:rgba(59,42,32,.5)"></div>
+      <div role="dialog" aria-modal="true" aria-label="{{ frShTitle }}" style="position:relative;width:100%;max-width:440px;max-height:90vh;overflow-y:auto;box-sizing:border-box;background:#FFF7EC;border:2px solid #3B2A20;border-bottom:none;border-radius:28px 28px 0 0;padding:18px 16px 0;display:flex;flex-direction:column;gap:12px">
+        <div style="width:44px;height:5px;border-radius:999px;background:#D8C2AC;align-self:center;flex:none"></div>
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;flex:none">
+          <div style="min-width:0">
+            <div style="font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#E2553F">{{ frShSub }}</div>
+            <div style="font-family:'Baloo 2',sans-serif;font-size:22px;font-weight:800;line-height:1.1">{{ frShTitle }}</div>
+          </div>
+          <button aria-label="Close" sc-camel-on-click="{{ frClose }}" style="width:44px;height:44px;border-radius:50%;border:2px solid #3B2A20;background:#fff;font-size:16px;font-weight:800;color:#3B2A20;cursor:pointer;flex:none;padding:0">✕</button>
+        </div>
+
+        <sc-if value="{{ frShTask }}" hint-placeholder-val="{{ false }}">
+          <label style="display:flex;flex-direction:column;gap:4px;flex:none">
+            <span style="font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#7A4B12">What’s the plan?</span>
+            <input value="{{ frShT }}" sc-camel-on-change="{{ onFrShT }}" maxlength="80" placeholder="e.g. Piano practice" style="height:48px;border-radius:16px;border:2px solid #3B2A20;padding:0 14px;font-family:inherit;font-size:16px;font-weight:700;color:#3B2A20;background:#fff;outline:none;min-width:0">
+          </label>
+          <sc-if value="{{ frShHasMembers }}" hint-placeholder-val="{{ false }}">
+            <div style="font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#7A4B12;flex:none">Who is it for?</div>
+            <div style="display:flex;gap:6px;flex-wrap:wrap;flex:none" role="group" aria-label="Who is it for">
+            <sc-for list="{{ frShMembers }}" as="fm" hint-placeholder-count="3">
+              <button aria-pressed="{{ fm.pressed }}" sc-camel-on-click="{{ fm.onClick }}" style="min-height:44px;padding:0 12px;border-radius:999px;border:2px solid #3B2A20;background:{{ fm.bg }};color:{{ fm.fg }};font-family:inherit;font-weight:800;font-size:13px;cursor:pointer">{{ fm.label }}</button>
+            </sc-for>
+          </div>
+          </sc-if>
+          <label style="display:flex;align-items:center;justify-content:space-between;gap:10px;flex:none">
+            <span style="font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#7A4B12">Start time (optional)</span>
+            <input type="time" value="{{ frShTm }}" sc-camel-on-change="{{ onFrShTm }}" aria-label="Start time" style="height:44px;border-radius:14px;border:2px solid #3B2A20;padding:0 10px;font-family:inherit;font-size:16px;font-weight:700;color:#3B2A20;background:#fff;outline:none;min-width:0">
+          </label>
+          <div style="font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#7A4B12;flex:none">About how long?</div>
+          <div style="display:flex;gap:6px;flex-wrap:wrap;flex:none" role="group" aria-label="Estimated time">
+            <sc-for list="{{ frShEsts }}" as="fe" hint-placeholder-count="6">
+              <button aria-pressed="{{ fe.pressed }}" sc-camel-on-click="{{ fe.onClick }}" style="min-height:44px;padding:0 12px;border-radius:999px;border:2px solid #3B2A20;background:{{ fe.bg }};color:{{ fe.fg }};font-family:inherit;font-weight:800;font-size:13px;cursor:pointer">{{ fe.label }}</button>
+            </sc-for>
+          </div>
+          <div style="font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#7A4B12;flex:none">Priority</div>
+          <div style="display:flex;gap:6px;flex-wrap:wrap;flex:none" role="group" aria-label="Priority">
+            <sc-for list="{{ frShPris }}" as="fp" hint-placeholder-count="2">
+              <button aria-pressed="{{ fp.pressed }}" sc-camel-on-click="{{ fp.onClick }}" style="min-height:44px;padding:0 12px;border-radius:999px;border:2px solid #3B2A20;background:{{ fp.bg }};color:{{ fp.fg }};font-family:inherit;font-weight:800;font-size:13px;cursor:pointer">{{ fp.label }}</button>
+            </sc-for>
+          </div>
+          <div style="font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#7A4B12;flex:none">Kind</div>
+          <div style="display:flex;gap:6px;flex-wrap:wrap;flex:none" role="group" aria-label="Kind of plan">
+            <sc-for list="{{ frShTypes }}" as="ft" hint-placeholder-count="3">
+              <button aria-pressed="{{ ft.pressed }}" sc-camel-on-click="{{ ft.onClick }}" style="min-height:44px;padding:0 12px;border-radius:999px;border:2px solid #3B2A20;background:{{ ft.bg }};color:{{ ft.fg }};font-family:inherit;font-weight:800;font-size:13px;cursor:pointer">{{ ft.label }}</button>
+            </sc-for>
+          </div>
+          <button aria-pressed="{{ frShPinPressed }}" sc-camel-on-click="{{ frShPinToggle }}" style="flex:none;display:flex;align-items:center;gap:10px;min-height:52px;padding:6px 12px;border-radius:16px;border:2px solid #3B2A20;background:{{ frShPinBg }};font-family:inherit;color:#3B2A20;cursor:pointer;text-align:left">
+            <span aria-hidden="true" style="font-size:22px">📌</span>
+            <span style="flex:1;min-width:0"><span style="display:block;font-size:15px;font-weight:800">Pin as the day’s highlight</span><span style="display:block;font-size:12px;font-weight:700;color:#8A6E5A">Shows at the top of the Plan tab for everyone</span></span>
+            <span style="width:26px;height:26px;border-radius:8px;border:2px solid #3B2A20;background:{{ frShPinBox }};display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:800;flex:none">{{ frShPinMark }}</span>
+          </button>
+          <sc-if value="{{ frShHasGoals }}" hint-placeholder-val="{{ false }}">
+            <div style="font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#7A4B12;flex:none">Linked goal</div>
+            <div style="display:flex;gap:6px;flex-wrap:wrap;flex:none" role="group" aria-label="Linked goal">
+            <sc-for list="{{ frShGoals }}" as="fg" hint-placeholder-count="2">
+              <button aria-pressed="{{ fg.pressed }}" sc-camel-on-click="{{ fg.onClick }}" style="min-height:44px;padding:0 12px;border-radius:999px;border:2px solid #3B2A20;background:{{ fg.bg }};color:{{ fg.fg }};font-family:inherit;font-weight:800;font-size:13px;cursor:pointer">{{ fg.label }}</button>
+            </sc-for>
+          </div>
+          </sc-if>
+          <sc-if value="{{ frShHasActual }}" hint-placeholder-val="{{ false }}">
+            <div style="font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#7A4B12;flex:none">✅ Done! How long did it take?</div>
+            <div style="display:flex;gap:6px;flex-wrap:wrap;flex:none" role="group" aria-label="Actual time">
+            <sc-for list="{{ frShActuals }}" as="fa" hint-placeholder-count="6">
+              <button aria-pressed="{{ fa.pressed }}" sc-camel-on-click="{{ fa.onClick }}" style="min-height:44px;padding:0 12px;border-radius:999px;border:2px solid #3B2A20;background:{{ fa.bg }};color:{{ fa.fg }};font-family:inherit;font-weight:800;font-size:13px;cursor:pointer">{{ fa.label }}</button>
+            </sc-for>
+          </div>
+          </sc-if>
+        </sc-if>
+
+        <sc-if value="{{ frShMeal }}" hint-placeholder-val="{{ false }}">
+          <sc-if value="{{ frShNoMeals }}" hint-placeholder-val="{{ false }}">
+            <div style="font-size:13px;font-weight:700;color:#8A6E5A;line-height:1.4;flex:none">Nothing planned yet. Add the dish you’re making, or an idea for the family to vote on.</div>
+          </sc-if>
+          <sc-for list="{{ frShMealList }}" as="ml" hint-placeholder-count="2">
+            <div style="flex:none;background:{{ ml.bg }};border:2px solid #3B2A20;border-radius:16px;padding:8px 10px;display:flex;flex-direction:column;gap:6px">
+              <div style="display:flex;align-items:center;gap:8px">
+                <span aria-hidden="true" style="font-size:26px;line-height:1;flex:none">{{ ml.e }}</span>
+                <span style="flex:1;min-width:0"><span style="display:block;font-size:15px;font-weight:800;overflow-wrap:anywhere">{{ ml.title }}</span><span style="display:block;font-size:11px;font-weight:700;color:#6B5444">{{ ml.by }}</span></span>
+              </div>
+              <div style="display:flex;gap:6px;flex-wrap:wrap">
+                <button aria-label="{{ ml.voteAria }}" aria-pressed="{{ ml.votePressed }}" sc-camel-on-click="{{ ml.onVote }}" style="min-height:44px;padding:0 14px;border-radius:999px;border:2px solid #3B2A20;background:{{ ml.voteBg }};font-family:inherit;font-weight:800;font-size:14px;color:#B23A6A;cursor:pointer">{{ ml.votes }}</button>
+                <button sc-camel-on-click="{{ ml.onChoose }}" style="flex:1;min-height:44px;padding:0 14px;border-radius:999px;border:2px solid #3B2A20;background:{{ ml.chooseBg }};font-family:inherit;font-weight:800;font-size:14px;color:#3B2A20;cursor:pointer">{{ ml.chooseLabel }}</button>
+                <sc-if value="{{ ml.canDelete }}" hint-placeholder-val="{{ false }}">
+                  <button aria-label="{{ ml.deleteAria }}" sc-camel-on-click="{{ ml.onDelete }}" style="width:44px;height:44px;border-radius:12px;border:2px solid #3B2A20;background:#fff;font-size:15px;cursor:pointer;padding:0;flex:none">🗑️</button>
+                </sc-if>
+              </div>
+            </div>
+          </sc-for>
+          <label style="display:flex;flex-direction:column;gap:4px;flex:none">
+            <span style="font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#7A4B12">Add a dish</span>
+            <input value="{{ frShT }}" sc-camel-on-change="{{ onFrShT }}" maxlength="60" placeholder="{{ frShMealPh }}" style="height:48px;border-radius:16px;border:2px solid #3B2A20;padding:0 14px;font-family:inherit;font-size:16px;font-weight:700;color:#3B2A20;background:#fff;outline:none;min-width:0">
+          </label>
+          <button aria-pressed="{{ frShIdeaPressed }}" sc-camel-on-click="{{ frShIdeaToggle }}" style="flex:none;display:flex;align-items:center;gap:10px;min-height:52px;padding:6px 12px;border-radius:16px;border:2px solid #3B2A20;background:{{ frShIdeaBg }};font-family:inherit;color:#3B2A20;cursor:pointer;text-align:left">
+            <span aria-hidden="true" style="font-size:22px">💡</span>
+            <span style="flex:1;min-width:0"><span style="display:block;font-size:15px;font-weight:800">Save as an idea</span><span style="display:block;font-size:12px;font-weight:700;color:#8A6E5A">The family votes ♡ before someone chooses</span></span>
+            <span style="width:26px;height:26px;border-radius:8px;border:2px solid #3B2A20;background:{{ frShIdeaBox }};display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:800;flex:none">{{ frShIdeaMark }}</span>
+          </button>
+        </sc-if>
+
+        <sc-if value="{{ frShCredit }}" hint-placeholder-val="{{ false }}">
+          <div style="font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#7A4B12;flex:none">For</div>
+          <div style="display:flex;gap:6px;flex-wrap:wrap;flex:none" role="group" aria-label="Credit for">
+            <sc-for list="{{ frShItems }}" as="fi" hint-placeholder-count="5">
+              <button aria-pressed="{{ fi.pressed }}" sc-camel-on-click="{{ fi.onClick }}" style="min-height:44px;padding:0 12px;border-radius:999px;border:2px solid #3B2A20;background:{{ fi.bg }};color:{{ fi.fg }};font-family:inherit;font-weight:800;font-size:13px;cursor:pointer">{{ fi.label }}</button>
+            </sc-for>
+          </div>
+          <label style="display:flex;flex-direction:column;gap:4px;flex:none">
+            <span style="font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#7A4B12">Reason (needed)</span>
+            <input value="{{ frShReason }}" sc-camel-on-change="{{ onFrShReason }}" maxlength="80" placeholder="e.g. Ate a good breakfast" style="height:48px;border-radius:16px;border:2px solid #3B2A20;padding:0 14px;font-family:inherit;font-size:16px;font-weight:700;color:#3B2A20;background:#fff;outline:none;min-width:0">
+          </label>
+          <div style="font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#7A4B12;flex:none">Points</div>
+          <div role="group" aria-label="Points" style="display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:4px;flex:none">
+            <sc-for list="{{ frShPts }}" as="pt" hint-placeholder-count="7">
+              <button aria-label="{{ pt.aria }}" aria-pressed="{{ pt.pressed }}" sc-camel-on-click="{{ pt.onClick }}" style="height:48px;min-width:0;border-radius:14px;border:2px solid #3B2A20;background:{{ pt.bg }};color:{{ pt.fg }};font-family:'Baloo 2',sans-serif;font-size:17px;font-weight:800;cursor:pointer;padding:0">{{ pt.label }}</button>
+            </sc-for>
+          </div>
+          <div style="font-size:12px;font-weight:800;color:#6B5444;flex:none">{{ frShPtsNote }}</div>
+        </sc-if>
+
+        <sc-if value="{{ frShGoal }}" hint-placeholder-val="{{ false }}">
+          <label style="display:flex;flex-direction:column;gap:4px;flex:none">
+            <span style="font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#7A4B12">The goal</span>
+            <input value="{{ frShT }}" sc-camel-on-change="{{ onFrShT }}" maxlength="80" placeholder="{{ frShGoalPh }}" style="height:48px;border-radius:16px;border:2px solid #3B2A20;padding:0 14px;font-family:inherit;font-size:16px;font-weight:700;color:#3B2A20;background:#fff;outline:none;min-width:0">
+          </label>
+          <div style="font-size:12px;font-weight:700;color:#8A6E5A;flex:none">Link plans to it from the Plan tab, and check it off in the Nest.</div>
+        </sc-if>
+
+        <sc-if value="{{ frShReflect }}" hint-placeholder-val="{{ false }}">
+          <label style="display:flex;flex-direction:column;gap:4px;flex:none">
+            <span style="font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#7A4B12">🌈 What went well?</span>
+            <textarea value="{{ frShWin }}" sc-camel-on-change="{{ onFrShWin }}" maxlength="400" rows="3" style="border-radius:16px;border:2px solid #3B2A20;padding:10px 14px;font-family:inherit;font-size:16px;font-weight:700;color:#3B2A20;background:#fff;outline:none;resize:vertical;min-width:0"></textarea>
+          </label>
+          <label style="display:flex;flex-direction:column;gap:4px;flex:none">
+            <span style="font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#7A4B12">🔧 What would you adjust?</span>
+            <textarea value="{{ frShAdjust }}" sc-camel-on-change="{{ onFrShAdjust }}" maxlength="400" rows="3" style="border-radius:16px;border:2px solid #3B2A20;padding:10px 14px;font-family:inherit;font-size:16px;font-weight:700;color:#3B2A20;background:#fff;outline:none;resize:vertical;min-width:0"></textarea>
+          </label>
+          <div style="font-size:12px;font-weight:700;color:#8A6E5A;flex:none">{{ frShReflWho }}</div>
+        </sc-if>
+
+        <div style="position:sticky;bottom:0;background:#FFF7EC;padding:12px 0 20px;display:flex;gap:8px;flex:none;border-top:2px solid #F1E4D6;margin-top:2px">
+          <sc-if value="{{ frShCanDelete }}" hint-placeholder-val="{{ false }}">
+            <button aria-label="{{ frShDeleteAria }}" sc-camel-on-click="{{ frShDelete }}" style="width:54px;height:54px;border-radius:18px;border:2px solid #3B2A20;background:#fff;font-size:20px;cursor:pointer;flex:none;padding:0">🗑️</button>
+          </sc-if>
+          <button sc-camel-on-click="{{ frShSave }}" style="flex:1;min-width:0;height:54px;border-radius:18px;border:2px solid #3B2A20;background:#FFD166;opacity:{{ frShSaveOp }};color:#3B2A20;font-family:'Baloo 2',sans-serif;font-size:18px;font-weight:800;cursor:pointer;box-shadow:0 4px 0 #3B2A20;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;padding:0 10px">{{ frShSaveLabel }}</button>
         </div>
       </div>
     </div>
@@ -2478,6 +2946,38 @@ const fpDay = blocks => {
   return x;
 };
 
+// ── Family Rhythm: the shared day (Plan tab) and the weekly review (Nest) ──
+// Credits are points a parent gives a kid for a day, −3 to +3 with a reason. Only parents give them.
+const CR_ITEMS = [['breakfast', '🍳', 'Breakfast', 3], ['dinner', '🍽️', 'Dinner', 3], ['sleep', '😴', 'Sleep', 3], ['plan', '✅', 'Fulfill the plan', 3]];
+const CR_ITEM = Object.fromEntries(CR_ITEMS.map(([id, e, label, pts]) => [id, { id, e, label, pts }]));
+const CR_PTS = [-3, -2, -1, 0, 1, 2, 3];
+const sgn = n => n > 0 ? `+${n}` : n < 0 ? `−${-n}` : '0';
+const TASK_TYPES = [['plan', '🙋', 'My plan'], ['family', '👪', 'Family event'], ['activity', '🎒', 'After-school']];
+const TASK_TYPE = Object.fromEntries(TASK_TYPES.map(([id, e, label]) => [id, { id, e, label }]));
+const EST_OPTS = [15, 30, 45, 60, 90, 120];
+const minLbl = n => n >= 60 && n % 60 === 0 ? `${n / 60} hr` : n > 60 ? `${Math.floor(n / 60)} hr ${n % 60} min` : `${n} min`;
+// Short, encouraging King James verses (public domain). One a day, in turn.
+const VERSES = [
+  ['Let all your things be done with charity.', '1 Corinthians 16:14'],
+  ['I can do all things through Christ which strengtheneth me.', 'Philippians 4:13'],
+  ['This is the day which the LORD hath made; we will rejoice and be glad in it.', 'Psalm 118:24'],
+  ['Be ye kind one to another, tenderhearted, forgiving one another.', 'Ephesians 4:32'],
+  ['Whatsoever ye do, do it heartily, as to the Lord.', 'Colossians 3:23'],
+  ['Trust in the LORD with all thine heart.', 'Proverbs 3:5'],
+  ['A merry heart doeth good like a medicine.', 'Proverbs 17:22'],
+  ['Let us not be weary in well doing.', 'Galatians 6:9'],
+  ['Thy word is a lamp unto my feet, and a light unto my path.', 'Psalm 119:105'],
+  ['Charity suffereth long, and is kind.', '1 Corinthians 13:4'],
+  ['The joy of the LORD is your strength.', 'Nehemiah 8:10'],
+  ['Be strong and of a good courage.', 'Joshua 1:9'],
+  ['Casting all your care upon him; for he careth for you.', '1 Peter 5:7']
+];
+const verseFor = day => VERSES[Math.round(new Date(day + 'T12:00').getTime() / 864e5) % VERSES.length];
+const timeLbl = tm => tm ? tmLabel(tm) : 'Any time';
+// What parents with no kids yet see: an example week, so they know what's coming.
+const CR_SAMPLE = [[0, 'breakfast', 3, 'Breakfast'], [0, 'sleep', 2, 'Lights out by 9:30'], [1, 'dinner', 3, 'Dinner'], [1, 'plan', 3, 'Finished the plan'],
+  [2, 'breakfast', 2, 'Breakfast'], [2, '', 1, 'Helped set the table'], [3, 'sleep', -1, 'Up too late'], [3, 'plan', 3, 'Finished the plan'], [4, 'dinner', 3, 'Dinner'], [5, 'breakfast', 3, 'Breakfast'], [6, 'sleep', 3, 'Early bedtime']];
+
 class Component extends DCLogic {
   constructor(p) {
     super(p);
@@ -2498,6 +2998,7 @@ class Component extends DCLogic {
       nestView: 'quests', bSheet: false, bDraft: { ...MB_BLANK }, game: null,
       sched: cleanSched(saved.sched), cal: cleanCal(saved.cal), calM: firstOfMonth(now), calSel: null, calSheet: null, fpWs: monOf(now), fpIdx: (wd + 6) % 7, fpSheet: null, fpKid: null, fpKidSched: {}, fpNotes: [], fpTag: '',
       fpNoteDraft: '', fpNoteEdit: false, fpReplyFor: null, fpReplyDraft: '', fpReplyEdit: null, fpBusy: false, tick: 0,
+      frWeeks: {}, frBoard: [], frTotals: {}, frSheet: null, frBusy: false, frBoardOpen: false, frPost: '', frReflOpen: false, nestWs: monOf(now),
       famOk: false, fam: null, famBusy: false, famErr: '', famEvents: [], famLastSeen: 0, famPlans: [], pushState: 'unknown',
       backupAt: ((lsGet(FKEY, {}) || {}).token ? (lsGet(FKEY, {}) || {}).bAt : (lsGet(VKEY, {}) || {}).bAt) || 0, moveCode: null,
       famForm: { familyName: '', startName: '', code: '', joinName: '', role: 'kid', moveCode: '' }
@@ -2541,7 +3042,7 @@ class Component extends DCLogic {
   famFail(e, quiet) {
     if (e && e.code === 'no_session') {
       lsSet(FKEY, null); lsSet(FDIRTY, null); lsSet(PDIRTY, null);
-      this.setState({ fam: null, famEvents: [], famPlans: [], fpNotes: [], fpKidSched: {}, backupAt: this.vSession().bAt || 0, moveCode: null, famErr: quiet ? '' : e.message }, () => this.backupSoon());
+      this.setState({ fam: null, famEvents: [], famPlans: [], fpNotes: [], fpKidSched: {}, frWeeks: {}, frBoard: [], frTotals: {}, frSheet: null, backupAt: this.vSession().bAt || 0, moveCode: null, famErr: quiet ? '' : e.message }, () => this.backupSoon());
       return;
     }
     if (!quiet) this.setState({ famErr: (e && e.message) || 'Something went wrong.' });
@@ -2597,7 +3098,8 @@ class Component extends DCLogic {
         const ses = this.famSession();
         if (ses.bDirty || !ses.bAt) await this.backupNow();
         if (this.state.tab === 'family') { this.famLoadEvents(true); this.famLoadPlans(); }
-        if (this.state.tab === 'plan') this.fpLoad();
+        if (this.state.tab === 'plan') { this.fpLoad(); this.frLoad(this.state.fpWs); }
+        if (this.state.tab === 'nest') this.frLoad(this.state.nestWs);
       } else {
         const v = this.vSession();
         if (v.bDirty || !v.bAt) await this.backupNow();
@@ -2612,7 +3114,7 @@ class Component extends DCLogic {
     const f = this.state.fam, n = id === 'plan' && f && f.notesNew > 0 && f.notesDay ? new Date(f.notesDay + 'T12:00') : null;
     const jump = n ? { fpWs: monOf(n), fpIdx: (n.getDay() + 6) % 7, ...(f.notesKid ? { fpKid: f.notesKid } : {}) } : {};
     this.setState(s => ({ tab: id, ...jump, ...(id === 'plan' && s.tab !== 'plan' ? { fpNotes: s.fpNotes.map(x => ({ ...x, wasNew: false })), fpNoteEdit: false } : {}) }),
-      () => { if (id === 'family') this.famRefresh(); if (id === 'plan') this.fpLoad(); });
+      () => { if (id === 'family') this.famRefresh(); if (id === 'plan') { this.fpLoad(); this.frLoad(this.state.fpWs); } if (id === 'nest') this.frLoad(this.state.nestWs); });
     window.scrollTo(0, 0);
   }
   async createFamily() {
@@ -2651,7 +3153,7 @@ class Component extends DCLogic {
       await this.pushDisable(true);
       await this.api('POST', 'family/leave', {});
       lsSet(FKEY, null); lsSet(FDIRTY, null); lsSet(PDIRTY, null);
-      this.setState({ fam: null, famEvents: [], famPlans: [], fpNotes: [], fpKidSched: {}, backupAt: this.vSession().bAt || 0, moveCode: null }, () => this.backupSoon());
+      this.setState({ fam: null, famEvents: [], famPlans: [], fpNotes: [], fpKidSched: {}, frWeeks: {}, frBoard: [], frTotals: {}, frSheet: null, backupAt: this.vSession().bAt || 0, moveCode: null }, () => this.backupSoon());
       this.flash(lastParent ? 'Family deleted' : pending ? 'Request cancelled' : 'You left the family');
     });
   }
@@ -3187,7 +3689,7 @@ class Component extends DCLogic {
     if (src.length) this.setSched(day, src, () => this.flash('↻ Copied last week’s plan'));
   }
   fpPick(i) { this.setState({ fpIdx: i, fpNoteEdit: false, fpReplyFor: null, fpReplyEdit: null }, () => this.fpSeen()); }
-  fpShiftWeek(n) { this.setState(s => ({ fpWs: add(s.fpWs, 7 * n), fpNoteEdit: false, fpReplyFor: null, fpReplyEdit: null }), () => this.fpLoad()); }
+  fpShiftWeek(n) { this.setState(s => ({ fpWs: add(s.fpWs, 7 * n), fpNoteEdit: false, fpReplyFor: null, fpReplyEdit: null }), () => { this.fpLoad(); this.frLoad(this.state.fpWs); }); }
   // Kids share their plan with their family's parents, a moment after each change.
   fpIsKid() { return this.famActive() && this.state.fam.me.role === 'kid'; }
   fpMark(day) {
@@ -3274,6 +3776,123 @@ class Component extends DCLogic {
     text = String(text || '').trim();
     if (!text) { this.flash('✏️ Write a reply first'); return; }
     this.fpDo(async () => { await this.api('POST', 'notes/reply', { id: n.id, reply: text }); this.setState({ fpReplyFor: null, fpReplyDraft: '', fpReplyEdit: null }); await this.fpLoad(); this.flash('💬 Reply sent'); });
+  }
+  // ── Family Rhythm: the shared day (schedule, breakfast/dinner, credits, board) and the weekly review ──
+  frMe() { return this.famActive() ? this.state.fam.me : null; }
+  async frLoad(ws) {
+    if (!this.famActive() || !ws) return;
+    const k = iso(ws);
+    try {
+      const r = await this.api('GET', `rhythm?start=${k}&end=${iso(add(ws, 6))}`);
+      this.setState(s => ({ frWeeks: { ...s.frWeeks, [k]: r }, frBoard: r.board || [], frTotals: { ...s.frTotals, ...(r.totals || {}) } }));
+    } catch (e) { this.famFail(e, true); }
+  }
+  // After a change, reload the weeks on screen (and another week, like next week's goals).
+  frShown(extra) {
+    const seen = new Set();
+    return Promise.all([this.state.fpWs, this.state.nestWs, extra].filter(w => { if (!w) return false; const k = iso(w); if (seen.has(k)) return false; seen.add(k); return true; }).map(w => this.frLoad(w)));
+  }
+  async frDo(fn, msg, extra) {
+    if (this._frBusy) return;
+    this._frBusy = true; this.setState({ frBusy: true });
+    try { await fn(); await this.frShown(extra); if (msg) this.flash(msg); }
+    catch (e) { if (e && e.code === 'no_session') this.famFail(e, true); this.flash(`⚠️ ${(e && e.message) || 'Something went wrong'}`); }
+    finally { this._frBusy = false; this.setState({ frBusy: false }); }
+  }
+  frAsk(q) { let ok = true; try { ok = window.confirm(q); } catch (e) {} return ok; }
+  setFrSheet(p) { this.setState(s => s.frSheet ? { frSheet: { ...s.frSheet, ...p } } : null); }
+  frTaskOpen(day, t) {
+    const me = this.frMe(); if (!me) return;
+    this.setState({ frSheet: t ? { kind: 'task', id: t.id, day: t.day, title: t.title, member: t.memberId, tm: t.tm, est: t.est, pri: t.pri, type: t.type, pinned: t.pinned, goal: t.goal }
+      : { kind: 'task', id: '', day, title: '', member: me.id, tm: '', est: 30, pri: 'must', type: 'plan', pinned: false, goal: '' } });
+  }
+  frTaskSave() {
+    const f = this.state.frSheet; if (!f || f.kind !== 'task') return;
+    const title = f.title.trim();
+    if (!title) { this.flash('✏️ Say what you’ll do first'); return; }
+    this.frDo(async () => {
+      await this.api('POST', 'rhythm/task', { id: f.id || undefined, day: f.day, title, member: f.member, tm: f.tm, est: f.est, pri: f.pri, type: f.type, pinned: f.pinned, goal: f.goal });
+      this.setState({ frSheet: null });
+    }, f.id ? '✏️ Plan updated' : `🗓️ ${title} added`);
+  }
+  frTaskDone(t, done) { this.frDo(() => this.api('POST', 'rhythm/task/done', { id: t.id, done }), done ? `✅ ${t.title}: done!` : 'Took back that check'); }
+  frTaskActual(t, actual) { this.frDo(() => this.api('POST', 'rhythm/task/done', { id: t.id, actual }), `⏱ It took ${minLbl(actual)}`); }
+  frTaskDelete(t) {
+    if (!this.frAsk(`Remove “${t.title}”?`)) return;
+    this.frDo(async () => { await this.api('POST', 'rhythm/task/delete', { id: t.id }); this.setState({ frSheet: null }); }, '🗑️ Removed from the day');
+  }
+  frMealOpen(day, slot) { if (this.frMe()) this.setState({ frSheet: { kind: 'meal', day, slot, title: '', idea: false } }); }
+  frMealAdd() {
+    const f = this.state.frSheet; if (!f || f.kind !== 'meal') return;
+    const title = f.title.trim();
+    if (!title) { this.flash('✏️ Type a dish first'); return; }
+    this.frDo(async () => { await this.api('POST', 'rhythm/meal', { day: f.day, slot: f.slot, title, idea: f.idea }); this.setFrSheet({ title: '' }); },
+      f.idea ? `💡 ${title} is up for a vote` : `${emojiFor(title)} ${title} it is!`);
+  }
+  frMealVote(m) { this.frDo(() => this.api('POST', 'rhythm/meal/vote', { id: m.id }), null); }
+  frMealChoose(m) { this.frDo(() => this.api('POST', 'rhythm/meal/choose', { id: m.id }), m.chosen ? 'Unpicked' : `${emojiFor(m.title)} ${m.title} it is!`); }
+  frMealDelete(m) { if (this.frAsk(`Remove ${m.title}?`)) this.frDo(() => this.api('POST', 'rhythm/meal/delete', { id: m.id }), '🗑️ Dish removed'); }
+  frCreditOpen(kid, day, c, item) {
+    if (!kid) return;
+    this.setState({ frSheet: c ? { kind: 'credit', id: c.id, kid: c.kidId, day: c.day, item: c.item, reason: c.reason, pts: c.pts }
+      : { kind: 'credit', id: '', kid, day, item: item || '', reason: item ? CR_ITEM[item].label : '', pts: item ? CR_ITEM[item].pts : 1 } });
+  }
+  frCreditSave() {
+    const f = this.state.frSheet; if (!f || f.kind !== 'credit') return;
+    const reason = f.reason.trim();
+    if (!reason) { this.flash('✏️ Add a reason first'); return; }
+    this.frDo(async () => {
+      await this.api('PUT', 'credits', { id: f.id || undefined, kid: f.kid, day: f.day, item: f.item, reason, pts: f.pts });
+      this.setState({ frSheet: null });
+    }, `⭐ ${sgn(f.pts)} for ${reason}`);
+  }
+  frCreditDelete() {
+    const f = this.state.frSheet; if (!f || !f.id || !this.frAsk('Remove this credit?')) return;
+    this.frDo(async () => { await this.api('POST', 'credits/delete', { id: f.id }); this.setState({ frSheet: null }); }, '🗑️ Credit removed');
+  }
+  frGoalOpen(kid, week, title) { if (kid) this.setState({ frSheet: { kind: 'goal', kid, week: iso(week), title: title || '' } }); }
+  frGoalSave() {
+    const f = this.state.frSheet; if (!f || f.kind !== 'goal') return;
+    const title = f.title.trim();
+    if (!title) { this.flash('✏️ Write the goal first'); return; }
+    this.frDo(async () => { await this.api('POST', 'rhythm/goal', { kid: f.kid, week: f.week, title }); this.setState({ frSheet: null }); }, '🎯 Goal set', new Date(f.week + 'T12:00'));
+  }
+  frGoalDone(g) { this.frDo(() => this.api('POST', 'rhythm/goal/done', { id: g.id, done: !g.done }), g.done ? 'Took back that check' : '🎯 Goal reached!'); }
+  frGoalDelete(g) { if (this.frAsk(`Remove the goal “${g.title}”?`)) this.frDo(() => this.api('POST', 'rhythm/goal/delete', { id: g.id }), '🗑️ Goal removed'); }
+  frReflOpen(kid, week, mine) { if (kid) this.setState({ frSheet: { kind: 'reflect', kid, week: iso(week), win: mine ? mine.win : '', adjust: mine ? mine.adjust : '' } }); }
+  frReflSave() {
+    const f = this.state.frSheet; if (!f || f.kind !== 'reflect') return;
+    if (!f.win.trim() && !f.adjust.trim()) { this.flash('✏️ Write a few words first'); return; }
+    this.frDo(async () => { await this.api('PUT', 'rhythm/reflection', { kid: f.kid, week: f.week, win: f.win.trim(), adjust: f.adjust.trim() }); this.setState({ frSheet: null, frReflOpen: true }); }, '🪞 Reflection saved');
+  }
+  frBoardPost() {
+    const text = this.state.frPost.trim();
+    if (!text) { this.flash('✏️ Write an update first'); return; }
+    this.frDo(async () => { await this.api('POST', 'rhythm/board', { text }); this.setState({ frPost: '' }); }, '📌 Posted to the family board');
+  }
+  frBoardDelete(p) { if (this.frAsk('Remove this post?')) this.frDo(() => this.api('POST', 'rhythm/board/delete', { id: p.id }), '🗑️ Post removed'); }
+  // From the Nest's weekly review to that day on the Plan tab, scrolled to its credits.
+  frJump(day) {
+    const d = new Date(day + 'T12:00');
+    this._famSeenBase = null;
+    // Scroll once the Plan tab has drawn, and again once the day's data is in (the sections above can grow).
+    const go = () => setTimeout(() => { const el = document.getElementById('lb-credits'); if (el) el.scrollIntoView({ block: 'start' }); }, 60);
+    this.setState({ tab: 'plan', fpWs: monOf(d), fpIdx: (d.getDay() + 6) % 7, fpNoteEdit: false }, async () => {
+      go();
+      await Promise.all([this.fpLoad(), this.frLoad(this.state.fpWs)]).catch(() => {});
+      go();
+    });
+  }
+  nestShiftWeek(n) { this.setState(s => ({ nestWs: add(s.nestWs, 7 * n) }), () => this.frLoad(this.state.nestWs)); }
+  // The Plan tab's menu rows hand off to the Menu tab: lunch opens that day's school menu, the add-on its picker.
+  frSchoolDay(day, picker) {
+    const d = new Date(day + 'T12:00'), wd = d.getDay();
+    if (wd === 0 || wd === 6) { this.flash('🏖️ No school lunch on weekends'); return; }
+    const ws = mondayOf(d), same = iso(ws) === iso(this.state.weekStart);
+    this.setState({ weekStart: ws, dayIdx: wd - 1, ...(picker ? { ideaSheet: true } : { tab: 'menu' }) }, () => {
+      if (!same) this.load();
+      if (!picker) window.scrollTo(0, 0);
+    });
   }
   // ── My calendar ──
   calShift(n) { this.setState(s => ({ calM: new Date(s.calM.getFullYear(), s.calM.getMonth() + n, 1, 12), calSel: null })); }
@@ -3450,7 +4069,7 @@ class Component extends DCLogic {
       return { e, label: ic ? ic.label : 'Icon', pressed: on ? 'true' : 'false', bg: on ? '#FFD166' : '#fff', border: on ? '#3B2A20' : '#E8D3BC', onClick: () => this.setDraft({ emoji: e, picked: true }) }; };
     const total = Object.keys(s.badges).length;
     const yum = ['🥄', '🍴', '🍽️', '😋', '🤩'];
-    const tabs = [['menu', '🍽️', 'Menu'], ['ideas', '💡', 'Ideas'], ['nest', '🐣', 'Nest'], ['plan', '🗓️', 'Plan'], ['game', '🎮', 'Game']];
+    const tabs = [['menu', '🍽️', 'Menu'], ['ideas', '💡', 'Ideas'], ['plan', '🗓️', 'Plan'], ['nest', '🐣', 'Nest'], ['game', '🎮', 'Game']];
     if (s.famOk) tabs.push(['family', '👪', 'Family']);
     // Family view values
     const fam = s.fam, famIn = !!(fam && fam.me), famAct = famIn && fam.me.status === 'active';
@@ -3576,6 +4195,239 @@ class Component extends DCLogic {
       fpShEditing: !!(sh && sh.idx >= 0), fpSave: () => this.fpSave(), fpRemove: () => this.fpRemove(),
       fpSaveLabel: !sh || !sh.a ? 'Pick an activity' : `${sh.idx >= 0 ? 'Save' : 'Add'} ${sh.a === 'other' ? (sh.t.trim() || 'it') : ACT[sh.a].name} · ${FP_LEN[sh.n] || ''}`,
       fpSaveBg: sh && sh.a ? '#FFD166' : '#F3E6D3', fpSaveOp: sh && sh.a ? 1 : 0.7
+    };
+    // ── Family Rhythm: the family's day on the Plan tab, the weekly review in the Nest ──
+    const frMe = famAct ? fam.me : null;
+    const frKid = famParent ? viewKid : famKid ? fam.me : null;   // whose credits, goals and review are shown
+    const frWk = famAct ? s.frWeeks[iso(s.fpWs)] : null;
+    const memOf = id => famMembersAll.find(m => m.id === id);
+    const memName = id => frMe && id === frMe.id ? 'You' : (memOf(id) || {}).nickname || 'Someone';
+    const memEmo = id => ROLE_EMO[(memOf(id) || {}).role] || '🙂';
+    const sumPts = list => list.reduce((a, c) => a + c.pts, 0);
+    const chip = on => ({ pressed: on ? 'true' : 'false', bg: on ? '#3B2A20' : '#fff', fg: on ? '#FFD166' : '#3B2A20' });
+    const dayTasks = frWk ? frWk.tasks.filter(t => t.day === fk).sort((a, b) => (a.tm || '99').localeCompare(b.tm || '99')) : [];
+    const nowTm = `${pad(nowD.getHours())}:${pad(nowD.getMinutes())}`;
+    const hlPin = dayTasks.find(t => t.pinned);
+    const hlNext = fk === tIso ? dayTasks.find(t => !t.done && t.type !== 'plan' && t.tm && t.tm >= nowTm) : null;
+    const hl = hlPin || hlNext || dayTasks.find(t => !t.done && t.pri === 'must') || dayTasks[0] || null;
+    const canTouch = t => !!frMe && (famParent || t.memberId === frMe.id || t.by === frMe.id);
+    const weekGoals = (wk, who) => wk ? wk.goals.filter(g => g.memberId === who && g.week === iso(monOf(new Date(wk.start + 'T12:00')))) : [];
+    const taskView = t => {
+      const ty = TASK_TYPE[t.type] || TASK_TYPE.plan, mine = canTouch(t), who = t.type === 'family' ? '👪 Everyone' : `${memEmo(t.memberId)} ${memName(t.memberId)}`;
+      const goal = t.goal && frWk ? frWk.goals.find(g => g.id === t.goal) : null;
+      return {
+        title: t.title, e: ty.e, who, time: timeLbl(t.tm), est: t.done && t.actual ? `took ${minLbl(t.actual)}` : minLbl(t.est),
+        sub: `${timeLbl(t.tm)} · ${t.done && t.actual ? `took ${minLbl(t.actual)}` : minLbl(t.est)} · ${who}`,
+        pri: t.pri === 'must' ? 'Must do' : 'Would like', priBg: t.pri === 'must' ? '#FFD6DC' : '#E1F0FB',
+        type: ty.label, pinned: !!t.pinned, hasGoal: !!goal, goal: goal ? `🎯 ${goal.title}` : '',
+        bg: t.done ? '#F2FBF6' : '#fff', titleDeco: t.done ? 'line-through' : 'none',
+        pressed: t.done ? 'true' : 'false', check: t.done ? '✓' : '', checkBg: t.done ? '#3DBE8B' : '#fff',
+        checkAria: t.done ? `Mark ${t.title} not done` : `Mark ${t.title} done`,
+        onCheck: () => mine ? this.frTaskDone(t, !t.done) : this.flash(`✋ Only ${memName(t.memberId)} or a parent can check this off`),
+        aria: mine ? `Change ${t.title}` : t.title,
+        onOpen: () => mine ? this.frTaskOpen(fk, t) : this.flash(`👀 ${memName(t.memberId)} planned this`)
+      };
+    };
+    // Breakfast and dinner (family plans), lunch (the school menu) and the school add-on (favs) for the selected day.
+    const dayMeals = frWk ? frWk.meals.filter(m => m.day === fk) : [];
+    const mealRow = (slot, e, label) => {
+      const list = dayMeals.filter(m => m.slot === slot), pick = list.find(m => m.chosen), ideas = list.filter(m => !m.chosen);
+      const top = ideas.slice().sort((a, b) => b.votes.length - a.votes.length)[0];
+      return {
+        e: pick ? emojiFor(pick.title) : e, label, main: pick ? pick.title : 'Not planned yet', mainFg: pick ? '#3B2A20' : '#B49A86',
+        sub: ideas.length ? `${ideas.length} idea${ideas.length > 1 ? 's' : ''} up for a vote${top && top.votes.length ? ` · ♡ ${top.votes.length} for ${top.title}` : ''}` : pick ? 'Tap to vote or change' : 'Tap to add a dish',
+        aria: `${label}: ${pick ? pick.title : 'not planned yet'}. Open ${label.toLowerCase()} plans`, onClick: () => this.frMealOpen(fk, slot)
+      };
+    };
+    const wdFp = fpD.getDay(), schoolDay = wdFp >= 1 && wdFp <= 5, lunchM = s.menus[fk];
+    const entree = schoolDay && lunchM && lunchM[0] && lunchM[0].items[0];
+    const kidAdd = famParent && viewKid && frWk ? (frWk.addons.find(a => a.memberId === viewKid.id && a.day === fk) || {}).items || [] : null;
+    const addOns = kidAdd || s.favs[fk] || [];
+    const frMenu = [
+      ...(famAct ? [mealRow('breakfast', '🍳', 'Breakfast')] : []),
+      { e: entree ? foodPic(entree, 'fr') : '🏫', label: 'Lunch', main: !schoolDay ? 'No school lunch on weekends' : entree || 'See the school menu', mainFg: entree ? '#3B2A20' : '#B49A86',
+        sub: !schoolDay ? 'Enjoy the weekend!' : entree ? 'School lunch · tap for the full menu' : 'Tap to open the Menu tab', aria: `Lunch: ${entree || 'school menu'}. Open the Menu tab`,
+        onClick: () => this.frSchoolDay(fk, false) },
+      { e: addOns.length ? (IDEAS.find(i => i.title === addOns[0]) || {}).emoji || emojiFor(addOns[0]) : '🥕', label: kidAdd ? `${kidName}’s school add-on` : 'School add-on',
+        main: addOns.length ? addOns.join(', ') : kidAdd ? 'Nothing picked yet' : !schoolDay ? 'Nothing to pack' : 'Pick an add-on', mainFg: addOns.length ? '#3B2A20' : '#B49A86',
+        sub: kidAdd ? `${kidName} picks add-ons on their Menu tab` : !schoolDay ? 'Weekend: no school lunch' : addOns.length ? 'Tap to change' : 'Something to bring along with lunch',
+        aria: kidAdd ? `${kidName}’s add-on: ${addOns.join(', ') || 'nothing yet'}` : `School add-on: ${addOns.join(', ') || 'none yet'}. Pick an add-on`,
+        onClick: () => kidAdd ? this.flash(`🥕 ${kidName} picks their own add-ons`) : this.frSchoolDay(fk, true) },
+      ...(famAct ? [mealRow('dinner', '🍽️', 'Dinner')] : [])
+    ];
+    // Credits for the selected day. Parents score; kids see their own, read-only.
+    const crSample = famParent && !viewKid, crFuture = fk > tIso;
+    const crList = crSample ? CR_SAMPLE.filter(r => r[0] === s.fpIdx).map(([, item, pts, reason], i) => ({ id: `x${i}`, item, pts, reason, by: frMe.id, byName: 'You' }))
+      : frKid && frWk ? frWk.credits.filter(c => c.kidId === frKid.id && c.day === fk) : [];
+    const crCan = !!(famParent && viewKid && !crFuture);
+    const crRow = c => ({
+      pts: `${sgn(c.pts)} ⭐`, reason: c.reason, by: famParent ? (c.by === frMe.id ? 'by you' : `by ${c.byName}`) : `from ${c.byName}`,
+      ptsBg: c.pts > 0 ? '#DDF5E8' : c.pts < 0 ? '#FFE3E6' : '#F1E4D6', ptsFg: c.pts > 0 ? '#1F5E40' : c.pts < 0 ? '#8E2436' : '#6B5444',
+      aria: crCan ? `Change ${sgn(c.pts)} for ${c.reason}` : `${sgn(c.pts)} for ${c.reason}`,
+      onClick: () => crSample ? this.flash('👀 This is just an example') : crCan ? this.frCreditOpen(viewKid.id, fk, c) : famParent ? this.flash('🗓️ Credits can be given once the day comes') : this.flash('⭐ Only parents give credits')
+    });
+    const crItems = CR_ITEMS.map(([id, e, label]) => {
+      const list = crList.filter(c => c.item === id), tot = sumPts(list);
+      return { e, label, scored: list.length > 0, notScored: !list.length, total: list.length ? sgn(tot) : 'Not scored', totalBg: !list.length ? '#F6EEE6' : tot > 0 ? '#DDF5E8' : tot < 0 ? '#FFE3E6' : '#F1E4D6',
+        awards: list.map(crRow), canAdd: crCan, addAria: `Score ${label} for ${kidName}`, onAdd: () => this.frCreditOpen(viewKid.id, fk, null, id) };
+    });
+    const crCustom = crList.filter(c => !c.item);
+    const crDay = sumPts(crList);
+    const frBoardList = famAct ? s.frBoard : [];
+    const frView = {
+      frShow: famAct, frPointer: s.famOk && !famAct, frPointerPending: famIn && !famAct,
+      frPointerText: famIn && !famAct ? `Once a parent approves you, your family’s day shows up here: the schedule, breakfast and dinner, credits and the family board.`
+        : 'Set up your family on the 👪 Family tab to share the day: a family schedule, breakfast and dinner plans, credits from parents and a family board.',
+      frGoFamily: () => this.goTab('family'),
+      frHl: !!hl, frNoHl: famAct && !hl,
+      frHlEyebrow: hlPin ? '📌 Pinned highlight' : hl && hl === hlNext ? '⏭️ Up next' : '✨ Daily highlight',
+      frHlView: hl ? taskView(hl) : { e: '', title: '', sub: '' },
+      frHlOpen: () => hl && (canTouch(hl) ? this.frTaskOpen(fk, hl) : this.flash(`👀 ${memName(hl.memberId)} planned this`)),
+      frAddTask: () => this.frTaskOpen(fk, null),
+      frMenuTitle: famAct ? 'What’s on the menu?' : 'What’s for lunch?',
+      frMenu, frMenuHint: s.famOk && !famAct ? 'Breakfast and dinner plans for the whole family show up here once your family is set up.' : '',
+      frHasMenuHint: s.famOk && !famAct,
+      frDayLabel: `${FDAYS[s.fpIdx]}, ${MON[fpD.getMonth()]} ${fpD.getDate()}`,
+      frTasks: dayTasks.map(taskView), frNoTasks: famAct && !dayTasks.length,
+      frTaskCount: dayTasks.length ? `${dayTasks.filter(t => t.done).length} of ${dayTasks.length} done` : '',
+      frAddLabel: famParent ? '+ Add to the day' : '+ Add my plan',
+      frVerse: verseFor(fk)[0], frVerseRef: verseFor(fk)[1],
+      frCrShow: famAct && (famParent || famKid),
+      frCrTitle: fk === tIso ? 'Today’s credits' : `${FDAYSL[s.fpIdx]}’s credits`,
+      frCrSub: crSample ? 'Example: once your kids join, you score their day here.' : famParent ? (viewKid ? `Score ${kidName}’s day · ${MON[fpD.getMonth()]} ${fpD.getDate()}` : '') : `From your parents · ${MON[fpD.getMonth()]} ${fpD.getDate()}`,
+      frCrChips: famParent ? fpKids.map(m => ({ label: `🧒 ${m.nickname}`, ...chip(viewKid && m.id === viewKid.id), onClick: () => this.setState({ fpKid: m.id, fpNotes: [], fpNoteEdit: false, fpNoteDraft: '' }, () => this.fpLoad()) }))
+        : famKid ? [{ label: `🧒 ${fam.me.nickname}`, ...chip(true), onClick: () => {} }] : [],
+      frCrHasChips: famKid || fpKids.length > 0,
+      frCrDay: `${sgn(crDay)} ⭐`, frCrItems: crItems, frCrCustom: crCustom.map(crRow), frCrHasCustom: crCustom.length > 0,
+      frCrCan: crCan, frCrAddCustom: () => this.frCreditOpen(viewKid.id, fk, null, ''),
+      frCrNote: crSample ? `👀 This is an example. Once your kids join the family${fam && fam.family && fam.family.code ? ` with invite code ${fam.family.code}` : ''}, you can give them −3 to +3 for each part of their day, with a reason.`
+        : famParent && crFuture ? '🗓️ Credits can be given once the day comes.' : famParent ? 'Tap + to score. −3 to +3, with a reason; 0 means neutral. Only parents give credits.'
+        : crFuture ? '🗓️ This day hasn’t come yet.' : '🔒 Only parents give credits. They show up here, and add up in your Nest.',
+      frBoardOpen: s.frBoardOpen, frBoardAria: s.frBoardOpen ? 'true' : 'false', frBoardToggle: () => this.setState(x => ({ frBoardOpen: !x.frBoardOpen })),
+      frBoardCount: frBoardList.length ? `${frBoardList.length} post${frBoardList.length > 1 ? 's' : ''}` : 'No posts yet', frBoardChevron: s.frBoardOpen ? '▲' : '▼',
+      frBoardPosts: frBoardList.map(p => ({ who: `${memEmo(p.memberId)} ${p.memberId === frMe.id ? 'You' : p.nickname}`, when: ago(p.at), text: p.text,
+        canDelete: famParent || p.memberId === frMe.id, onDelete: () => this.frBoardDelete(p) })),
+      frBoardEmpty: !frBoardList.length,
+      frPost: s.frPost, onFrPost: e => this.setState({ frPost: e.target.value.slice(0, 280) }), frPostNow: () => this.frBoardPost(),
+      frPostLabel: s.frBusy ? 'Posting…' : '📌 Post', frBusyOp: s.frBusy ? 0.6 : 1
+    };
+    // ── The Nest's weekly review ──
+    const nWs = s.nestWs, nWe = add(nWs, 6), nWk = famAct ? s.frWeeks[iso(nWs)] : null, nSample = famParent && !viewKid;
+    const nKidId = frKid ? frKid.id : '';
+    const nCredits = nSample ? CR_SAMPLE.map(([d, item, pts, reason]) => ({ day: iso(add(nWs, d)), item, pts, reason })).filter(c => c.day <= tIso)
+      : nKidId && nWk ? nWk.credits.filter(c => c.kidId === nKidId) : [];
+    const nGoals = nSample ? [{ id: 'x', title: 'Read 20 minutes every day', done: false }, { id: 'y', title: 'Pack my lunch the night before', done: true }] : weekGoals(nWk, nKidId);
+    const nPlans = nSample ? {} : famParent ? Object.fromEntries((nWk ? nWk.plans : []).filter(p => p.memberId === nKidId).map(p => [p.day, p.blocks])) : s.sched;
+    const nDayKeys = FDAYS.map((_, i) => iso(add(nWs, i)));
+    const nTotal = sumPts(nCredits);
+    const nFpPts = nDayKeys.reduce((a, dk) => a + fpDay(nPlans[dk] || []).pts, 0);
+    const nGamePts = famParent ? null : nDayKeys.reduce((a, dk) => a + ((s.peck.log || {})[dk] || 0), 0);
+    const nPlanDays = nDayKeys.filter(dk => dk <= tIso && ((nWk && nWk.tasks.some(t => t.day === dk && t.memberId === nKidId && t.type === 'plan' && t.done)) || (nPlans[dk] || []).some(b => b.d))).length;
+    const nAim = Math.min(7, Math.max(3, nPlanDays + 1));
+    const nSuggest = famParent ? `Finish the plan on ${nAim} different days` : `Finish my plan on ${nAim} different days`;
+    const nRefl = nSample ? [] : nWk ? nWk.reflections.filter(r => r.memberId === nKidId && r.week === iso(nWs)) : [];
+    const nMine = nRefl.find(r => r.mine);
+    const nWkOff = Math.round((nWs - monOf(nowD)) / 6048e5);
+    const nestReview = {
+      nrShow: famAct && (famKid || famParent), nrPointer: s.famOk && !famAct,
+      nrPointerText: famIn && !famAct ? 'Once a parent approves you, credits from your parents, weekly goals and reflections show up here.'
+        : 'Set up your family on the 👪 Family tab, and credits from parents, weekly goals and a weekly reflection show up here.',
+      nrSample: nSample, nrSampleText: `👀 This is an example week. Once your kids join the family${fam && fam.family && fam.family.code ? ` with invite code ${fam.family.code}` : ''}, their real week shows up here.`,
+      nrChips: famParent ? fpKids.map(m => ({ label: `🧒 ${m.nickname}`, ...chip(viewKid && m.id === viewKid.id), onClick: () => this.setState({ fpKid: m.id, fpNotes: [], fpNoteEdit: false, fpNoteDraft: '' }) })) : [],
+      nrHasChips: famParent && fpKids.length > 1,
+      nrSub: nSample ? 'Example week' : famParent ? `${kidName}’s week` : 'Your week',
+      nrWeek: `${MON[nWs.getMonth()]} ${nWs.getDate()} – ${MON[nWe.getMonth()]} ${nWe.getDate()}`,
+      nrWeekNote: nWkOff === 0 ? 'This week' : nWkOff === 1 ? 'Next week' : nWkOff === -1 ? 'Last week' : nWkOff > 0 ? `In ${nWkOff} weeks` : `${-nWkOff} weeks ago`,
+      nrPrev: () => this.nestShiftWeek(-1), nrNext: () => this.nestShiftWeek(1),
+      nrGoals: nGoals.map(g => ({ title: g.title, pressed: g.done ? 'true' : 'false', check: g.done ? '✓' : '', checkBg: g.done ? '#3DBE8B' : '#fff', deco: g.done ? 'line-through' : 'none',
+        aria: g.done ? `Mark goal ${g.title} not done` : `Mark goal ${g.title} done`, onToggle: () => nSample ? this.flash('👀 This is just an example') : this.frGoalDone(g),
+        canDelete: !nSample, deleteAria: `Remove goal ${g.title}`, onDelete: () => this.frGoalDelete(g) })),
+      nrNoGoals: !nGoals.length, nrNoGoalsText: famParent ? `No goal for this week yet. Set one with ${kidName}, or let them set their own.` : 'No goal for this week yet. What would you like to work on?',
+      nrCanAddGoal: !nSample && !!nKidId && nGoals.length < 5, nrAddGoal: () => this.frGoalOpen(nKidId, nWs),
+      nrDays: FDAYS.map((label, i) => {
+        const dk = nDayKeys[i], dd = add(nWs, i), fut = dk > tIso, list = nCredits.filter(c => c.day === dk), tot = sumPts(list), today = dk === tIso;
+        return { label: today ? 'Today' : label, date: dd.getDate(), val: fut ? '–' : sgn(tot), sub: fut ? 'Upcoming' : list.length ? `${list.length} credit${list.length > 1 ? 's' : ''}` : 'Not scored',
+          bg: fut ? '#FFF7EC' : tot > 0 ? '#DDF5E8' : tot < 0 ? '#FFE3E6' : '#fff', border: today ? '#E2553F' : '#3B2A20', op: fut ? 0.75 : 1,
+          aria: `${FDAYSL[i]} ${MON[dd.getMonth()]} ${dd.getDate()}: ${fut ? 'upcoming' : `${sgn(tot)} credits`}. Open in Plan`,
+          onClick: () => nSample ? this.flash('👀 This is just an example') : this.frJump(dk) };
+      }),
+      nrTotal: `${sgn(nTotal)} ⭐`, nrAllTime: nKidId && s.frTotals[nKidId] != null ? `${sgn(s.frTotals[nKidId])} ⭐ all time` : '',
+      nrBreak: [...CR_ITEMS.map(([id, e, label]) => [e, label, nCredits.filter(c => c.item === id)]), ['🌟', 'Other credits', nCredits.filter(c => !c.item)]]
+        .map(([e, label, list]) => ({ e, label, n: list.length ? `${list.length}×` : '', val: list.length ? sgn(sumPts(list)) : '–' })),
+      nrAlso: [{ e: '🗓️', label: 'Flight Plan points', val: `⭐ ${nFpPts}`, onClick: () => this.goTab('plan') }, ...(nGamePts == null ? [] : [{ e: '🎮', label: 'Peck Patch points', val: `⭐ ${nGamePts}`, onClick: () => this.goTab('game') }])],
+      nrSuggest: nSuggest, nrSuggestWhy: nSample ? 'Based on the days the plan was finished.' : `${famParent ? kidName : 'You'} finished ${famParent ? 'their' : 'your'} plan on ${nPlanDays} day${nPlanDays === 1 ? '' : 's'} this week. Next week, aim for ${nAim}.`,
+      nrUseSuggest: () => nSample ? this.flash('👀 This is just an example') : this.frGoalOpen(nKidId, add(nWs, 7), nSuggest),
+      nrReflOpen: s.frReflOpen, nrReflAria: s.frReflOpen ? 'true' : 'false', nrReflToggle: () => this.setState(x => ({ frReflOpen: !x.frReflOpen })), nrReflChevron: s.frReflOpen ? '▲' : '▼',
+      nrReflCount: nRefl.length ? `${nRefl.length} reflection${nRefl.length > 1 ? 's' : ''}` : 'Not written yet',
+      nrRefls: nRefl.map(r => ({ who: r.mine ? 'You wrote' : `${r.authorName} wrote`, hasWin: !!r.win, win: r.win, hasAdjust: !!r.adjust, adjust: r.adjust })),
+      nrNoRefl: !nRefl.length, nrNoReflText: famParent ? `Look back on ${kidName}’s week together: what went well, and what to adjust. ${kidName} and the parents in your family can read it.` : 'Look back on your week: what went well, and what to adjust. You and your parents can read it.',
+      nrCanRefl: !nSample && !!nKidId, nrReflLabel: nMine ? '✏️ Edit my reflection' : '🪞 Write a reflection', nrWriteRefl: () => this.frReflOpen(nKidId, nWs, nMine),
+      nestSubtitle: famAct && (famKid || famParent) ? 'Credits from parents lead the way here, then quests, badges you’ve earned, badges you design, and points from Peck Patch and your Flight Plan.'
+        : 'Every badge and point lives here: quests, badges you’ve earned, badges you design, and points from Peck Patch and your Flight Plan.',
+      nrTile: famAct && !!nKidId, nrTileVal: `⭐ ${sgn(nTotal)}`, nrTileSub: famParent ? `${kidName}’s family credits this week` : 'family credits this week',
+      nrTileAll: nKidId && s.frTotals[nKidId] != null ? `${sgn(s.frTotals[nKidId])} all time` : '', nrGoReview: () => { const el = document.getElementById('lb-review'); if (el) el.scrollIntoView({ block: 'start', behavior: 'smooth' }); }
+    };
+    // One sheet for everything Family Rhythm adds (a plan, a meal, a credit, a goal, a reflection).
+    const fs = s.frSheet, fsK = fs ? fs.kind : '';
+    const fsD = fs && fs.day ? new Date(fs.day + 'T12:00') : fs && fs.week ? new Date(fs.week + 'T12:00') : null;
+    const fsDay = fsD ? `${FDAYS[(fsD.getDay() + 6) % 7]}, ${MON[fsD.getMonth()]} ${fsD.getDate()}` : '';
+    const fsKidName = fs && fs.kid ? (memOf(fs.kid) || {}).nickname || 'you' : '';
+    const fsMeals = fsK === 'meal' && frWk ? (s.frWeeks[iso(monOf(fsD))] || frWk).meals.filter(m => m.day === fs.day && m.slot === fs.slot).sort((a, b) => (b.chosen - a.chosen) || (b.votes.length - a.votes.length)) : [];
+    const fsGoals = fsK === 'task' ? weekGoals(s.frWeeks[iso(monOf(fsD))], fs.member) : [];
+    const fsTask = fsK === 'task' && fs.id && frWk ? (s.frWeeks[iso(monOf(fsD))] || frWk).tasks.find(t => t.id === fs.id) : null;
+    const fsWeekD = fs && fs.week ? new Date(fs.week + 'T12:00') : null;
+    const frSheetView = {
+      frHasSheet: !!fs, frClose: () => this.setState({ frSheet: null }),
+      frShTask: fsK === 'task', frShMeal: fsK === 'meal', frShCredit: fsK === 'credit', frShGoal: fsK === 'goal', frShReflect: fsK === 'reflect',
+      frShTitle: fsK === 'task' ? (fs.id ? 'Change plan' : famParent ? 'Add to the day' : 'Add my plan') : fsK === 'meal' ? (fs.slot === 'breakfast' ? '🍳 Breakfast' : '🍽️ Dinner')
+        : fsK === 'credit' ? (fs.id ? 'Change credit' : `Score ${fsKidName}`) : fsK === 'goal' ? `🎯 Goal for ${fs.kid === (frMe && frMe.id) ? 'me' : fsKidName}` : fsK === 'reflect' ? '🪞 Weekly reflection' : '',
+      frShSub: fsK === 'goal' || fsK === 'reflect' ? `Week of ${MON[fsWeekD.getMonth()]} ${fsWeekD.getDate()}` : fsK === 'credit' ? `${fsKidName} · ${fsDay}` : fsDay,
+      // a plan
+      frShT: fs && fs.title != null ? fs.title : '', onFrShT: e => this.setFrSheet({ title: e.target.value.slice(0, fsK === 'meal' ? 60 : 80) }),
+      frShMembers: fsK === 'task' && famParent ? famMembersAll.filter(m => m.status === 'active').map(m => ({ label: `${ROLE_EMO[m.role] || '🙂'} ${m.id === frMe.id ? 'Me' : m.nickname}`, ...chip(fs.member === m.id), onClick: () => this.setFrSheet({ member: m.id, goal: '' }) })) : [],
+      frShHasMembers: fsK === 'task' && famParent,
+      frShTm: fsK === 'task' ? fs.tm : '', onFrShTm: e => this.setFrSheet({ tm: /^\d{2}:\d{2}$/.test(e.target.value) ? e.target.value : '' }),
+      frShEsts: fsK === 'task' ? EST_OPTS.map(n => ({ label: minLbl(n), ...chip(fs.est === n), onClick: () => this.setFrSheet({ est: n }) })) : [],
+      frShPris: fsK === 'task' ? [['must', '❗ Must do'], ['like', '💭 Would like']].map(([id, label]) => ({ label, ...chip(fs.pri === id), onClick: () => this.setFrSheet({ pri: id }) })) : [],
+      frShTypes: fsK === 'task' ? TASK_TYPES.map(([id, e, label]) => ({ label: `${e} ${label}`, ...chip(fs.type === id), onClick: () => this.setFrSheet({ type: id }) })) : [],
+      frShPinPressed: fsK === 'task' && fs.pinned ? 'true' : 'false', frShPinBox: fsK === 'task' && fs.pinned ? '#FFD166' : '#fff', frShPinMark: fsK === 'task' && fs.pinned ? '✓' : '',
+      frShPinBg: fsK === 'task' && fs.pinned ? '#FFF3C4' : '#fff', frShPinToggle: () => this.setFrSheet({ pinned: !(fs && fs.pinned) }),
+      frShHasGoals: fsGoals.length > 0,
+      frShGoals: fsK === 'task' ? [{ id: '', title: 'None' }, ...fsGoals].map(g => ({ label: g.id ? `🎯 ${g.title}` : 'No goal', ...chip(fs.goal === g.id), onClick: () => this.setFrSheet({ goal: g.id }) })) : [],
+      frShHasActual: !!(fsTask && fsTask.done),
+      frShActuals: fsTask && fsTask.done ? EST_OPTS.map(n => ({ label: minLbl(n), ...chip(fsTask.actual === n), onClick: () => this.frTaskActual(fsTask, n) })) : [],
+      // a meal
+      frShMealList: fsMeals.map(m => {
+        const mine = !!frMe && m.votes.includes(frMe.id);
+        return { e: emojiFor(m.title), title: m.title, chosen: m.chosen, bg: m.chosen ? '#DDF5E8' : '#fff', by: `${m.chosen ? '✓ Chosen · ' : ''}added by ${memName(m.by)}`,
+          votes: `♡ ${m.votes.length}`, votePressed: mine ? 'true' : 'false', voteBg: mine ? '#FFD6E0' : '#fff', voteAria: mine ? `Take back my vote for ${m.title}` : `Vote for ${m.title}`, onVote: () => this.frMealVote(m),
+          chooseLabel: m.chosen ? 'Unpick' : 'Choose dish', chooseBg: m.chosen ? '#fff' : '#FFD166', onChoose: () => this.frMealChoose(m),
+          canDelete: famParent || (!!frMe && m.by === frMe.id), deleteAria: `Remove ${m.title}`, onDelete: () => this.frMealDelete(m) };
+      }),
+      frShNoMeals: fsK === 'meal' && !fsMeals.length,
+      frShMealPh: fsK === 'meal' ? (fs.slot === 'breakfast' ? 'e.g. Pancakes' : 'e.g. Chicken tacos') : '',
+      frShIdeaPressed: fsK === 'meal' && fs.idea ? 'true' : 'false', frShIdeaBox: fsK === 'meal' && fs.idea ? '#FFD166' : '#fff', frShIdeaMark: fsK === 'meal' && fs.idea ? '✓' : '',
+      frShIdeaBg: fsK === 'meal' && fs.idea ? '#FFF3C4' : '#fff', frShIdeaToggle: () => this.setFrSheet({ idea: !(fs && fs.idea) }),
+      // a credit
+      frShItems: fsK === 'credit' ? [...CR_ITEMS, ['', '🌟', 'Custom', 1]].map(([id, e, label, def]) => ({ label: `${e} ${label}`, ...chip(fs.item === id),
+        onClick: () => this.setFrSheet({ item: id, ...(!fs.id && (!fs.reason.trim() || CR_ITEMS.some(x => x[2] === fs.reason)) ? { reason: id ? label : '', pts: def } : {}) }) })) : [],
+      frShReason: fsK === 'credit' ? fs.reason : '', onFrShReason: e => this.setFrSheet({ reason: e.target.value.slice(0, 80) }),
+      frShPts: fsK === 'credit' ? CR_PTS.map(n => { const on = fs.pts === n; return { label: sgn(n), pressed: on ? 'true' : 'false', aria: `${sgn(n)} points`,
+        bg: on ? (n > 0 ? '#3DBE8B' : n < 0 ? '#E57C8D' : '#3B2A20') : '#fff', fg: on ? '#fff' : n > 0 ? '#1F5E40' : n < 0 ? '#8E2436' : '#3B2A20', onClick: () => this.setFrSheet({ pts: n }) }; }) : [],
+      frShPtsNote: fsK === 'credit' ? (fs.pts > 0 ? `${sgn(fs.pts)} ⭐ for ${fsKidName}` : fs.pts < 0 ? `${sgn(fs.pts)} ⭐: something to work on` : '0 is neutral: noted, no points') : '',
+      // a goal
+      frShGoalPh: fsK === 'goal' ? 'e.g. Read 20 minutes every day' : '',
+      // a reflection
+      frShReflWho: fsK === 'reflect' ? (fs.kid === (frMe && frMe.id) ? '👪 You and your parents can read it.' : `👪 ${fsKidName} and the parents in your family can read it.`) : '',
+      frShWin: fsK === 'reflect' ? fs.win : '', onFrShWin: e => this.setFrSheet({ win: e.target.value.slice(0, 400) }),
+      frShAdjust: fsK === 'reflect' ? fs.adjust : '', onFrShAdjust: e => this.setFrSheet({ adjust: e.target.value.slice(0, 400) }),
+      frShCanDelete: (fsK === 'task' && !!fs.id) || (fsK === 'credit' && !!fs.id),
+      frShDeleteAria: fsK === 'credit' ? 'Remove this credit' : 'Remove this plan',
+      frShDelete: () => fsK === 'credit' ? this.frCreditDelete() : fsTask ? this.frTaskDelete(fsTask) : null,
+      frShSaveLabel: s.frBusy ? 'Saving…' : fsK === 'task' ? (fs.id ? 'Save plan' : `Add ${(fs.title.trim() || 'it').slice(0, 24)}`) : fsK === 'meal' ? (fs.idea ? '💡 Add as an idea' : `${fs.title.trim() ? emojiFor(fs.title) : '✓'} Make it ${fs.slot === 'breakfast' ? 'breakfast' : 'dinner'}`)
+        : fsK === 'credit' ? `Give ${sgn(fs.pts)} ⭐` : fsK === 'goal' ? '🎯 Set goal' : fsK === 'reflect' ? '🪞 Save reflection' : '',
+      frShSave: () => fsK === 'task' ? this.frTaskSave() : fsK === 'meal' ? this.frMealAdd() : fsK === 'credit' ? this.frCreditSave() : fsK === 'goal' ? this.frGoalSave() : fsK === 'reflect' ? this.frReflSave() : null,
+      frShSaveOp: s.frBusy ? 0.6 : 1
     };
     // ── My calendar ──
     const cm = s.calM, cy = cm.getFullYear(), cmo = cm.getMonth(), mKey = iso(cm).slice(0, 7);
@@ -3878,7 +4730,7 @@ class Component extends DCLogic {
       pipHero: s.tab === 'game' ? (curLv >= 0 ? guideOf(curLv) : GUIDES.pip).el('happy', 68, 'lb-bob 2.2s ease-in-out infinite') : null,
       peckPts: pk.pts || 0, peckStars: Object.values(pbest).reduce((a, b) => a + b, 0), peckStarsMax: LEVELS.length * 3,
       peckToday: (pk.log || {})[today] || 0, peckAllDone: curLv < 0, units,
-      ...gv, ...fpView, ...calView, planPts: st.planPts,
+      ...gv, ...fpView, ...frView, ...nestReview, ...frSheetView, ...calView, planPts: st.planPts,
       nav: tabs.map(([id, e, label]) => {
         const badge = id === 'family' ? famUnread : id === 'plan' ? notesNew : 0;
         return { e, label, bg: s.tab === id ? '#FFD166' : 'transparent', fg: s.tab === id ? '#3B2A20' : '#FFF7EC', onClick: () => this.goTab(id),
