@@ -347,8 +347,11 @@ const ROUTES = {
     if (me.status === 'active' && me.role === 'parent') {
       const others = await env.DB.prepare("SELECT COUNT(*) AS n FROM members WHERE family_id = ? AND role = 'parent' AND status = 'active' AND id <> ?").bind(me.family_id, me.id).first();
       if (others.n === 0) {
+        await ensureRhythmTables(env);
         await env.DB.batch([
           env.DB.prepare('DELETE FROM events WHERE family_id = ?').bind(me.family_id),
+          // Meals aren't tied to a member, so they go with the family here (the other family tables follow their members).
+          env.DB.prepare('DELETE FROM meals WHERE family_id = ?').bind(me.family_id),
           env.DB.prepare('DELETE FROM families WHERE id = ?').bind(me.family_id)
         ]);
         return json({ ok: true, deletedFamily: true });
