@@ -596,8 +596,14 @@ const ROUTES = {
     await ensureBackupTables(env);
     const kid = await kidFor(env, me, url.searchParams.get('member') || me.id);
     const { start, end } = rangeArgs(url);
-    const { results } = await env.DB.prepare('SELECT day, blocks FROM plans WHERE member_id = ? AND day >= ? AND day <= ? ORDER BY day').bind(kid.id, start, end).all();
-    return json({ plans: results.map((r) => ({ day: r.day, blocks: JSON.parse(r.blocks) })) });
+    const [{ results }, bk] = await Promise.all([
+      env.DB.prepare('SELECT day, blocks FROM plans WHERE member_id = ? AND day >= ? AND day <= ? ORDER BY day').bind(kid.id, start, end).all(),
+      env.DB.prepare('SELECT data FROM backups WHERE member_id = ?').bind(kid.id).first()
+    ]);
+    // The kid's passion project name lives in their saved data (backed up a few seconds after each change).
+    let passion = '';
+    try { const d = bk ? JSON.parse(bk.data) : null; if (d && typeof d.passion === 'string') passion = d.passion.replace(/[\u0000-\u001f\u007f]/g, '').replace(/\s+/g, ' ').trim().slice(0, 24); } catch (e) {}
+    return json({ plans: results.map((r) => ({ day: r.day, blocks: JSON.parse(r.blocks) })), passion });
   },
 
   'GET notes': async ({ env, request, url }) => {

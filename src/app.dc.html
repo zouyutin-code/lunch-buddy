@@ -417,9 +417,24 @@ input::placeholder{color:#B49A86}
 
       <section id="lb-lunch" style="scroll-margin-top:64px;background:#fff;border:2px solid #3B2A20;border-radius:24px;padding:16px;box-shadow:4px 4px 0 #3B2A20">
         <div style="display:flex;align-items:baseline;justify-content:space-between;gap:8px;margin-bottom:10px">
-          <h2 style="font-family:'Baloo 2',sans-serif;font-size:22px;margin:0;font-weight:800;line-height:1.1">🍽️ School tray</h2>
-          <span style="font-size:13px;font-weight:700;color:#8A6E5A">{{ dayTitle }}</span>
+          <h2 style="font-family:'Baloo 2',sans-serif;font-size:22px;margin:0;font-weight:800;line-height:1.1;min-width:0">{{ trayTitle }}</h2>
+          <span style="font-size:13px;font-weight:700;color:#8A6E5A;white-space:nowrap">{{ dayTitle }}</span>
         </div>
+        <sc-if value="{{ mMeals }}" hint-placeholder-val="{{ false }}">
+          <button aria-label="{{ mBreakfast.aria }}" sc-camel-on-click="{{ mBreakfast.onClick }}" style="display:flex;align-items:center;gap:10px;width:100%;min-height:62px;padding:6px 10px;border-radius:18px;border:2px solid #3B2A20;background:#FFF1C2;box-shadow:0 3px 0 #3B2A20;font-family:inherit;color:#3B2A20;text-align:left;cursor:pointer">
+            <span aria-hidden="true" style="width:42px;height:42px;flex:none;border-radius:12px;background:#fff;border:2px solid #3B2A20;display:flex;align-items:center;justify-content:center;font-size:23px;line-height:1">{{ mBreakfast.e }}</span>
+            <span style="flex:1;min-width:0">
+              <span style="display:block;font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#7A4B12">🌅 {{ mBreakfast.label }}</span>
+              <span style="display:block;font-size:16px;font-weight:800;line-height:1.2;color:{{ mBreakfast.mainFg }};overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ mBreakfast.main }}</span>
+              <span style="display:block;font-size:11px;font-weight:700;color:#7A5A3A;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ mBreakfast.sub }}</span>
+            </span>
+            <span aria-hidden="true" style="flex:none;font-size:20px;font-weight:800;color:#7A5A3A">›</span>
+          </button>
+        </sc-if>
+        <div style="margin:{{ lwMargin }};border:{{ lwBorder }};border-radius:20px;padding:{{ lwPad }};background:{{ lwBg }}">
+        <sc-if value="{{ mMeals }}" hint-placeholder-val="{{ false }}">
+          <div style="font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#E2553F;margin-bottom:2px">☀️ Lunch · school tray</div>
+        </sc-if>
         <sc-if value="{{ isLoading }}" hint-placeholder-val="{{ false }}">
           <div style="display:flex;align-items:center;gap:10px;padding:18px 4px;font-weight:700;color:#8A6E5A">
             <span style="display:inline-block;font-size:26px;animation:lb-spin 1.2s linear infinite">🍩</span>Peeking into the cafeteria…
@@ -482,6 +497,18 @@ input::placeholder{color:#B49A86}
           <div style="margin-top:10px;font-size:12px;font-weight:700;color:#8A6E5A">{{ famDayNoneText }}</div>
         </sc-if>
         <a href="https://schools.mealviewer.com/school/SoutheastBullochMiddle" target="_blank" style="display:inline-block;margin-top:12px;font-size:12px;font-weight:700">Open official MealViewer ↗</a>
+        </div>
+        <sc-if value="{{ mMeals }}" hint-placeholder-val="{{ false }}">
+          <button aria-label="{{ mDinner.aria }}" sc-camel-on-click="{{ mDinner.onClick }}" style="display:flex;align-items:center;gap:10px;width:100%;min-height:62px;padding:6px 10px;border-radius:18px;border:2px solid #3B2A20;background:#E1F0FB;box-shadow:0 3px 0 #3B2A20;font-family:inherit;color:#3B2A20;text-align:left;cursor:pointer">
+            <span aria-hidden="true" style="width:42px;height:42px;flex:none;border-radius:12px;background:#fff;border:2px solid #3B2A20;display:flex;align-items:center;justify-content:center;font-size:23px;line-height:1">{{ mDinner.e }}</span>
+            <span style="flex:1;min-width:0">
+              <span style="display:block;font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#2D5B85">🌙 {{ mDinner.label }}</span>
+              <span style="display:block;font-size:16px;font-weight:800;line-height:1.2;color:{{ mDinner.mainFg }};overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ mDinner.main }}</span>
+              <span style="display:block;font-size:11px;font-weight:700;color:#4A6680;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ mDinner.sub }}</span>
+            </span>
+            <span aria-hidden="true" style="flex:none;font-size:20px;font-weight:800;color:#4A6680">›</span>
+          </button>
+        </sc-if>
       </section>
 
       <section id="lb-kitchen" aria-label="Idea kitchen" style="scroll-margin-top:64px;background:#FFF1C2;border:2px solid #3B2A20;border-radius:24px;padding:14px 16px;box-shadow:4px 4px 0 #3B2A20;display:flex;flex-direction:column;gap:10px">
@@ -1185,29 +1212,6 @@ input::placeholder{color:#B49A86}
         </section>
       </sc-if>
 
-      <sc-if value="{{ frShowMenu }}" hint-placeholder-val="{{ true }}">
-        <section aria-label="{{ frMenuTitle }}" style="background:#fff;border:2px solid #3B2A20;border-radius:24px;padding:14px;box-shadow:4px 4px 0 #3B2A20;display:flex;flex-direction:column;gap:8px">
-          <div style="display:flex;align-items:baseline;justify-content:space-between;gap:8px">
-            <h3 style="font-family:'Baloo 2',sans-serif;font-size:20px;margin:0;font-weight:800;line-height:1.1;min-width:0">🍴 {{ frMenuTitle }}</h3>
-            <span style="font-size:12px;font-weight:800;color:#8A6E5A;white-space:nowrap">{{ frDayLabel }}</span>
-          </div>
-          <sc-for list="{{ frMenu }}" as="mr" hint-placeholder-count="4">
-            <button aria-label="{{ mr.aria }}" sc-camel-on-click="{{ mr.onClick }}" style="display:flex;align-items:center;gap:10px;width:100%;min-height:58px;padding:6px 10px;border-radius:16px;border:2px solid #3B2A20;background:#FFF9F1;font-family:inherit;color:#3B2A20;text-align:left;cursor:pointer">
-              <span aria-hidden="true" style="width:40px;height:40px;flex:none;border-radius:12px;background:#fff;border:2px solid #E8D3BC;display:flex;align-items:center;justify-content:center;font-size:22px;line-height:1">{{ mr.e }}</span>
-              <span style="flex:1;min-width:0">
-                <span style="display:block;font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#7A4B12">{{ mr.label }}</span>
-                <span style="display:block;font-size:15px;font-weight:800;line-height:1.2;color:{{ mr.mainFg }};overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ mr.main }}</span>
-                <span style="display:block;font-size:11px;font-weight:700;color:#8A6E5A;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ mr.sub }}</span>
-              </span>
-              <span aria-hidden="true" style="flex:none;font-size:20px;font-weight:800;color:#B49A86">›</span>
-            </button>
-          </sc-for>
-          <sc-if value="{{ frHasMenuHint }}" hint-placeholder-val="{{ false }}">
-            <div style="font-size:12px;font-weight:700;color:#8A6E5A;line-height:1.35">{{ frMenuHint }}</div>
-          </sc-if>
-        </section>
-      </sc-if>
-
       <sc-if value="{{ frShow }}" hint-placeholder-val="{{ false }}">
         <section aria-label="Day’s schedule" style="background:#fff;border:2px solid #3B2A20;border-radius:24px;padding:14px;box-shadow:4px 4px 0 #3B2A20;display:flex;flex-direction:column;gap:8px">
           <div style="display:flex;align-items:baseline;justify-content:space-between;gap:8px">
@@ -1252,10 +1256,18 @@ input::placeholder{color:#B49A86}
         </div>
         <sc-if value="{{ fpShowPassion }}" hint-placeholder-val="{{ true }}">
           <div style="background:#FFEEF2;border:2px solid #3B2A20;border-radius:18px;padding:10px;display:flex;flex-direction:column;gap:8px">
-            <label style="display:flex;flex-direction:column;gap:4px">
-              <span style="font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#B23A50">🔥 My passion project</span>
-              <input value="{{ fpPassion }}" sc-camel-on-change="{{ onFpPassion }}" maxlength="24" placeholder="e.g. Building a robot" style="height:46px;border-radius:14px;border:2px solid #3B2A20;padding:0 12px;font-family:inherit;font-size:16px;font-weight:700;color:#3B2A20;background:#fff;outline:none;min-width:0">
-            </label>
+            <sc-if value="{{ fpPassionEdit }}" hint-placeholder-val="{{ true }}">
+              <label style="display:flex;flex-direction:column;gap:4px">
+                <span style="font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#B23A50">🔥 My passion project</span>
+                <input value="{{ fpPassion }}" sc-camel-on-change="{{ onFpPassion }}" maxlength="24" placeholder="e.g. Building a robot" style="height:46px;border-radius:14px;border:2px solid #3B2A20;padding:0 12px;font-family:inherit;font-size:16px;font-weight:700;color:#3B2A20;background:#fff;outline:none;min-width:0">
+              </label>
+            </sc-if>
+            <sc-if value="{{ fpPassionRead }}" hint-placeholder-val="{{ false }}">
+              <div style="display:flex;flex-direction:column;gap:2px">
+                <span style="font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#B23A50">{{ fpPassionHead }}</span>
+                <span style="font-family:'Baloo 2',sans-serif;font-size:20px;font-weight:800;line-height:1.15;color:{{ fpPassionNameFg }};overflow-wrap:anywhere">{{ fpPassionName }}</span>
+              </div>
+            </sc-if>
             <sc-if value="{{ fpPassionCan }}" hint-placeholder-val="{{ true }}">
               <button sc-camel-on-click="{{ fpPlanPassion }}" style="min-height:44px;border-radius:14px;border:2px solid #3B2A20;background:#FFD166;box-shadow:0 3px 0 #3B2A20;font-family:inherit;font-weight:800;font-size:15px;color:#3B2A20;cursor:pointer">⏱️ Plan time for it</button>
             </sc-if>
@@ -1284,17 +1296,25 @@ input::placeholder{color:#B49A86}
       </section>
 
       <sc-if value="{{ fpShowGrid }}" hint-placeholder-val="{{ true }}">
-        <section aria-label="Afternoon timeline" style="background:#FFFDF8;border:2px solid #3B2A20;border-radius:24px;padding:16px 10px 6px 6px;box-shadow:4px 4px 0 #3B2A20">
-          <div style="position:relative;display:grid;grid-template-columns:44px minmax(0,1fr);grid-template-rows:repeat(14,56px) 12px;column-gap:6px">
-            <sc-for list="{{ fpTimes }}" as="tm" hint-placeholder-count="15">
-              <div style="grid-column:1;grid-row:{{ tm.row }};font-size:{{ tm.fs }};font-weight:800;color:{{ tm.color }};text-align:right;line-height:1;margin-top:-6px;white-space:nowrap">{{ tm.label }}</div>
-            </sc-for>
-            <sc-for list="{{ fpGaps }}" as="gp" hint-placeholder-count="2">
-              <div style="grid-column:2;grid-row:{{ gp.row }};margin:3px 0;border:2px dashed #EADBC8;border-radius:16px"></div>
-            </sc-for>
-            <sc-for list="{{ fpBlocks }}" as="b" hint-placeholder-count="2">
-              <div style="grid-column:2;grid-row:{{ b.row }};margin:3px 0;display:flex;border:2px solid #3B2A20;border-radius:16px;background:{{ b.bg }};box-shadow:0 3px 0 #3B2A20;overflow:hidden;min-height:0">
-                <button aria-label="{{ b.aria }}" sc-camel-on-click="{{ b.onOpen }}" style="flex:1;min-width:0;display:flex;align-items:center;gap:10px;padding:0 10px;border:none;background:none;font-family:inherit;color:#3B2A20;text-align:left;cursor:pointer">
+        <section aria-label="{{ fpListTitle }}" style="background:#FFFDF8;border:2px solid #3B2A20;border-radius:24px;padding:12px;box-shadow:4px 4px 0 #3B2A20;display:flex;flex-direction:column;gap:8px">
+          <div style="display:flex;align-items:baseline;justify-content:space-between;gap:8px">
+            <h3 style="font-family:'Baloo 2',sans-serif;font-size:19px;margin:0;font-weight:800;line-height:1.1;min-width:0">🗓️ {{ fpListTitle }}</h3>
+            <span style="font-size:12px;font-weight:800;color:#8A6E5A;white-space:nowrap">{{ fpListCount }}</span>
+          </div>
+          <sc-for list="{{ fpBlocks }}" as="b" hint-placeholder-count="3">
+            <sc-if value="{{ b.nowBefore }}" hint-placeholder-val="{{ false }}">
+              <div aria-hidden="true" style="display:flex;align-items:center;gap:8px">
+                <span style="width:46px;flex:none;text-align:right;font-size:11px;font-weight:800;color:#E2553F;white-space:nowrap">{{ fpNowLabel }}</span>
+                <span style="flex:1;height:3px;border-radius:2px;background:#E2553F"></span>
+              </div>
+            </sc-if>
+            <div style="display:flex;gap:8px;align-items:stretch">
+              <div style="width:46px;flex:none;text-align:right;padding-top:9px;line-height:1.15">
+                <div style="font-size:14px;font-weight:800;color:#3B2A20;white-space:nowrap">{{ b.t1 }}</div>
+                <div style="font-size:11px;font-weight:800;color:{{ b.t2Color }};white-space:nowrap">{{ b.t2 }}</div>
+              </div>
+              <div style="flex:1;min-width:0;display:flex;border:2px solid #3B2A20;border-radius:16px;background:{{ b.bg }};box-shadow:{{ b.shadow }};overflow:hidden;min-height:62px">
+                <button aria-label="{{ b.aria }}" sc-camel-on-click="{{ b.onOpen }}" style="flex:1;min-width:0;display:flex;align-items:center;gap:10px;padding:6px 10px;border:none;background:none;font-family:inherit;color:#3B2A20;text-align:left;cursor:pointer">
                   <span style="width:38px;height:38px;flex:none">{{ b.icon }}</span>
                   <span style="min-width:0;flex:1">
                     <span style="display:block;font-weight:800;font-size:15px;line-height:1.15;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ b.name }}</span>
@@ -1306,11 +1326,17 @@ input::placeholder{color:#B49A86}
                   <span style="font-size:10px;font-weight:800;color:{{ b.checkFg }};line-height:1">{{ b.checkWord }}</span>
                 </button>
               </div>
-            </sc-for>
-            <sc-if value="{{ fpHasNow }}" hint-placeholder-val="{{ false }}">
-              <div aria-hidden="true" style="position:absolute;left:44px;right:0;top:{{ fpNowTop }};border-top:3px solid #E2553F;z-index:2;pointer-events:none"><span style="position:absolute;left:-5px;top:-7px;width:11px;height:11px;border-radius:50%;background:#E2553F"></span></div>
-            </sc-if>
-          </div>
+            </div>
+          </sc-for>
+          <sc-if value="{{ fpNowEnd }}" hint-placeholder-val="{{ false }}">
+            <div aria-hidden="true" style="display:flex;align-items:center;gap:8px">
+              <span style="width:46px;flex:none;text-align:right;font-size:11px;font-weight:800;color:#E2553F;white-space:nowrap">{{ fpNowLabel }}</span>
+              <span style="flex:1;height:3px;border-radius:2px;background:#E2553F"></span>
+            </div>
+          </sc-if>
+          <sc-if value="{{ fpHasListHint }}" hint-placeholder-val="{{ false }}">
+            <div style="font-size:12px;font-weight:700;color:#8A6E5A;line-height:1.35;text-wrap:pretty">{{ fpListHint }}</div>
+          </sc-if>
         </section>
       </sc-if>
       <sc-if value="{{ fpLoadingKid }}" hint-placeholder-val="{{ false }}">
@@ -3040,7 +3066,7 @@ const FP_SLOTS = 14, FP_START = 15 * 60, FP_ROW = 56, FP_PAST = 2, BAL_BONUS = 2
 const FDAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 const FDAYSL = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 const PDIRTY = 'lunchbuddy-plan-dirty';   // days whose plan still needs sharing with the family
-const FP_SAMPLE = [{ s: 0, n: 1, a: 'snack', d: 1 }, { s: 1, n: 2, a: 'study', d: 1 }, { s: 3, n: 3, a: 'soccer', d: 0 }, { s: 6, n: 1, a: 'dinner', d: 0 }, { s: 7, n: 2, a: 'reading', d: 0 }, { s: 9, n: 1, a: 'gaming', d: 0 }, { s: 13, n: 1, a: 'bedtime', d: 0 }];
+const FP_SAMPLE = [{ s: 0, n: 1, a: 'snack', d: 1 }, { s: 1, n: 2, a: 'study', d: 1 }, { s: 3, n: 3, a: 'soccer', d: 0 }, { s: 6, n: 1, a: 'dinner', d: 0 }, { s: 7, n: 2, a: 'reading', d: 0 }, { s: 9, n: 1, a: 'gaming', d: 0 }, { s: 10, n: 2, a: 'passion', d: 0, t: 'Building a robot' }, { s: 13, n: 1, a: 'bedtime', d: 0 }];
 const FP_WH = 40;   // height of one row in the start / end time wheels
 // The day card's plan tiles: each one opens the start / end wheels with just its kind of activities.
 const FP_CATS = {
@@ -3147,7 +3173,7 @@ class Component extends DCLogic {
       stickers: Object.fromEntries(Object.entries(saved.stickers || {}).map(([d, id]) => [d, LEGACY_Q[id] || id])),
       peck: { pts: 0, best: {}, log: {}, plays: 0, ...migratePeck(saved.peck) }, myBadges: saved.myBadges || [],
       nestView: 'quests', bSheet: false, bDraft: { ...MB_BLANK }, game: null,
-      sched: cleanSched(saved.sched), cal: cleanCal(saved.cal), passion: cleanPassion(saved.passion), calM: firstOfMonth(now), calSel: null, calSheet: null, fpWs: monOf(now), fpIdx: (wd + 6) % 7, fpSheet: null, fpKid: null, fpKidSched: {}, fpNotes: [], fpTag: '',
+      sched: cleanSched(saved.sched), cal: cleanCal(saved.cal), passion: cleanPassion(saved.passion), calM: firstOfMonth(now), calSel: null, calSheet: null, fpWs: monOf(now), fpIdx: (wd + 6) % 7, fpSheet: null, fpKid: null, fpKidSched: {}, fpKidPassion: {}, fpNotes: [], fpTag: '',
       fpNoteDraft: '', fpNoteEdit: false, fpReplyFor: null, fpReplyDraft: '', fpReplyEdit: null, fpBusy: false, tick: 0,
       frWeeks: {}, frBoard: [], frTotals: {}, frSheet: null, frBusy: false, frBoardOpen: false, frPost: '', frReflOpen: false, nestWs: monOf(now),
       art: null, frArtEdit: false, frArtKidDraft: '', frArtDel: null,
@@ -3195,7 +3221,7 @@ class Component extends DCLogic {
   famFail(e, quiet) {
     if (e && e.code === 'no_session') {
       lsSet(FKEY, null); lsSet(FDIRTY, null); lsSet(PDIRTY, null);
-      this.setState({ fam: null, famEvents: [], famPlans: [], fpNotes: [], fpKidSched: {}, frWeeks: {}, frBoard: [], frTotals: {}, frSheet: null, backupAt: this.vSession().bAt || 0, moveCode: null, famErr: quiet ? '' : e.message }, () => this.backupSoon());
+      this.setState({ fam: null, famEvents: [], famPlans: [], fpNotes: [], fpKidSched: {}, fpKidPassion: {}, frWeeks: {}, frBoard: [], frTotals: {}, frSheet: null, backupAt: this.vSession().bAt || 0, moveCode: null, famErr: quiet ? '' : e.message }, () => this.backupSoon());
       return;
     }
     if (!quiet) this.setState({ famErr: (e && e.message) || 'Something went wrong.' });
@@ -3251,7 +3277,7 @@ class Component extends DCLogic {
         const ses = this.famSession();
         if (ses.bDirty || !ses.bAt) await this.backupNow();
         if (this.state.tab === 'family') { this.famLoadEvents(true); this.famLoadPlans(); }
-        if (this.state.tab === 'menu') this.famLoadPlans();
+        if (this.state.tab === 'menu') { this.famLoadPlans(); this.frLoad(this.state.weekStart); }
         if (this.state.tab === 'plan') { this.fpLoad(); this.frLoad(this.state.fpWs); }
         if (this.state.tab === 'nest') this.frLoad(this.state.nestWs);
       } else {
@@ -3269,7 +3295,7 @@ class Component extends DCLogic {
     const f = this.state.fam, n = id === 'plan' && f && f.notesNew > 0 && f.notesDay ? new Date(f.notesDay + 'T12:00') : null;
     const jump = n ? { fpWs: monOf(n), fpIdx: (n.getDay() + 6) % 7, ...(f.notesKid ? { fpKid: f.notesKid } : {}) } : {};
     this.setState(s => ({ tab: id, ...jump, ...(id === 'plan' && s.tab !== 'plan' ? { fpNotes: s.fpNotes.map(x => ({ ...x, wasNew: false })), fpNoteEdit: false } : {}) }),
-      () => { if (id === 'family') this.famRefresh(); if (id === 'menu' && this.famActive()) this.famLoadPlans(); if (id === 'plan') { this.fpLoad(); this.frLoad(this.state.fpWs); } if (id === 'nest') this.frLoad(this.state.nestWs); });
+      () => { if (id === 'family') this.famRefresh(); if (id === 'menu' && this.famActive()) { this.famLoadPlans(); this.frLoad(this.state.weekStart); } if (id === 'plan') { this.fpLoad(); this.frLoad(this.state.fpWs); } if (id === 'nest') this.frLoad(this.state.nestWs); });
     window.scrollTo(0, 0);
   }
   // Open the Menu tab at one of its parts: 'lunch' (tray + add-on), 'quests', 'eat', 'kitchen' (ideas) or 'create' (new idea form).
@@ -3321,7 +3347,7 @@ class Component extends DCLogic {
       await this.pushDisable(true);
       await this.api('POST', 'family/leave', {});
       lsSet(FKEY, null); lsSet(FDIRTY, null); lsSet(PDIRTY, null);
-      this.setState({ fam: null, famEvents: [], famPlans: [], fpNotes: [], fpKidSched: {}, frWeeks: {}, frBoard: [], frTotals: {}, frSheet: null, backupAt: this.vSession().bAt || 0, moveCode: null }, () => this.backupSoon());
+      this.setState({ fam: null, famEvents: [], famPlans: [], fpNotes: [], fpKidSched: {}, fpKidPassion: {}, frWeeks: {}, frBoard: [], frTotals: {}, frSheet: null, backupAt: this.vSession().bAt || 0, moveCode: null }, () => this.backupSoon());
       this.flash(lastParent ? 'Family deleted' : pending ? 'Request cancelled' : 'You left the family');
     });
   }
@@ -3650,6 +3676,7 @@ class Component extends DCLogic {
     this.setState(s => ({ weekStart: add(s.weekStart, 7 * n), dayIdx: s.pickIdea ? s.dayIdx : 0, famPlans: [] }), () => {
       this.load();
       if ((this.state.tab === 'family' || this.state.tab === 'menu') && this.famActive()) this.famLoadPlans();
+      if (this.state.tab === 'menu') this.frLoad(this.state.weekStart);
     });
   }
   flash(msg) { clearTimeout(this._t); this.setState({ toast: msg }); this._t = setTimeout(() => this.setState({ toast: '' }), 1800); }
@@ -3966,6 +3993,7 @@ class Component extends DCLogic {
           const days = {}; for (let i = 0; i < 7; i++) days[iso(add(ws, i))] = [];
           p.plans.forEach(r => { days[r.day] = cleanBlocks(r.blocks); });
           o.fpKid = kid.id; o.fpKidSched = { ...s.fpKidSched, [kid.id]: { ...(s.fpKidSched[kid.id] || {}), ...days } };
+          o.fpKidPassion = { ...s.fpKidPassion, [kid.id]: cleanPassion(p.passion).trim() };
         }
         return o;
       }, () => this.fpSeen());
@@ -4111,7 +4139,7 @@ class Component extends DCLogic {
   // After a change, reload the weeks on screen (and another week, like next week's goals).
   frShown(extra) {
     const seen = new Set();
-    return Promise.all([this.state.fpWs, this.state.nestWs, extra].filter(w => { if (!w) return false; const k = iso(w); if (seen.has(k)) return false; seen.add(k); return true; }).map(w => this.frLoad(w)));
+    return Promise.all([this.state.fpWs, this.state.nestWs, this.state.tab === 'menu' ? this.state.weekStart : null, extra].filter(w => { if (!w) return false; const k = iso(w); if (seen.has(k)) return false; seen.add(k); return true; }).map(w => this.frLoad(w)));
   }
   async frDo(fn, msg, extra) {
     if (this._frBusy) return;
@@ -4205,16 +4233,6 @@ class Component extends DCLogic {
     });
   }
   nestShiftWeek(n) { this.setState(s => ({ nestWs: add(s.nestWs, 7 * n) }), () => this.frLoad(this.state.nestWs)); }
-  // The Plan tab's menu rows hand off to the Menu tab: lunch opens that day's school menu, the add-on its picker.
-  frSchoolDay(day, picker) {
-    const d = new Date(day + 'T12:00'), wd = d.getDay();
-    if (wd === 0 || wd === 6) { this.flash('🏖️ No school lunch on weekends'); return; }
-    const ws = mondayOf(d), same = iso(ws) === iso(this.state.weekStart);
-    this.setState({ weekStart: ws, dayIdx: wd - 1, ...(picker ? { ideaSheet: true } : { tab: 'menu' }) }, () => {
-      if (!same) this.load();
-      if (!picker) window.scrollTo(0, 0);
-    });
-  }
   // ── My calendar ──
   calShift(n) { this.setState(s => ({ calM: new Date(s.calM.getFullYear(), s.calM.getMonth() + n, 1, 12), calSel: null })); }
   // Zoom into a day, and show the same day in the plan below.
@@ -4435,8 +4453,13 @@ class Component extends DCLogic {
     const fpEdit = !famParent && fk >= iso(add(nowD, -FP_PAST));
     const lastWk = s.sched[iso(add(fpD, -7))] || [];
     const kidName = viewKid ? viewKid.nickname : '';
-    const covered = Array(FP_SLOTS).fill(false); fpBl.forEach(b => { for (let j = b.s; j < b.s + b.n; j++) covered[j] = true; });
-    const freeSlots = [...Array(FP_SLOTS).keys()].filter(i => !covered[i]);
+    // The timeline lists only what's planned, in time order (i is the block's place in the saved day).
+    const fpList = fpBl.map((b, i) => ({ b, i })).sort((x, y) => x.b.s - y.b.s);
+    const fpToday = fk === tIso && nowMin >= FP_START && nowMin < slotMin(FP_SLOTS) && (!famParent || kidLoaded || fpSample);
+    const fpNowIn = b => fpToday && nowMin >= slotMin(b.s) && nowMin < slotMin(b.s + b.n);
+    // The red "now" line sits before the next activity (or after the last), unless one is going on right now.
+    const fpNowAt = !fpToday || fpList.some(x => fpNowIn(x.b)) ? -1 : (j => j < 0 ? fpList.length : j)(fpList.findIndex(x => slotMin(x.b.s) > nowMin));
+    const kidPassion = viewKid ? s.fpKidPassion[viewKid.id] || '' : '';
     const dayNotes = s.fpNotes.filter(n => n.day === fk);
     const ownNote = famParent ? dayNotes.find(n => n.mine) : null;
     const wkOff = Math.round((s.fpWs - monOf(nowD)) / 6048e5);
@@ -4486,11 +4509,16 @@ class Component extends DCLogic {
         };
       }),
       // The kid's passion project: typed once, kept with their saved data; "Plan time for it" opens the sheet with it picked.
-      fpShowPassion: !famParent, fpPassion: s.passion, onFpPassion: e => this.setState({ passion: cleanPassion(e.target.value) }, () => this.persist()),
+      fpShowPassion: !famParent || fpSample || (!!viewKid && kidLoaded), fpPassionEdit: !famParent, fpPassionRead: famParent,
+      fpPassionHead: fpSample ? '🔥 Example passion project' : `🔥 ${kidName}’s passion project`,
+      fpPassionName: fpSample ? 'Building a robot' : kidPassion || 'Not named yet', fpPassionNameFg: fpSample || kidPassion ? '#3B2A20' : '#B49A86',
+      fpPassion: s.passion, onFpPassion: e => this.setState({ passion: cleanPassion(e.target.value) }, () => this.persist()),
       fpPassionCan: fpEdit, fpPlanPassion: () => this.fpPlanPassion(),
       fpPassionNote: (() => {
         const pb = fpBl.filter(b => b.a === 'passion'), n = pb.reduce((t, b) => t + b.n, 0), d = pb.filter(b => b.d).reduce((t, b) => t + b.n, 0);
         if (n) return `🔥 ${fpDur(n)} planned on this day${d ? ` · ${fpDur(d)} done` : ''}`;
+        if (fpSample) return 'Kids name something they love working on, then plan time for it. Every half hour they finish earns ⭐ 10.';
+        if (famParent) return kidPassion ? 'No time planned for it on this day.' : `${kidName} hasn’t named one yet. Kids type it on their own Plan tab.`;
         if (!s.passion.trim()) return 'What do you love working on? A robot, a song, a comic… Type it here, then plan time for it.';
         return fpEdit ? 'Pick a start and an end time. Check it off when you’re done for ⭐ 10 every half hour.' : 'No time was planned for it this day.';
       })(),
@@ -4522,13 +4550,17 @@ class Component extends DCLogic {
       fpHasLockNote: (!famParent && !fpEdit) || fpSample,
       fpLockNote: fpSample ? `👀 This is an example. Once your kids join the family${fam.family && fam.family.code ? ` with invite code ${fam.family.code}` : ''} (on the 👪 Family tab), their real after-school plans show up here.`
         : `🔒 This day is locked. You can add and check off activities for today, the days ahead, and the last ${FP_PAST} days.`,
-      fpShowGrid: !famParent || fpSample || (!!viewKid && kidLoaded), fpLoadingKid: !!(famParent && viewKid && !kidLoaded), fpKidName: kidName,
-      fpTimes: Array.from({ length: FP_SLOTS + 1 }, (_, i) => { const m = slotMin(i), half = m % 60 !== 0; return { row: String(i + 1), label: half ? clock(m) : `${Math.floor(m / 60) - 12} PM`, color: half ? '#B49A86' : '#5A4334', fs: half ? '11px' : '12px' }; }),
-      fpGaps: freeSlots.map(i => ({ row: String(i + 1) })),   // free time; plans are added from the tiles above, not typed into the timeline
-      fpBlocks: fpBl.map((b, i) => {
-        const a = ACT[b.a] || ACT.other, name = actName(b), p = a.pts * b.n, range = fpRange(b.s, b.n);
+      fpShowGrid: fpBl.length > 0 && (!famParent || fpSample || (!!viewKid && kidLoaded)), fpLoadingKid: !!(famParent && viewKid && !kidLoaded), fpKidName: kidName,
+      fpListTitle: fpSample ? 'Example plan' : famParent ? `${kidName}’s plan` : fk === tIso ? 'My plan for today' : `My plan for ${FDAYSL[s.fpIdx]}`,
+      fpListCount: `${fpBl.length} ${fpBl.length === 1 ? 'activity' : 'activities'} · ${hrs(fpX.planned)}`,
+      fpHasListHint: fpEdit, fpListHint: 'Tap an activity to change or remove it. Plan more with the tiles above.',
+      fpNowEnd: fpNowAt >= 0 && fpNowAt === fpList.length, fpNowLabel: `Now ${clock(nowMin)}`,
+      fpBlocks: fpList.map(({ b, i }, j) => {
+        const a = ACT[b.a] || ACT.other, name = actName(b), p = a.pts * b.n, range = fpRange(b.s, b.n), now = fpNowIn(b);
         return {
-          row: `${b.s + 1} / span ${b.n}`, bg: ACT_KIND[a.kind].card, icon: actIcon(a.id, 38), name,
+          t1: clock(slotMin(b.s)), t2: now ? 'Now' : fpDur(b.n), t2Color: now ? '#E2553F' : '#8A6E5A', nowBefore: fpNowAt === j,
+          shadow: now ? '0 0 0 3px #FFB4A2, 0 3px 0 #3B2A20' : '0 3px 0 #3B2A20',
+          bg: ACT_KIND[a.kind].card, icon: actIcon(a.id, 38), name,
           sub: a.kind === 'screen' ? `${range} · screen` : `${range} · ${b.d ? '+' : ''}${p} ⭐`,
           aria: famParent ? `${name}, ${range}` : `Change ${name}, ${range}`,
           onOpen: () => fpSample ? this.flash('👀 This is just an example') : famParent ? null : !fpEdit ? this.flash('🔒 That day is locked') : this.fpOpen(fk, b.s, i),
@@ -4537,7 +4569,6 @@ class Component extends DCLogic {
           onCheck: () => fpSample ? this.flash('👀 This is just an example') : famParent ? this.flash(`✓ marks appear when ${kidName} finishes`) : this.fpToggle(fk, i)
         };
       }),
-      fpHasNow: fk === tIso && nowMin >= FP_START && nowMin <= slotMin(FP_SLOTS) && (!famParent || kidLoaded || fpSample), fpNowTop: `${(nowMin - FP_START) / 30 * FP_ROW}px`,
       fpHasSheet: !!sh, fpClose: () => this.setState({ fpSheet: null }),
       fpSh: sh ? { title: sh.idx >= 0 ? 'Change activity' : shCat ? `${shCat.e} ${shCat.title}` : 'Add an activity', sub: `${FDAYS[(new Date(sh.day + 'T12:00').getDay() + 6) % 7]} · ${fpRange(sh.s, sh.n)}` } : {},
       fpShOther: !!(sh && NAMED_ACT[sh.a]), fpShT: sh ? sh.t : '', onFpT: e => this.setFpSheet({ t: e.target.value.slice(0, 24) }),
@@ -4592,35 +4623,17 @@ class Component extends DCLogic {
         onOpen: () => mine ? this.frTaskOpen(fk, t) : this.flash(`👀 ${memName(t.memberId)} planned this`)
       };
     };
-    // Breakfast and dinner (family plans), lunch (the school menu) and the school add-on (favs) for the selected day.
-    const dayMeals = frWk ? frWk.meals.filter(m => m.day === fk) : [];
+    // Breakfast and dinner (family plans) for the day picked on the Menu tab, around its school tray.
+    const mealDay = iso(add(s.weekStart, s.dayIdx)), mWk = famAct ? s.frWeeks[iso(s.weekStart)] : null;
     const mealRow = (slot, e, label) => {
-      const list = dayMeals.filter(m => m.slot === slot), pick = list.find(m => m.chosen), ideas = list.filter(m => !m.chosen);
+      const list = mWk ? mWk.meals.filter(m => m.day === mealDay && m.slot === slot) : [], pick = list.find(m => m.chosen), ideas = list.filter(m => !m.chosen);
       const top = ideas.slice().sort((a, b) => b.votes.length - a.votes.length)[0];
       return {
         e: pick ? emojiFor(pick.title) : e, label, main: pick ? pick.title : 'Not planned yet', mainFg: pick ? '#3B2A20' : '#B49A86',
         sub: ideas.length ? `${ideas.length} idea${ideas.length > 1 ? 's' : ''} up for a vote${top && top.votes.length ? ` · ♡ ${top.votes.length} for ${top.title}` : ''}` : pick ? 'Tap to vote or change' : 'Tap to add a dish',
-        aria: `${label}: ${pick ? pick.title : 'not planned yet'}. Open ${label.toLowerCase()} plans`, onClick: () => this.frMealOpen(fk, slot)
+        aria: `${label}: ${pick ? pick.title : 'not planned yet'}. Open ${label.toLowerCase()} plans`, onClick: () => this.frMealOpen(mealDay, slot)
       };
     };
-    const wdFp = fpD.getDay(), schoolDay = wdFp >= 1 && wdFp <= 5, lunchM = s.menus[fk];
-    const entree = schoolDay && lunchM && lunchM[0] && lunchM[0].items[0];
-    const kidAdd = famParent && viewKid && frWk ? (frWk.addons.find(a => a.memberId === viewKid.id && a.day === fk) || {}).items || [] : null;
-    const addOns = kidAdd || s.favs[fk] || [];
-    // The claude.ai artifact copy leaves out the add-on row (the owner asked); add-ons are still picked on the Menu tab there.
-    const noAddRow = !!(window.claude && !s.famOk);
-    const frMenu = [
-      ...(famAct ? [mealRow('breakfast', '🍳', 'Breakfast')] : []),
-      { e: entree ? foodPic(entree, 'fr') : '🏫', label: 'Lunch', main: !schoolDay ? 'No school lunch on weekends' : entree || 'See the school menu', mainFg: entree ? '#3B2A20' : '#B49A86',
-        sub: !schoolDay ? 'Enjoy the weekend!' : entree ? 'School lunch · tap for the full menu' : 'Tap to open the Menu tab', aria: `Lunch: ${entree || 'school menu'}. Open the Menu tab`,
-        onClick: () => this.frSchoolDay(fk, false) },
-      ...(noAddRow ? [] : [{ e: addOns.length ? (IDEAS.find(i => i.title === addOns[0]) || {}).emoji || emojiFor(addOns[0]) : '🥕', label: kidAdd ? `${kidName}’s school add-on` : 'School add-on',
-        main: addOns.length ? addOns.join(', ') : kidAdd ? 'Nothing picked yet' : !schoolDay ? 'Nothing to pack' : 'Pick an add-on', mainFg: addOns.length ? '#3B2A20' : '#B49A86',
-        sub: kidAdd ? `${kidName} picks add-ons on their Menu tab` : !schoolDay ? 'Weekend: no school lunch' : addOns.length ? 'Tap to change' : 'Something to bring along with lunch',
-        aria: kidAdd ? `${kidName}’s add-on: ${addOns.join(', ') || 'nothing yet'}` : `School add-on: ${addOns.join(', ') || 'none yet'}. Pick an add-on`,
-        onClick: () => kidAdd ? this.flash(`🥕 ${kidName} picks their own add-ons`) : this.frSchoolDay(fk, true) }]),
-      ...(famAct ? [mealRow('dinner', '🍽️', 'Dinner')] : [])
-    ];
     // Credits for the selected day. Parents score; kids see their own, read-only.
     const crSample = famParent && !viewKid, crFuture = fk > tIso;
     const crList = crSample ? CR_SAMPLE.filter(r => r[0] === s.fpIdx).map(([, item, pts, reason], i) => ({ id: `x${i}`, item, pts, reason, by: frMe.id, byName: 'You' }))
@@ -4650,10 +4663,10 @@ class Component extends DCLogic {
       frHlView: hl ? taskView(hl) : { e: '', title: '', sub: '' },
       frHlOpen: () => hl && (canTouch(hl) ? this.frTaskOpen(fk, hl) : this.flash(`👀 ${memName(hl.memberId)} planned this`)),
       frAddTask: () => this.frTaskOpen(fk, null),
-      frShowMenu: !noAddRow,   // the artifact copy has no family breakfast/dinner plans, so the lunch card is left out there
-      frMenuTitle: famAct ? 'What’s on the menu?' : 'What’s for lunch?',
-      frMenu, frMenuHint: s.famOk && !famAct ? 'Breakfast and dinner plans for the whole family show up here once your family is set up.' : '',
-      frHasMenuHint: s.famOk && !famAct,
+      // Menu tab: breakfast and dinner wrap around the school tray once the family is on.
+      mMeals: famAct, mBreakfast: mealRow('breakfast', '🍳', 'Breakfast'), mDinner: mealRow('dinner', '🍽️', 'Dinner'),
+      trayTitle: famAct ? '🍴 What’s on the menu?' : '🍽️ School tray',
+      lwMargin: famAct ? '10px 0' : '0', lwBorder: famAct ? '2px solid #3B2A20' : 'none', lwPad: famAct ? '10px 12px 12px' : '0', lwBg: famAct ? '#FFFDF8' : 'transparent',
       frDayLabel: `${FDAYS[s.fpIdx]}, ${MON[fpD.getMonth()]} ${fpD.getDate()}`,
       frTasks: dayTasks.map(taskView), frNoTasks: famAct && !dayTasks.length,
       frTaskCount: dayTasks.length ? `${dayTasks.filter(t => t.done).length} of ${dayTasks.length} done` : '',
@@ -4750,7 +4763,7 @@ class Component extends DCLogic {
     const fsD = fs && fs.day ? new Date(fs.day + 'T12:00') : fs && fs.week ? new Date(fs.week + 'T12:00') : null;
     const fsDay = fsD ? `${FDAYS[(fsD.getDay() + 6) % 7]}, ${MON[fsD.getMonth()]} ${fsD.getDate()}` : '';
     const fsKidName = fs && fs.kid ? (memOf(fs.kid) || {}).nickname || 'you' : '';
-    const fsMeals = fsK === 'meal' && frWk ? (s.frWeeks[iso(monOf(fsD))] || frWk).meals.filter(m => m.day === fs.day && m.slot === fs.slot).sort((a, b) => (b.chosen - a.chosen) || (b.votes.length - a.votes.length)) : [];
+    const fsMeals = fsK === 'meal' ? ((s.frWeeks[iso(monOf(fsD))] || {}).meals || []).filter(m => m.day === fs.day && m.slot === fs.slot).sort((a, b) => (b.chosen - a.chosen) || (b.votes.length - a.votes.length)) : [];
     const fsGoals = fsK === 'task' ? weekGoals(s.frWeeks[iso(monOf(fsD))], fs.member) : [];
     const fsTask = fsK === 'task' && fs.id && frWk ? (s.frWeeks[iso(monOf(fsD))] || frWk).tasks.find(t => t.id === fs.id) : null;
     const fsWeekD = fs && fs.week ? new Date(fs.week + 'T12:00') : null;
