@@ -344,6 +344,7 @@ input::placeholder{color:#B49A86}
 @keyframes lb-pop{0%{transform:scale(.2) rotate(-20deg);opacity:0}60%{transform:scale(1.12) rotate(6deg);opacity:1}100%{transform:scale(1) rotate(0)}}
 @keyframes lb-wob{0%,100%{transform:rotate(-6deg)}50%{transform:rotate(6deg)}}
 @keyframes lb-spin{to{transform:rotate(360deg)}}
+@keyframes lb-lens{0%{transform:scale(.55);opacity:.2}70%{transform:scale(1.05);opacity:1}100%{transform:scale(1)}}
 @keyframes lb-peck{0%{transform:translateY(-8px) rotate(0)}45%{transform:translateY(4px) rotate(30deg)}70%{transform:translateY(-2px) rotate(10deg)}100%{transform:translateY(-8px) rotate(0)}}
 @keyframes lb-flip{0%{transform:rotateY(90deg) scale(.9)}100%{transform:rotateY(0) scale(1)}}
 @keyframes lb-shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-6px)}40%{transform:translateX(6px)}60%{transform:translateX(-4px)}80%{transform:translateX(4px)}}
@@ -401,13 +402,22 @@ input::placeholder{color:#B49A86}
             <sc-if value="{{ d.hasBadge }}" hint-placeholder-val="{{ false }}">
               <span style="position:absolute;top:-8px;right:-6px;font-size:16px">🏅</span>
             </sc-if>
+            <sc-if value="{{ d.hasAdd }}" hint-placeholder-val="{{ false }}">
+              <span aria-hidden="true" style="position:absolute;top:-8px;left:-5px;font-size:14px">💖</span>
+            </sc-if>
           </button>
         </sc-for>
       </div>
 
-      <section style="background:#fff;border:2px solid #3B2A20;border-radius:24px;padding:16px;box-shadow:4px 4px 0 #3B2A20">
+      <div role="navigation" aria-label="On the Menu tab" style="position:sticky;top:0;z-index:4;margin:-4px -16px 0;padding:8px 16px;background:rgba(255,247,236,.95);display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px">
+        <sc-for list="{{ jumps }}" as="j" hint-placeholder-count="4">
+          <button aria-label="{{ j.aria }}" sc-camel-on-click="{{ j.onClick }}" style="min-height:40px;border-radius:999px;border:2px solid #3B2A20;background:#fff;font-family:inherit;font-weight:800;font-size:13px;color:#3B2A20;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:4px;padding:0 4px;white-space:nowrap;box-shadow:0 2px 0 #3B2A20"><span aria-hidden="true" style="font-size:15px;line-height:1">{{ j.e }}</span>{{ j.label }}</button>
+        </sc-for>
+      </div>
+
+      <section id="lb-lunch" style="scroll-margin-top:64px;background:#fff;border:2px solid #3B2A20;border-radius:24px;padding:16px;box-shadow:4px 4px 0 #3B2A20">
         <div style="display:flex;align-items:baseline;justify-content:space-between;gap:8px;margin-bottom:10px">
-          <h2 style="font-family:'Baloo 2',sans-serif;font-size:22px;margin:0;font-weight:800">🍽️ School tray</h2>
+          <h2 style="font-family:'Baloo 2',sans-serif;font-size:22px;margin:0;font-weight:800;line-height:1.1">🍽️ School tray</h2>
           <span style="font-size:13px;font-weight:700;color:#8A6E5A">{{ dayTitle }}</span>
         </div>
         <sc-if value="{{ isLoading }}" hint-placeholder-val="{{ false }}">
@@ -431,56 +441,182 @@ input::placeholder{color:#B49A86}
             </div>
           </div>
         </sc-for>
-        <div style="margin-top:14px;padding-top:12px;border-top:2px dashed #F1C7D3">
-          <div style="font-size:11px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:#C9487A;margin-bottom:8px">💖 My lunch add-on · {{ dayShort }}</div>
+        <div style="margin-top:14px;background:#FFE3EC;border:2px solid #3B2A20;border-radius:20px;padding:12px;display:flex;flex-direction:column;gap:10px">
+          <div style="display:flex;align-items:baseline;justify-content:space-between;gap:8px">
+            <h3 style="font-family:'Baloo 2',sans-serif;font-size:19px;margin:0;font-weight:800;line-height:1.1">💖 My lunch add-on</h3>
+            <span style="font-size:12px;font-weight:800;color:#8A4A5E">{{ dayShort }}</span>
+          </div>
           <sc-if value="{{ hasFavs }}" hint-placeholder-val="{{ false }}">
-            <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px">
-              <sc-for list="{{ favs }}" as="f" hint-placeholder-count="1">
-                <div style="display:flex;align-items:center;gap:10px;background:#FFE3EC;border:2px solid #F1A9BF;border-radius:16px;padding:8px 10px;min-height:44px">
-                  <span style="font-size:26px;line-height:1;flex:none">{{ f.emoji }}</span>
-                  <span style="font-size:14px;font-weight:700;line-height:1.2;text-wrap:pretty">{{ f.text }}</span>
-                </div>
+            <div style="display:flex;flex-wrap:wrap;gap:8px">
+              <sc-for list="{{ favs }}" as="f" hint-placeholder-count="2">
+                <span style="display:flex;align-items:center;gap:6px;background:#fff;border:2px solid #3B2A20;border-radius:999px;padding:4px 4px 4px 12px;font-weight:800;font-size:14px;max-width:100%;min-width:0">
+                  <span style="font-size:18px;flex:none">{{ f.emoji }}</span><span style="min-width:0;overflow-wrap:anywhere">{{ f.text }}</span>
+                  <button aria-label="Remove {{ f.text }}" sc-camel-on-click="{{ f.onRemove }}" style="width:30px;height:30px;flex:none;border-radius:50%;border:none;background:#FFE3EC;cursor:pointer;font-weight:800;color:#8A4A5E">×</button>
+                </span>
               </sc-for>
             </div>
           </sc-if>
           <sc-if value="{{ noFavs }}" hint-placeholder-val="{{ true }}">
-            <div style="font-size:13px;font-weight:700;color:#8A6E5A">Nothing added yet. Type one below or pick from 💡 Ideas.</div>
+            <div style="font-size:13px;font-weight:700;color:#8A4A5E">Nothing yet. Pick something to bring along with {{ dayShort }}'s tray.</div>
+          </sc-if>
+          <button sc-camel-on-click="{{ goKitchen }}" style="width:100%;height:52px;border-radius:18px;border:2px solid #3B2A20;background:#FF6B8A;color:#fff;font-family:'Baloo 2',sans-serif;font-size:18px;font-weight:800;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;box-shadow:0 4px 0 #3B2A20;white-space:nowrap">💡 Choose from Idea kitchen ↓</button>
+          <sc-if value="{{ showQuick }}" hint-placeholder-val="{{ true }}">
+            <div style="font-size:11px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:#8A4A5E">Need an idea? Tap one</div>
+            <div style="display:flex;flex-wrap:wrap;gap:8px">
+              <sc-for list="{{ quickIdeas }}" as="q" hint-placeholder-count="3">
+                <button sc-camel-on-click="{{ q.onAdd }}" style="display:flex;align-items:center;gap:6px;min-height:40px;background:#FFF7EC;border:2px dashed #C9748C;border-radius:999px;padding:4px 12px;font-family:inherit;font-weight:700;font-size:14px;color:#3B2A20;cursor:pointer"><span style="font-size:18px">{{ q.emoji }}</span>{{ q.title }}</button>
+              </sc-for>
+              <button sc-camel-on-click="{{ shuffle }}" style="min-height:40px;border:none;background:none;font-family:inherit;font-weight:800;font-size:14px;color:#8A4A5E;cursor:pointer">🎲 more</button>
+            </div>
           </sc-if>
         </div>
+        <sc-if value="{{ hasFamDay }}" hint-placeholder-val="{{ false }}">
+          <div style="margin-top:10px;background:#FFF7EC;border:2px dashed #D8C2AC;border-radius:16px;padding:8px 12px;display:flex;flex-direction:column;gap:4px">
+            <div style="font-size:11px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:#7A4B12">👪 Family picks · {{ dayShort }}</div>
+            <sc-for list="{{ famDayPicks }}" as="fd" hint-placeholder-count="2">
+              <div style="font-size:13px;font-weight:700;line-height:1.35;color:#5A4334"><b style="font-weight:800;color:#3B2A20">{{ fd.who }}:</b> {{ fd.text }}</div>
+            </sc-for>
+          </div>
+        </sc-if>
+        <sc-if value="{{ famDayNone }}" hint-placeholder-val="{{ false }}">
+          <div style="margin-top:10px;font-size:12px;font-weight:700;color:#8A6E5A">{{ famDayNoneText }}</div>
+        </sc-if>
         <a href="https://schools.mealviewer.com/school/SoutheastBullochMiddle" target="_blank" style="display:inline-block;margin-top:12px;font-size:12px;font-weight:700">Open official MealViewer ↗</a>
       </section>
 
-      <section style="background:#FFE3EC;border:2px solid #3B2A20;border-radius:24px;padding:16px;box-shadow:4px 4px 0 #3B2A20">
-        <h2 style="font-family:'Baloo 2',sans-serif;font-size:22px;margin:0 0 4px;font-weight:800">💖 My lunch add-on</h2>
-        <div style="font-size:13px;font-weight:600;color:#8A4A5E;margin-bottom:10px">Pick favorites to pair with {{ dayShort }}'s tray.</div>
-        <button sc-camel-on-click="{{ openIdeaSheet }}" style="width:100%;height:54px;border-radius:18px;border:2px solid #3B2A20;background:#FF6B8A;color:#fff;font-family:'Baloo 2',sans-serif;font-size:19px;font-weight:800;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;box-shadow:0 4px 0 #3B2A20">💡 Choose from ideas</button>
-        <sc-if value="{{ hasFavs }}" hint-placeholder-val="{{ false }}">
-          <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:12px">
-            <sc-for list="{{ favs }}" as="f" hint-placeholder-count="2">
-              <span style="display:flex;align-items:center;gap:6px;background:#fff;border:2px solid #3B2A20;border-radius:999px;padding:6px 6px 6px 12px;font-weight:800;font-size:14px">
-                <span style="font-size:18px">{{ f.emoji }}</span><span>{{ f.text }}</span>
-                <button sc-camel-on-click="{{ f.onRemove }}" style="width:28px;height:28px;border-radius:50%;border:none;background:#FFE3EC;cursor:pointer;font-weight:800;color:#8A4A5E">×</button>
-              </span>
-            </sc-for>
+      <section id="lb-kitchen" aria-label="Idea kitchen" style="scroll-margin-top:64px;background:#FFF1C2;border:2px solid #3B2A20;border-radius:24px;padding:14px 16px;box-shadow:4px 4px 0 #3B2A20;display:flex;flex-direction:column;gap:10px">
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:10px">
+          <div style="min-width:0">
+            <h2 style="font-family:'Baloo 2',sans-serif;font-size:22px;margin:0;font-weight:800;line-height:1.1">💡 Idea kitchen</h2>
+            <div style="font-size:12px;font-weight:800;color:{{ thInk }};margin-top:2px">Today’s theme: {{ thTitle }}</div>
+          </div>
+          <button sc-camel-on-click="{{ surprise }}" style="flex:none;min-height:42px;padding:0 12px;border-radius:16px;border:2px solid #3B2A20;background:#FF6B8A;color:#fff;font-family:inherit;font-weight:800;font-size:14px;cursor:pointer;box-shadow:0 3px 0 #3B2A20;white-space:nowrap">🎲 Surprise me</button>
+        </div>
+
+        <sc-if value="{{ hasSpot }}" hint-placeholder-val="{{ false }}">
+          <div id="lb-spot" aria-live="polite" style="scroll-margin-top:64px;background:#fff;border:2px solid #3B2A20;border-radius:20px;padding:12px;box-shadow:0 4px 0 #3B2A20;display:flex;flex-direction:column;gap:10px;animation:lb-pop .35s ease-out">
+            <div style="display:flex;gap:12px;align-items:center">
+              <span aria-hidden="true" style="width:64px;height:64px;border-radius:20px;background:{{ spot.bg }};display:flex;align-items:center;justify-content:center;font-size:38px;flex:none;border:2px solid #3B2A20">{{ spot.emoji }}</span>
+              <div style="flex:1;min-width:0">
+                <div style="font-size:11px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:#E2553F">✨ Spotlight</div>
+                <div style="font-family:'Baloo 2',sans-serif;font-size:20px;font-weight:800;line-height:1.1;overflow-wrap:anywhere">{{ spot.title }}</div>
+                <div style="font-size:12px;font-weight:800;color:#8A6E5A;margin-top:2px">⏱ {{ spot.time }} · {{ spot.groupEmojis }}</div>
+              </div>
+              <button aria-label="Close the spotlight" sc-camel-on-click="{{ closeSpot }}" style="width:36px;height:36px;border-radius:50%;border:2px solid #3B2A20;background:#fff;font-size:14px;font-weight:800;color:#3B2A20;cursor:pointer;flex:none;padding:0;align-self:flex-start">✕</button>
+            </div>
+            <div style="font-size:14px;font-weight:600;line-height:1.4;color:#5A4334;text-wrap:pretty">{{ spot.how }}</div>
+            <div style="display:flex;gap:8px">
+              <button aria-label="{{ spot.addAria }}" sc-camel-on-click="{{ spot.onAdd }}" style="flex:1;min-width:0;height:48px;border-radius:16px;border:2px solid #3B2A20;background:{{ spot.btnBg }};font-family:'Baloo 2',sans-serif;font-size:17px;font-weight:800;color:#3B2A20;cursor:pointer;box-shadow:0 3px 0 #3B2A20;white-space:nowrap">{{ spot.addLabel }}</button>
+              <button aria-label="{{ spot.daysAria }}" sc-camel-on-click="{{ spot.onDays }}" style="flex:none;height:48px;padding:0 12px;border-radius:16px;border:2px solid #3B2A20;background:#fff;font-family:inherit;font-weight:800;font-size:14px;color:#3B2A20;cursor:pointer">📅 Days</button>
+              <button aria-label="Show another idea" sc-camel-on-click="{{ surprise }}" style="flex:none;height:48px;padding:0 12px;border-radius:16px;border:2px solid #3B2A20;background:#fff;font-family:inherit;font-weight:800;font-size:14px;color:#3B2A20;cursor:pointer">🎲</button>
+            </div>
           </div>
         </sc-if>
-        <sc-if value="{{ showQuick }}" hint-placeholder-val="{{ true }}">
-          <div style="margin-top:14px;font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#8A4A5E">Need an idea? Tap one</div>
-          <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:8px">
-            <sc-for list="{{ quickIdeas }}" as="q" hint-placeholder-count="3">
-              <button sc-camel-on-click="{{ q.onAdd }}" style="display:flex;align-items:center;gap:6px;min-height:40px;background:#FFF7EC;border:2px dashed #C9748C;border-radius:999px;padding:4px 12px;font-family:inherit;font-weight:700;font-size:14px;color:#3B2A20;cursor:pointer"><span style="font-size:18px">{{ q.emoji }}</span>{{ q.title }}</button>
-            </sc-for>
-            <button sc-camel-on-click="{{ shuffle }}" style="min-height:40px;border:none;background:none;font-family:inherit;font-weight:800;font-size:14px;color:#8A4A5E;cursor:pointer">🎲 more</button>
-          </div>
+
+        <div role="group" aria-label="Show ideas" style="display:flex;gap:6px;overflow-x:auto;margin:0 -16px;padding:2px 16px 4px;scrollbar-width:none">
+          <sc-for list="{{ filters }}" as="fl" hint-placeholder-count="4">
+            <button aria-pressed="{{ fl.pressed }}" sc-camel-on-click="{{ fl.onClick }}" style="flex:none;min-height:36px;padding:0 12px;border-radius:999px;border:2px solid #3B2A20;background:{{ fl.bg }};color:{{ fl.fg }};font-family:inherit;font-weight:800;font-size:13px;cursor:pointer;white-space:nowrap">{{ fl.label }}</button>
+          </sc-for>
+        </div>
+
+        <sc-if value="{{ noIdeas }}" hint-placeholder-val="{{ false }}">
+          <div style="text-align:center;padding:10px;color:#7A4B12;font-weight:700"><div style="font-size:32px">📝</div>No ideas of your own yet. Create one below!</div>
         </sc-if>
+        <div aria-label="{{ ideaCount }}" style="display:flex;gap:10px;overflow-x:auto;scroll-snap-type:x mandatory;scroll-padding:0 16px;margin:0 -16px;padding:2px 16px 8px;scrollbar-width:none;overscroll-behavior-x:contain">
+          <sc-for list="{{ ideas }}" as="ig" hint-placeholder-count="3">
+            <div style="flex:none;width:132px;box-sizing:border-box;scroll-snap-align:start;background:{{ ig.cardBg }};border:2px solid #3B2A20;border-radius:18px;padding:8px;display:flex;flex-direction:column;gap:6px;box-shadow:0 3px 0 #3B2A20;position:relative">
+              <sc-if value="{{ ig.isTheme }}" hint-placeholder-val="{{ false }}">
+                <span style="position:absolute;top:-2px;right:-2px;background:{{ thBg }};border:2px solid #3B2A20;border-radius:0 16px 0 10px;padding:1px 7px;font-size:10px;font-weight:800;color:{{ thInk }}">✨ Theme</span>
+              </sc-if>
+              <button aria-label="{{ ig.openAria }}" sc-camel-on-click="{{ ig.onOpen }}" style="border:none;background:none;padding:0;display:flex;flex-direction:column;align-items:flex-start;gap:5px;text-align:left;cursor:pointer;font-family:inherit;color:#3B2A20;min-width:0;flex:1">
+                <span style="width:46px;height:46px;border-radius:14px;background:{{ ig.bg }};display:flex;align-items:center;justify-content:center;font-size:28px;flex:none">{{ ig.emoji }}</span>
+                <span style="font-family:'Baloo 2',sans-serif;font-size:15px;font-weight:800;line-height:1.1;overflow-wrap:anywhere;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden">{{ ig.title }}</span>
+                <span style="font-size:11px;font-weight:800;color:#8A6E5A">⏱ {{ ig.time }} · {{ ig.groupEmojis }}</span>
+              </button>
+              <sc-if value="{{ ig.mine }}" hint-placeholder-val="{{ false }}">
+                <div style="display:flex;align-items:center;justify-content:space-between;gap:4px">
+                  <span style="background:#FFE3EC;border-radius:999px;padding:2px 8px;font-size:11px;font-weight:800;color:#8A4A5E;white-space:nowrap">💖 Mine</span>
+                  <button aria-label="{{ ig.delAria }}" sc-camel-on-click="{{ ig.onDelete }}" style="width:30px;height:30px;flex:none;border-radius:50%;border:2px solid #E1CDB8;background:#fff;font-size:13px;cursor:pointer;padding:0">🗑️</button>
+                </div>
+              </sc-if>
+              <div style="display:flex;gap:6px">
+                <button aria-label="{{ ig.addAria }}" sc-camel-on-click="{{ ig.onAdd }}" style="flex:1;min-width:0;min-height:36px;border-radius:12px;border:2px solid #3B2A20;background:{{ ig.btnBg }};font-family:inherit;font-weight:800;font-size:12px;color:#3B2A20;cursor:pointer;white-space:nowrap;padding:0 4px">{{ ig.addLabel }}</button>
+                <button aria-label="{{ ig.daysAria }}" sc-camel-on-click="{{ ig.onDays }}" style="width:36px;min-height:36px;flex:none;border-radius:12px;border:2px solid #3B2A20;background:#fff;font-size:14px;cursor:pointer;padding:0">📅</button>
+              </div>
+            </div>
+          </sc-for>
+        </div>
+        <div style="font-size:12px;font-weight:800;color:#7A4B12;margin-top:-4px">{{ ideaCount }}</div>
+
+        <section id="lb-create" style="scroll-margin-top:64px;background:#fff;border:2px solid #3B2A20;border-radius:20px;padding:12px 14px">
+          <button sc-camel-on-click="{{ toggleForm }}" style="width:100%;display:flex;align-items:center;justify-content:space-between;gap:8px;background:none;border:none;padding:0;cursor:pointer;font-family:inherit;color:#3B2A20;min-height:40px">
+            <span style="font-family:'Baloo 2',sans-serif;font-size:19px;font-weight:800">✏️ Create my own idea</span>
+            <span style="width:36px;height:36px;border-radius:50%;background:#3B2A20;color:#FFD166;display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:800">{{ formIcon }}</span>
+          </button>
+          <sc-if value="{{ showForm }}" hint-placeholder-val="{{ false }}">
+            <div style="display:flex;flex-direction:column;gap:10px;margin-top:10px">
+              <input value="{{ draftTitle }}" sc-camel-on-change="{{ onDraftTitle }}" maxlength="60" aria-label="Idea name" placeholder="Idea name, e.g. Grandma's chicken salad" style="height:48px;border-radius:16px;border:2px solid #3B2A20;padding:0 14px;font-family:inherit;font-size:16px;font-weight:700;color:#3B2A20;background:#fff;outline:none;min-width:0">
+              <div style="display:flex;align-items:baseline;justify-content:space-between;gap:8px">
+                <span style="font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#7A4B12;flex:none">Pick an icon</span>
+                <sc-if value="{{ iconHasMatch }}" hint-placeholder-val="{{ false }}">
+                  <span style="font-size:12px;font-weight:700;color:#8A6E5A;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0">{{ iconMatchLine }}</span>
+                </sc-if>
+              </div>
+              <div style="display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:6px">
+                <sc-for list="{{ emojiOpts }}" as="eo" hint-placeholder-count="12">
+                  <button aria-label="{{ eo.label }}" aria-pressed="{{ eo.pressed }}" sc-camel-on-click="{{ eo.onClick }}" style="height:44px;border-radius:14px;border:2px solid {{ eo.border }};background:{{ eo.bg }};font-size:22px;cursor:pointer">{{ eo.e }}</button>
+                </sc-for>
+              </div>
+              <button aria-expanded="{{ iconAllOpen }}" sc-camel-on-click="{{ toggleIconAll }}" style="align-self:flex-start;min-height:36px;padding:0 12px;border-radius:999px;border:2px solid #3B2A20;background:#fff;color:#3B2A20;font-family:inherit;font-weight:800;font-size:13px;cursor:pointer">{{ iconAllLabel }}</button>
+              <sc-if value="{{ iconShowAll }}" hint-placeholder-val="{{ false }}">
+                <div style="display:flex;flex-direction:column;gap:10px;background:#fff;border:2px solid #E8D3BC;border-radius:18px;padding:10px">
+                  <sc-for list="{{ iconGroups }}" as="ig" hint-placeholder-count="3">
+                    <div>
+                      <div style="font-size:12px;font-weight:800;color:#8A6E5A;margin:0 0 6px 2px">{{ ig.title }}</div>
+                      <div style="display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:6px">
+                        <sc-for list="{{ ig.icons }}" as="gi" hint-placeholder-count="6">
+                          <button aria-label="{{ gi.label }}" aria-pressed="{{ gi.pressed }}" sc-camel-on-click="{{ gi.onClick }}" style="height:44px;border-radius:14px;border:2px solid {{ gi.border }};background:{{ gi.bg }};font-size:22px;cursor:pointer">{{ gi.e }}</button>
+                        </sc-for>
+                      </div>
+                    </div>
+                  </sc-for>
+                </div>
+              </sc-if>
+              <textarea value="{{ draftHow }}" sc-camel-on-change="{{ onDraftHow }}" placeholder="How to make it (optional)" rows="3" style="border-radius:16px;border:2px solid #3B2A20;padding:10px 14px;font-family:inherit;font-size:15px;font-weight:600;color:#3B2A20;background:#fff;outline:none;resize:vertical;min-width:0"></textarea>
+              <div style="font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#7A4B12">Food groups</div>
+              <div style="display:flex;flex-wrap:wrap;gap:6px">
+                <sc-for list="{{ draftGroups }}" as="dg" hint-placeholder-count="5">
+                  <button sc-camel-on-click="{{ dg.onClick }}" style="min-height:40px;padding:0 12px;border-radius:999px;border:2px solid #3B2A20;background:{{ dg.bg }};font-family:inherit;font-weight:800;font-size:13px;color:#3B2A20;cursor:pointer;display:flex;align-items:center;gap:4px"><span style="font-size:16px">{{ dg.e }}</span>{{ dg.label }}</button>
+                </sc-for>
+              </div>
+              <div style="display:flex;gap:6px;flex-wrap:wrap">
+                <sc-for list="{{ timeOpts }}" as="to" hint-placeholder-count="3">
+                  <button sc-camel-on-click="{{ to.onClick }}" style="min-height:40px;padding:0 12px;border-radius:999px;border:2px solid #3B2A20;background:{{ to.bg }};color:{{ to.fg }};font-family:inherit;font-weight:800;font-size:13px;cursor:pointer">⏱ {{ to.label }}</button>
+                </sc-for>
+              </div>
+              <button sc-camel-on-click="{{ saveIdea }}" style="height:52px;border-radius:18px;border:2px solid #3B2A20;background:{{ saveBg }};color:#3B2A20;font-family:'Baloo 2',sans-serif;font-size:19px;font-weight:800;cursor:pointer;opacity:{{ saveOp }}">💾 Save to my ideas</button>
+            </div>
+          </sc-if>
+        </section>
       </section>
 
-      <button sc-camel-on-click="{{ goQuests }}" style="display:flex;align-items:center;gap:12px;background:#E1F0FB;border:2px solid #3B2A20;border-radius:20px;padding:12px 14px;font-family:inherit;color:#3B2A20;cursor:pointer;text-align:left;box-shadow:4px 4px 0 #3B2A20">
-        <span style="font-size:30px;flex:none">🎯</span>
-        <span style="flex:1;min-width:0"><span style="display:block;font-family:'Baloo 2',sans-serif;font-weight:800;font-size:17px;line-height:1.1">Daily quests {{ questDots }}</span><span style="display:block;font-size:12px;font-weight:700;color:#4A6A85">{{ questSummary }}</span></span>
-        <span style="font-weight:800;font-size:18px">›</span>
-      </button>
-      <section style="background:#DDF5E8;border:2px solid #3B2A20;border-radius:24px;padding:16px;box-shadow:4px 4px 0 #3B2A20">
+      <section id="lb-quests" style="scroll-margin-top:64px;background:#E1F0FB;border:2px solid #3B2A20;border-radius:24px;padding:16px;box-shadow:4px 4px 0 #3B2A20;display:flex;flex-direction:column;gap:8px">
+        <div style="display:flex;align-items:baseline;justify-content:space-between;gap:8px">
+          <h2 style="font-family:'Baloo 2',sans-serif;font-size:22px;margin:0;font-weight:800;line-height:1.1">🎯 Daily quests</h2>
+          <span style="font-size:14px;white-space:nowrap">{{ questDots }}</span>
+        </div>
+        <sc-for list="{{ quests }}" as="q" hint-placeholder-count="3">
+          <button sc-camel-on-click="{{ q.onClick }}" style="min-height:54px;border-radius:16px;border:2px solid #3B2A20;background:{{ q.bg }};display:flex;align-items:center;gap:10px;padding:6px 10px;font-family:inherit;color:#3B2A20;cursor:pointer;text-align:left">
+            <span style="font-size:24px;flex:none">{{ q.e }}</span>
+            <span style="flex:1;min-width:0"><span style="display:block;font-weight:800;font-size:15px;line-height:1.2">{{ q.text }}</span><span style="display:block;font-size:12px;font-weight:700;color:#8A6E5A">{{ q.hint }}</span></span>
+            <span style="width:30px;height:30px;border-radius:50%;border:2px solid #3B2A20;background:{{ q.checkBg }};display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:800;color:#fff;flex:none">{{ q.check }}</span>
+          </button>
+        </sc-for>
+        <div style="height:10px;border-radius:999px;background:#fff;border:2px solid #3B2A20;overflow:hidden"><div style="height:100%;width:{{ qPct }};background:#5AA9E6;transition:width .3s"></div></div>
+        <button sc-camel-on-click="{{ goQuestBoard }}" style="min-height:46px;border-radius:16px;border:2px dashed #3B2A20;background:#fff;font-family:inherit;font-weight:800;font-size:13px;color:#3B2A20;cursor:pointer;display:flex;align-items:center;gap:8px;padding:6px 12px;text-align:left"><span style="flex:1;min-width:0">{{ questReward }}</span><span style="font-size:18px">›</span></button>
+      </section>
+
+      <section id="lb-eat" style="scroll-margin-top:64px;background:#DDF5E8;border:2px solid #3B2A20;border-radius:24px;padding:16px;box-shadow:4px 4px 0 #3B2A20">
         <h2 style="font-family:'Baloo 2',sans-serif;font-size:22px;margin:0 0 4px;font-weight:800">🌈 What did you eat?</h2>
         <div style="font-size:13px;font-weight:600;color:#2E6B4F;margin-bottom:12px">Tap each food group on your plate. Hit {{ threshold }} to earn a badge!</div>
         <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px">
@@ -505,92 +641,7 @@ input::placeholder{color:#B49A86}
           </div>
         </sc-if>
       </section>
-    </div>
-  </sc-if>
 
-  <sc-if value="{{ isIdeas }}" hint-placeholder-val="{{ false }}">
-    <div style="padding:18px 16px 0;display:flex;flex-direction:column;gap:12px">
-      <div>
-        <h2 style="font-family:'Baloo 2',sans-serif;font-size:26px;margin:0;font-weight:800">💡 Easy &amp; tasty ideas</h2>
-        <div style="font-size:14px;font-weight:600;color:#8A6E5A">Packable in 10 minutes or less. Tap ➕ to pick a day.</div>
-      </div>
-      <div style="display:flex;gap:6px;flex-wrap:wrap">
-        <sc-for list="{{ filters }}" as="fl" hint-placeholder-count="4">
-          <button sc-camel-on-click="{{ fl.onClick }}" style="min-height:38px;padding:0 14px;border-radius:999px;border:2px solid #3B2A20;background:{{ fl.bg }};color:{{ fl.fg }};font-family:inherit;font-weight:800;font-size:13px;cursor:pointer">{{ fl.label }}</button>
-        </sc-for>
-      </div>
-      <section style="background:#FFF1C2;border:2px solid #3B2A20;border-radius:22px;padding:14px;box-shadow:3px 3px 0 #3B2A20">
-        <button sc-camel-on-click="{{ toggleForm }}" style="width:100%;display:flex;align-items:center;justify-content:space-between;gap:8px;background:none;border:none;padding:0;cursor:pointer;font-family:inherit;color:#3B2A20;min-height:40px">
-          <span style="font-family:'Baloo 2',sans-serif;font-size:19px;font-weight:800">✏️ Create my own idea</span>
-          <span style="width:36px;height:36px;border-radius:50%;background:#3B2A20;color:#FFD166;display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:800">{{ formIcon }}</span>
-        </button>
-        <sc-if value="{{ showForm }}" hint-placeholder-val="{{ false }}">
-          <div style="display:flex;flex-direction:column;gap:10px;margin-top:10px">
-            <input value="{{ draftTitle }}" sc-camel-on-change="{{ onDraftTitle }}" maxlength="60" aria-label="Idea name" placeholder="Idea name, e.g. Grandma's chicken salad" style="height:48px;border-radius:16px;border:2px solid #3B2A20;padding:0 14px;font-family:inherit;font-size:16px;font-weight:700;color:#3B2A20;background:#fff;outline:none;min-width:0">
-            <div style="display:flex;align-items:baseline;justify-content:space-between;gap:8px">
-              <span style="font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#7A4B12;flex:none">Pick an icon</span>
-              <sc-if value="{{ iconHasMatch }}" hint-placeholder-val="{{ false }}">
-                <span style="font-size:12px;font-weight:700;color:#8A6E5A;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0">{{ iconMatchLine }}</span>
-              </sc-if>
-            </div>
-            <div style="display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:6px">
-              <sc-for list="{{ emojiOpts }}" as="eo" hint-placeholder-count="12">
-                <button aria-label="{{ eo.label }}" aria-pressed="{{ eo.pressed }}" sc-camel-on-click="{{ eo.onClick }}" style="height:44px;border-radius:14px;border:2px solid {{ eo.border }};background:{{ eo.bg }};font-size:22px;cursor:pointer">{{ eo.e }}</button>
-              </sc-for>
-            </div>
-            <button aria-expanded="{{ iconAllOpen }}" sc-camel-on-click="{{ toggleIconAll }}" style="align-self:flex-start;min-height:36px;padding:0 12px;border-radius:999px;border:2px solid #3B2A20;background:#fff;color:#3B2A20;font-family:inherit;font-weight:800;font-size:13px;cursor:pointer">{{ iconAllLabel }}</button>
-            <sc-if value="{{ iconShowAll }}" hint-placeholder-val="{{ false }}">
-              <div style="display:flex;flex-direction:column;gap:10px;background:#fff;border:2px solid #E8D3BC;border-radius:18px;padding:10px">
-                <sc-for list="{{ iconGroups }}" as="ig" hint-placeholder-count="3">
-                  <div>
-                    <div style="font-size:12px;font-weight:800;color:#8A6E5A;margin:0 0 6px 2px">{{ ig.title }}</div>
-                    <div style="display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:6px">
-                      <sc-for list="{{ ig.icons }}" as="gi" hint-placeholder-count="6">
-                        <button aria-label="{{ gi.label }}" aria-pressed="{{ gi.pressed }}" sc-camel-on-click="{{ gi.onClick }}" style="height:44px;border-radius:14px;border:2px solid {{ gi.border }};background:{{ gi.bg }};font-size:22px;cursor:pointer">{{ gi.e }}</button>
-                      </sc-for>
-                    </div>
-                  </div>
-                </sc-for>
-              </div>
-            </sc-if>
-            <textarea value="{{ draftHow }}" sc-camel-on-change="{{ onDraftHow }}" placeholder="How to make it (optional)" rows="3" style="border-radius:16px;border:2px solid #3B2A20;padding:10px 14px;font-family:inherit;font-size:15px;font-weight:600;color:#3B2A20;background:#fff;outline:none;resize:vertical;min-width:0"></textarea>
-            <div style="font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#7A4B12">Food groups</div>
-            <div style="display:flex;flex-wrap:wrap;gap:6px">
-              <sc-for list="{{ draftGroups }}" as="dg" hint-placeholder-count="5">
-                <button sc-camel-on-click="{{ dg.onClick }}" style="min-height:40px;padding:0 12px;border-radius:999px;border:2px solid #3B2A20;background:{{ dg.bg }};font-family:inherit;font-weight:800;font-size:13px;color:#3B2A20;cursor:pointer;display:flex;align-items:center;gap:4px"><span style="font-size:16px">{{ dg.e }}</span>{{ dg.label }}</button>
-              </sc-for>
-            </div>
-            <div style="display:flex;gap:6px;flex-wrap:wrap">
-              <sc-for list="{{ timeOpts }}" as="to" hint-placeholder-count="3">
-                <button sc-camel-on-click="{{ to.onClick }}" style="min-height:40px;padding:0 12px;border-radius:999px;border:2px solid #3B2A20;background:{{ to.bg }};color:{{ to.fg }};font-family:inherit;font-weight:800;font-size:13px;cursor:pointer">⏱ {{ to.label }}</button>
-              </sc-for>
-            </div>
-            <button sc-camel-on-click="{{ saveIdea }}" style="height:52px;border-radius:18px;border:2px solid #3B2A20;background:{{ saveBg }};color:#3B2A20;font-family:'Baloo 2',sans-serif;font-size:19px;font-weight:800;cursor:pointer;opacity:{{ saveOp }}">💾 Save to my ideas</button>
-          </div>
-        </sc-if>
-      </section>
-      <sc-if value="{{ noIdeas }}" hint-placeholder-val="{{ false }}">
-        <div style="text-align:center;padding:16px;color:#8A6E5A;font-weight:700"><div style="font-size:36px">📝</div>No ideas of your own yet. Create one above!</div>
-      </sc-if>
-      <sc-for list="{{ ideas }}" as="i" hint-placeholder-count="4">
-        <article style="background:#fff;border:2px solid #3B2A20;border-radius:22px;padding:14px;display:grid;grid-template-columns:64px minmax(0,1fr) 48px;gap:12px;align-items:start;box-shadow:3px 3px 0 #3B2A20">
-          <div style="width:64px;height:64px;border-radius:20px;background:{{ i.bg }};display:flex;align-items:center;justify-content:center;font-size:36px">{{ i.emoji }}</div>
-          <div style="min-width:0">
-            <div style="font-family:'Baloo 2',sans-serif;font-size:18px;font-weight:800;line-height:1.1">{{ i.title }}</div>
-            <sc-if value="{{ i.mine }}" hint-placeholder-val="{{ false }}">
-              <span style="display:inline-block;margin-top:3px;background:#FFE3EC;border-radius:999px;padding:1px 8px;font-size:11px;font-weight:800;color:#8A4A5E">💖 My idea</span>
-            </sc-if>
-            <div style="font-size:12px;font-weight:800;color:#8A6E5A;margin:3px 0 6px">⏱ {{ i.time }} · {{ i.groupEmojis }}</div>
-            <div style="font-size:14px;font-weight:600;line-height:1.4;color:#5A4334;text-wrap:pretty">{{ i.how }}</div>
-          </div>
-          <div style="display:flex;flex-direction:column;gap:6px">
-            <button sc-camel-on-click="{{ i.onAdd }}" style="width:48px;height:48px;border-radius:16px;border:2px solid #3B2A20;background:{{ i.btnBg }};font-size:20px;cursor:pointer">{{ i.btn }}</button>
-            <sc-if value="{{ i.mine }}" hint-placeholder-val="{{ false }}">
-              <button sc-camel-on-click="{{ i.onDelete }}" style="width:48px;height:44px;border-radius:16px;border:2px solid #3B2A20;background:#fff;font-size:18px;cursor:pointer">🗑️</button>
-            </sc-if>
-          </div>
-        </article>
-      </sc-for>
     </div>
   </sc-if>
 
@@ -1029,7 +1080,7 @@ input::placeholder{color:#B49A86}
         </div>
         <div style="display:grid;grid-template-columns:{{ calCols }};grid-template-rows:{{ calRows }};gap:4px;transition:grid-template-columns .35s ease,grid-template-rows .35s ease">
           <sc-for list="{{ calCells }}" as="c" hint-placeholder-count="30">
-            <div style="grid-column:{{ c.col }};grid-row:{{ c.row }};position:relative;min-width:0;min-height:0;box-sizing:border-box;border-radius:12px;border:{{ c.border }};background:{{ c.bg }};box-shadow:{{ c.shadow }};overflow:hidden;transition:background .2s">
+            <div style="grid-column:{{ c.col }};grid-row:{{ c.row }};position:relative;z-index:{{ c.z }};min-width:0;min-height:0;box-sizing:border-box;border-radius:12px;border:{{ c.border }};background:{{ c.bg }};overflow:{{ c.ovf }};transition:background .3s">
               <sc-if value="{{ c.compact }}" hint-placeholder-val="{{ true }}">
                 <button aria-label="{{ c.aria }}" sc-camel-on-click="{{ c.onClick }}" style="position:absolute;inset:0;width:100%;height:100%;border:none;background:none;padding:3px 1px 0;margin:0;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:1px;font-family:inherit;color:#3B2A20">
                   <span style="font-size:{{ c.numFs }};font-weight:800;line-height:1.25;min-width:1.5em;border-radius:999px;background:{{ c.numBg }};color:{{ c.numFg }}">{{ c.num }}</span>
@@ -1037,28 +1088,25 @@ input::placeholder{color:#B49A86}
                 </button>
               </sc-if>
               <sc-if value="{{ c.big }}" hint-placeholder-val="{{ false }}">
-                <div style="position:absolute;inset:0;padding:7px 7px 7px 8px;display:flex;flex-direction:column;gap:5px">
-                  <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:4px;flex:none">
-                    <div style="min-width:0;line-height:1">
-                      <div style="font-size:10px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:#E2553F">{{ c.wd }}</div>
-                      <div style="font-family:'Baloo 2',sans-serif;font-size:24px;font-weight:800;line-height:1">{{ c.num }}</div>
+                <div style="position:absolute;top:0;bottom:0;left:0;right:0;margin:auto;height:100%;max-width:100%;aspect-ratio:1/1;box-sizing:border-box;border-radius:50%;border:3px solid #3B2A20;background:radial-gradient(circle at 34% 28%,#FFFFFF 0%,#FFFBF2 36%,#FFF2D6 72%,#FFE2A3 100%);box-shadow:0 0 0 5px rgba(255,236,176,.95),0 0 30px 14px rgba(255,206,92,.5),inset 0 -12px 20px rgba(232,185,58,.28),inset 0 8px 12px rgba(255,255,255,.9);overflow:hidden;animation:lb-lens .4s ease-out">
+                  <div aria-hidden="true" style="position:absolute;inset:0;border-radius:50%;pointer-events:none;background:radial-gradient(ellipse 48% 30% at 30% 17%,rgba(255,255,255,.95),rgba(255,255,255,0) 72%),radial-gradient(ellipse 34% 14% at 70% 89%,rgba(255,255,255,.7),rgba(255,255,255,0) 72%)"></div>
+                  <div style="position:absolute;inset:0;padding:14px 18px 12px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;text-align:center">
+                    <div style="font-size:10px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:#E2553F;line-height:1">{{ c.wd }}</div>
+                    <div style="font-family:'Baloo 2',sans-serif;font-size:32px;font-weight:800;line-height:.95;text-shadow:0 2px 0 #FFE2A3">{{ c.num }}</div>
+                    <div style="max-height:54px;width:100%;max-width:120px;overflow-y:auto;display:flex;flex-direction:column;gap:3px;flex:none">
+                      <sc-for list="{{ c.events }}" as="ce" hint-placeholder-count="2">
+                        <button aria-label="{{ ce.aria }}" sc-camel-on-click="{{ ce.onEdit }}" style="flex:none;display:flex;align-items:center;gap:3px;width:100%;min-height:24px;padding:1px 6px;border-radius:999px;border:{{ ce.border }};background:{{ ce.bg }};font-family:inherit;font-size:11px;font-weight:800;color:#3B2A20;cursor:pointer;text-align:left">
+                          <span style="flex:none;font-size:12px">{{ ce.e }}</span>
+                          <span style="min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ ce.t }}</span>
+                        </button>
+                      </sc-for>
+                      <sc-if value="{{ c.noEvents }}" hint-placeholder-val="{{ false }}">
+                        <div style="font-size:11px;font-weight:700;color:#B49A86;line-height:1.3">{{ c.emptyText }}</div>
+                      </sc-if>
                     </div>
-                    <button aria-label="Zoom out" sc-camel-on-click="{{ c.onClick }}" style="width:28px;height:28px;border-radius:50%;border:2px solid #3B2A20;background:#fff;font-size:12px;font-weight:800;color:#3B2A20;cursor:pointer;flex:none;padding:0">✕</button>
+                    <button sc-camel-on-click="{{ c.onAdd }}" style="flex:none;margin-top:2px;height:28px;padding:0 14px;border-radius:999px;border:2px solid #3B2A20;background:#FFD166;color:#3B2A20;font-family:inherit;font-weight:800;font-size:12px;cursor:pointer;box-shadow:0 2px 0 #3B2A20">+ Add</button>
                   </div>
-                  <div style="flex:1;min-height:0;overflow-y:auto;display:flex;flex-direction:column;gap:4px">
-                    <sc-for list="{{ c.events }}" as="ce" hint-placeholder-count="2">
-                      <button aria-label="{{ ce.aria }}" sc-camel-on-click="{{ ce.onEdit }}" style="flex:none;display:flex;align-items:center;gap:4px;width:100%;min-height:30px;padding:2px 6px;border-radius:9px;border:{{ ce.border }};background:{{ ce.bg }};font-family:inherit;font-size:12px;font-weight:800;color:#3B2A20;cursor:pointer;text-align:left">
-                        <span style="flex:none;font-size:14px">{{ ce.e }}</span>
-                        <span style="min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ ce.t }}</span>
-                      </button>
-                    </sc-for>
-                    <sc-if value="{{ c.noEvents }}" hint-placeholder-val="{{ false }}">
-                      <div style="font-size:11px;font-weight:700;color:#B49A86;line-height:1.3">{{ c.emptyText }}</div>
-                    </sc-if>
-                  </div>
-                  <div style="display:flex;gap:4px;flex:none">
-                    <button sc-camel-on-click="{{ c.onAdd }}" style="flex:1;min-width:0;height:34px;border-radius:10px;border:2px solid #3B2A20;background:#FFD166;color:#3B2A20;font-family:inherit;font-weight:800;font-size:13px;cursor:pointer;padding:0">+ Add</button>
-                  </div>
+                  <button aria-label="Zoom out" sc-camel-on-click="{{ c.onClick }}" style="position:absolute;top:13%;right:13%;width:26px;height:26px;border-radius:50%;border:2px solid #3B2A20;background:#fff;font-size:11px;font-weight:800;color:#3B2A20;cursor:pointer;padding:0">✕</button>
                 </div>
               </sc-if>
             </div>
@@ -1137,26 +1185,28 @@ input::placeholder{color:#B49A86}
         </section>
       </sc-if>
 
-      <section aria-label="{{ frMenuTitle }}" style="background:#fff;border:2px solid #3B2A20;border-radius:24px;padding:14px;box-shadow:4px 4px 0 #3B2A20;display:flex;flex-direction:column;gap:8px">
-        <div style="display:flex;align-items:baseline;justify-content:space-between;gap:8px">
-          <h3 style="font-family:'Baloo 2',sans-serif;font-size:20px;margin:0;font-weight:800;line-height:1.1;min-width:0">🍴 {{ frMenuTitle }}</h3>
-          <span style="font-size:12px;font-weight:800;color:#8A6E5A;white-space:nowrap">{{ frDayLabel }}</span>
-        </div>
-        <sc-for list="{{ frMenu }}" as="mr" hint-placeholder-count="4">
-          <button aria-label="{{ mr.aria }}" sc-camel-on-click="{{ mr.onClick }}" style="display:flex;align-items:center;gap:10px;width:100%;min-height:58px;padding:6px 10px;border-radius:16px;border:2px solid #3B2A20;background:#FFF9F1;font-family:inherit;color:#3B2A20;text-align:left;cursor:pointer">
-            <span aria-hidden="true" style="width:40px;height:40px;flex:none;border-radius:12px;background:#fff;border:2px solid #E8D3BC;display:flex;align-items:center;justify-content:center;font-size:22px;line-height:1">{{ mr.e }}</span>
-            <span style="flex:1;min-width:0">
-              <span style="display:block;font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#7A4B12">{{ mr.label }}</span>
-              <span style="display:block;font-size:15px;font-weight:800;line-height:1.2;color:{{ mr.mainFg }};overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ mr.main }}</span>
-              <span style="display:block;font-size:11px;font-weight:700;color:#8A6E5A;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ mr.sub }}</span>
-            </span>
-            <span aria-hidden="true" style="flex:none;font-size:20px;font-weight:800;color:#B49A86">›</span>
-          </button>
-        </sc-for>
-        <sc-if value="{{ frHasMenuHint }}" hint-placeholder-val="{{ false }}">
-          <div style="font-size:12px;font-weight:700;color:#8A6E5A;line-height:1.35">{{ frMenuHint }}</div>
-        </sc-if>
-      </section>
+      <sc-if value="{{ frShowMenu }}" hint-placeholder-val="{{ true }}">
+        <section aria-label="{{ frMenuTitle }}" style="background:#fff;border:2px solid #3B2A20;border-radius:24px;padding:14px;box-shadow:4px 4px 0 #3B2A20;display:flex;flex-direction:column;gap:8px">
+          <div style="display:flex;align-items:baseline;justify-content:space-between;gap:8px">
+            <h3 style="font-family:'Baloo 2',sans-serif;font-size:20px;margin:0;font-weight:800;line-height:1.1;min-width:0">🍴 {{ frMenuTitle }}</h3>
+            <span style="font-size:12px;font-weight:800;color:#8A6E5A;white-space:nowrap">{{ frDayLabel }}</span>
+          </div>
+          <sc-for list="{{ frMenu }}" as="mr" hint-placeholder-count="4">
+            <button aria-label="{{ mr.aria }}" sc-camel-on-click="{{ mr.onClick }}" style="display:flex;align-items:center;gap:10px;width:100%;min-height:58px;padding:6px 10px;border-radius:16px;border:2px solid #3B2A20;background:#FFF9F1;font-family:inherit;color:#3B2A20;text-align:left;cursor:pointer">
+              <span aria-hidden="true" style="width:40px;height:40px;flex:none;border-radius:12px;background:#fff;border:2px solid #E8D3BC;display:flex;align-items:center;justify-content:center;font-size:22px;line-height:1">{{ mr.e }}</span>
+              <span style="flex:1;min-width:0">
+                <span style="display:block;font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#7A4B12">{{ mr.label }}</span>
+                <span style="display:block;font-size:15px;font-weight:800;line-height:1.2;color:{{ mr.mainFg }};overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ mr.main }}</span>
+                <span style="display:block;font-size:11px;font-weight:700;color:#8A6E5A;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ mr.sub }}</span>
+              </span>
+              <span aria-hidden="true" style="flex:none;font-size:20px;font-weight:800;color:#B49A86">›</span>
+            </button>
+          </sc-for>
+          <sc-if value="{{ frHasMenuHint }}" hint-placeholder-val="{{ false }}">
+            <div style="font-size:12px;font-weight:700;color:#8A6E5A;line-height:1.35">{{ frMenuHint }}</div>
+          </sc-if>
+        </section>
+      </sc-if>
 
       <sc-if value="{{ frShow }}" hint-placeholder-val="{{ false }}">
         <section aria-label="Day’s schedule" style="background:#fff;border:2px solid #3B2A20;border-radius:24px;padding:14px;box-shadow:4px 4px 0 #3B2A20;display:flex;flex-direction:column;gap:8px">
@@ -1200,13 +1250,28 @@ input::placeholder{color:#B49A86}
           <h3 style="font-family:'Baloo 2',sans-serif;font-size:20px;margin:0;font-weight:800;line-height:1.1;min-width:0">{{ fpDayTitle }}</h3>
           <span style="flex:none;background:#FFD166;border:2px solid #3B2A20;border-radius:999px;padding:2px 12px;font-family:'Baloo 2',sans-serif;font-size:17px;font-weight:800">⭐ {{ fpPts }}</span>
         </div>
+        <sc-if value="{{ fpShowPassion }}" hint-placeholder-val="{{ true }}">
+          <div style="background:#FFEEF2;border:2px solid #3B2A20;border-radius:18px;padding:10px;display:flex;flex-direction:column;gap:8px">
+            <label style="display:flex;flex-direction:column;gap:4px">
+              <span style="font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#B23A50">🔥 My passion project</span>
+              <input value="{{ fpPassion }}" sc-camel-on-change="{{ onFpPassion }}" maxlength="24" placeholder="e.g. Building a robot" style="height:46px;border-radius:14px;border:2px solid #3B2A20;padding:0 12px;font-family:inherit;font-size:16px;font-weight:700;color:#3B2A20;background:#fff;outline:none;min-width:0">
+            </label>
+            <sc-if value="{{ fpPassionCan }}" hint-placeholder-val="{{ true }}">
+              <button sc-camel-on-click="{{ fpPlanPassion }}" style="min-height:44px;border-radius:14px;border:2px solid #3B2A20;background:#FFD166;box-shadow:0 3px 0 #3B2A20;font-family:inherit;font-weight:800;font-size:15px;color:#3B2A20;cursor:pointer">⏱️ Plan time for it</button>
+            </sc-if>
+            <div style="font-size:12px;font-weight:700;color:#6B5444;line-height:1.35;text-wrap:pretty">{{ fpPassionNote }}</div>
+          </div>
+        </sc-if>
         <div style="font-size:13px;font-weight:700;color:#8A6E5A">{{ fpTimeLine }}</div>
-        <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px">
-          <sc-for list="{{ fpBal }}" as="bl" hint-placeholder-count="3">
-            <div style="border:2px solid {{ bl.border }};background:{{ bl.bg }};border-radius:14px;padding:6px 8px;display:flex;flex-direction:column;gap:1px;min-width:0">
-              <span style="font-size:13px;font-weight:800;white-space:nowrap">{{ bl.e }} {{ bl.label }} {{ bl.mark }}</span>
-              <span style="font-size:11px;font-weight:700;color:#6B5444;line-height:1.2">{{ bl.text }}</span>
-            </div>
+        <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px">
+          <sc-for list="{{ fpBal }}" as="bl" hint-placeholder-count="4">
+            <button aria-label="{{ bl.aria }}" sc-camel-on-click="{{ bl.onClick }}" style="border:2px solid {{ bl.border }};background:{{ bl.bg }};box-shadow:{{ bl.shadow }};border-radius:16px;padding:8px 10px;display:flex;flex-direction:column;align-items:flex-start;gap:2px;min-width:0;font-family:inherit;color:#3B2A20;text-align:left;cursor:{{ bl.cursor }}">
+              <span style="font-size:15px;font-weight:800;white-space:nowrap">{{ bl.e }} {{ bl.label }} <span style="color:#1F7A50">{{ bl.mark }}</span></span>
+              <span style="font-size:12px;font-weight:700;color:#6B5444;line-height:1.25">{{ bl.text }}</span>
+              <sc-if value="{{ bl.plan }}" hint-placeholder-val="{{ true }}">
+                <span style="margin-top:3px;font-size:12px;font-weight:800;color:#E2553F;white-space:nowrap">⏱️ Plan time ›</span>
+              </sc-if>
+            </button>
           </sc-for>
         </div>
         <div style="font-size:12px;font-weight:800;color:{{ fpBalColor }};line-height:1.35;text-wrap:pretty">{{ fpBalLine }}</div>
@@ -1227,9 +1292,6 @@ input::placeholder{color:#B49A86}
             <sc-for list="{{ fpGaps }}" as="gp" hint-placeholder-count="2">
               <div style="grid-column:2;grid-row:{{ gp.row }};margin:3px 0;border:2px dashed #EADBC8;border-radius:16px"></div>
             </sc-for>
-            <sc-for list="{{ fpEmpty }}" as="es" hint-placeholder-count="4">
-              <button aria-label="{{ es.aria }}" sc-camel-on-click="{{ es.onClick }}" style="grid-column:2;grid-row:{{ es.row }};margin:3px 0;border:2px dashed #E1CDB8;border-radius:16px;background:#fff;font-family:inherit;font-weight:800;font-size:13px;color:#B49A86;cursor:pointer;text-align:left;padding:0 14px;display:flex;align-items:center;gap:8px"><span style="font-size:18px;line-height:1">+</span>{{ es.label }}</button>
-            </sc-for>
             <sc-for list="{{ fpBlocks }}" as="b" hint-placeholder-count="2">
               <div style="grid-column:2;grid-row:{{ b.row }};margin:3px 0;display:flex;border:2px solid #3B2A20;border-radius:16px;background:{{ b.bg }};box-shadow:0 3px 0 #3B2A20;overflow:hidden;min-height:0">
                 <button aria-label="{{ b.aria }}" sc-camel-on-click="{{ b.onOpen }}" style="flex:1;min-width:0;display:flex;align-items:center;gap:10px;padding:0 10px;border:none;background:none;font-family:inherit;color:#3B2A20;text-align:left;cursor:pointer">
@@ -1239,8 +1301,9 @@ input::placeholder{color:#B49A86}
                     <span style="display:block;font-size:12px;font-weight:700;color:#6B5444;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ b.sub }}</span>
                   </span>
                 </button>
-                <button aria-label="{{ b.checkAria }}" aria-pressed="{{ b.pressed }}" sc-camel-on-click="{{ b.onCheck }}" style="width:50px;flex:none;border:none;border-left:2px solid #3B2A20;background:{{ b.checkBg }};cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0">
-                  <span style="width:28px;height:28px;border-radius:50%;border:2px solid #3B2A20;background:{{ b.dotBg }};color:#1F5E40;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:800">{{ b.check }}</span>
+                <button role="checkbox" aria-label="{{ b.checkAria }}" aria-checked="{{ b.pressed }}" sc-camel-on-click="{{ b.onCheck }}" style="width:56px;flex:none;border:none;border-left:2px solid #3B2A20;background:{{ b.checkBg }};cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;padding:0;font-family:inherit">
+                  <span style="width:26px;height:26px;box-sizing:border-box;border-radius:7px;border:2.5px solid #3B2A20;background:{{ b.dotBg }};color:#1F5E40;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:900;line-height:1">{{ b.check }}</span>
+                  <span style="font-size:10px;font-weight:800;color:{{ b.checkFg }};line-height:1">{{ b.checkWord }}</span>
                 </button>
               </div>
             </sc-for>
@@ -1884,15 +1947,46 @@ input::placeholder{color:#B49A86}
         </div>
         <sc-if value="{{ fpShOther }}" hint-placeholder-val="{{ false }}">
           <label style="display:flex;flex-direction:column;gap:4px;flex:none">
-            <span style="font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#7A4B12">What is it?</span>
-            <input value="{{ fpShT }}" sc-camel-on-change="{{ onFpT }}" maxlength="24" placeholder="e.g. Chess club" style="height:48px;border-radius:16px;border:2px solid #3B2A20;padding:0 14px;font-family:inherit;font-size:16px;font-weight:700;color:#3B2A20;background:#fff;outline:none;min-width:0">
+            <span style="font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#7A4B12">{{ fpShTLabel }}</span>
+            <input value="{{ fpShT }}" sc-camel-on-change="{{ onFpT }}" maxlength="24" placeholder="{{ fpShTPh }}" style="height:48px;border-radius:16px;border:2px solid #3B2A20;padding:0 14px;font-family:inherit;font-size:16px;font-weight:700;color:#3B2A20;background:#fff;outline:none;min-width:0">
           </label>
         </sc-if>
-        <div style="font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#7A4B12;flex:none">How long?</div>
-        <div style="display:flex;gap:6px;flex-wrap:wrap;flex:none">
-          <sc-for list="{{ fpLens }}" as="ln" hint-placeholder-count="4">
-            <button aria-pressed="{{ ln.pressed }}" sc-camel-on-click="{{ ln.onClick }}" style="min-height:40px;padding:0 12px;border-radius:999px;border:2px solid #3B2A20;background:{{ ln.bg }};color:{{ ln.fg }};font-family:inherit;font-weight:800;font-size:13px;cursor:pointer">{{ ln.label }}</button>
-          </sc-for>
+        <div style="display:flex;align-items:baseline;justify-content:space-between;gap:8px;flex:none">
+          <span style="font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#7A4B12">When?</span>
+          <span style="font-size:12px;font-weight:800;color:#8A6E5A;white-space:nowrap">{{ fpWhen }}</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;flex:none">
+            <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:4px">
+              <span style="font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#8A6E5A;text-align:center">Start</span>
+              <div style="position:relative;height:200px;border:2px solid #3B2A20;border-radius:18px;background:#fff;overflow:hidden">
+                <div aria-hidden="true" style="position:absolute;left:6px;right:6px;top:80px;height:40px;box-sizing:border-box;border-radius:12px;background:#FFD166;border:2px solid #3B2A20"></div>
+                <div data-fp-wheel="s" data-idx="{{ fpWheelS.idx }}" sc-camel-on-scroll="{{ fpWheelS.onScroll }}" role="listbox" aria-label="Start time" sc-camel-tab-index="0" style="position:absolute;inset:0;overflow-y:scroll;scroll-snap-type:y mandatory;scrollbar-width:none;overscroll-behavior:contain;outline:none">
+                  <div aria-hidden="true" style="height:80px"></div>
+                  <sc-for list="{{ fpWheelS.items }}" as="ws" hint-placeholder-count="5">
+                    <button role="option" aria-selected="{{ ws.sel }}" sc-camel-tab-index="-1" sc-camel-on-click="{{ ws.onClick }}" style="display:block;width:100%;height:40px;scroll-snap-align:center;border:none;background:none;padding:0;font-family:inherit;font-size:{{ ws.fs }};font-weight:800;color:{{ ws.fg }};cursor:pointer;position:relative">{{ ws.label }}</button>
+                  </sc-for>
+                  <div aria-hidden="true" style="height:80px"></div>
+                </div>
+                <div aria-hidden="true" style="position:absolute;left:0;right:0;top:0;height:64px;background:linear-gradient(#fff,rgba(255,255,255,0));pointer-events:none"></div>
+                <div aria-hidden="true" style="position:absolute;left:0;right:0;bottom:0;height:64px;background:linear-gradient(rgba(255,255,255,0),#fff);pointer-events:none"></div>
+              </div>
+            </div>
+            <span aria-hidden="true" style="flex:none;font-size:18px;font-weight:800;color:#B49A86;margin-top:18px">→</span>
+            <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:4px">
+              <span style="font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#8A6E5A;text-align:center">End</span>
+              <div style="position:relative;height:200px;border:2px solid #3B2A20;border-radius:18px;background:#fff;overflow:hidden">
+                <div aria-hidden="true" style="position:absolute;left:6px;right:6px;top:80px;height:40px;box-sizing:border-box;border-radius:12px;background:#FFD166;border:2px solid #3B2A20"></div>
+                <div data-fp-wheel="e" data-idx="{{ fpWheelE.idx }}" sc-camel-on-scroll="{{ fpWheelE.onScroll }}" role="listbox" aria-label="End time" sc-camel-tab-index="0" style="position:absolute;inset:0;overflow-y:scroll;scroll-snap-type:y mandatory;scrollbar-width:none;overscroll-behavior:contain;outline:none">
+                  <div aria-hidden="true" style="height:80px"></div>
+                  <sc-for list="{{ fpWheelE.items }}" as="we" hint-placeholder-count="5">
+                    <button role="option" aria-selected="{{ we.sel }}" sc-camel-tab-index="-1" sc-camel-on-click="{{ we.onClick }}" style="display:block;width:100%;height:40px;scroll-snap-align:center;border:none;background:none;padding:0;font-family:inherit;font-size:{{ we.fs }};font-weight:800;color:{{ we.fg }};cursor:pointer;position:relative">{{ we.label }}</button>
+                  </sc-for>
+                  <div aria-hidden="true" style="height:80px"></div>
+                </div>
+                <div aria-hidden="true" style="position:absolute;left:0;right:0;top:0;height:64px;background:linear-gradient(#fff,rgba(255,255,255,0));pointer-events:none"></div>
+                <div aria-hidden="true" style="position:absolute;left:0;right:0;bottom:0;height:64px;background:linear-gradient(rgba(255,255,255,0),#fff);pointer-events:none"></div>
+              </div>
+            </div>
         </div>
         <sc-for list="{{ fpGroups }}" as="gr" hint-placeholder-count="3">
           <div style="display:flex;align-items:baseline;justify-content:space-between;gap:8px;flex:none;margin-top:2px">
@@ -2242,17 +2336,17 @@ const GOALS = [
 ];
 const RARE_UP = ['golden', 'rainbow', 'songbird', 'veghero'];
 const Q_AUTO = [
-  { id: 'water', text: 'Drink water with lunch', e: '💧', tab: 'menu', test: (x) => x.eat.includes('water') },
-  { id: 'veggie', text: 'Eat a veggie', e: '🥦', tab: 'menu', test: (x) => x.eat.includes('veggie') },
-  { id: 'fruit', text: 'Eat a fruit', e: '🍎', tab: 'menu', test: (x) => x.eat.includes('fruit') },
-  { id: 'dairy', text: 'Get some dairy', e: '🥛', tab: 'menu', test: (x) => x.eat.includes('dairy') },
-  { id: 'protein', text: 'Get some protein', e: '🍗', tab: 'menu', test: (x) => x.eat.includes('protein') },
-  { id: 'four', text: 'Hit 4 food groups', e: '🍽️', tab: 'menu', test: (x) => x.food >= 4 },
-  { id: 'badge', text: 'Earn a daily badge', e: '🏅', tab: 'menu', test: (x) => !!x.badge, clash: 'rare' },
-  { id: 'rare', text: 'Earn a Rare badge or better', e: '💎', tab: 'menu', test: (x) => RARE_UP.includes(x.badge), clash: 'badge' },
-  { id: 'addon', text: 'Plan a lunch add-on', e: '💖', tab: 'menu', test: (x) => x.favs >= 1, clash: 'twoadd' },
-  { id: 'twoadd', text: 'Plan 2 lunch add-ons', e: '✨', tab: 'menu', test: (x) => x.favs >= 2, clash: 'addon' },
-  { id: 'sketch', text: 'Create a new lunch idea', e: '✏️', tab: 'ideas', test: (x) => x.created }
+  { id: 'water', text: 'Drink water with lunch', e: '💧', tab: 'menu', go: 'eat', test: (x) => x.eat.includes('water') },
+  { id: 'veggie', text: 'Eat a veggie', e: '🥦', tab: 'menu', go: 'eat', test: (x) => x.eat.includes('veggie') },
+  { id: 'fruit', text: 'Eat a fruit', e: '🍎', tab: 'menu', go: 'eat', test: (x) => x.eat.includes('fruit') },
+  { id: 'dairy', text: 'Get some dairy', e: '🥛', tab: 'menu', go: 'eat', test: (x) => x.eat.includes('dairy') },
+  { id: 'protein', text: 'Get some protein', e: '🍗', tab: 'menu', go: 'eat', test: (x) => x.eat.includes('protein') },
+  { id: 'four', text: 'Hit 4 food groups', e: '🍽️', tab: 'menu', go: 'eat', test: (x) => x.food >= 4 },
+  { id: 'badge', text: 'Earn a daily badge', e: '🏅', tab: 'menu', go: 'eat', test: (x) => !!x.badge, clash: 'rare' },
+  { id: 'rare', text: 'Earn a Rare badge or better', e: '💎', tab: 'menu', go: 'eat', test: (x) => RARE_UP.includes(x.badge), clash: 'badge' },
+  { id: 'addon', text: 'Plan a lunch add-on', e: '💖', tab: 'menu', go: 'lunch', test: (x) => x.favs >= 1, clash: 'twoadd' },
+  { id: 'twoadd', text: 'Plan 2 lunch add-ons', e: '✨', tab: 'menu', go: 'lunch', test: (x) => x.favs >= 2, clash: 'addon' },
+  { id: 'sketch', text: 'Create a new lunch idea', e: '✏️', tab: 'menu', go: 'create', test: (x) => x.created }
 ];
 const Q_MANUAL = [
   { id: 'm_doodle', text: 'Doodle your lunch tray', e: '🖍️' },
@@ -2296,7 +2390,24 @@ const IDEAS = [
   { emoji: '🍝', title: 'Cold Pasta Salad', time: '10 min', g: ['grain', 'veggie', 'dairy'], how: 'Rotini, cherry tomatoes, cucumber, mozzarella pearls and a splash of Italian dressing.' },
   { emoji: '🧀', title: 'Mini Quesadillas', time: '6 min', g: ['grain', 'dairy', 'protein'], how: 'Cheese + black beans in a small tortilla, pan-toast 2 min a side, cut in triangles.' },
   { emoji: '🧁', title: 'Egg Muffin Cups', time: '10 min', g: ['protein', 'veggie'], how: 'Make a batch Sunday: whisked eggs, cheese and diced peppers baked in a muffin tin.' },
-  { emoji: '🥪', title: 'Cracker Stackers', time: '4 min', g: ['grain', 'protein', 'dairy'], how: 'DIY “lunchable”: crackers, sliced ham or turkey, cheese squares to stack yourself.' }
+  { emoji: '🥪', title: 'Cracker Stackers', time: '4 min', g: ['grain', 'protein', 'dairy'], how: 'DIY “lunchable”: crackers, sliced ham or turkey, cheese squares to stack yourself.' },
+  { emoji: '🥒', title: 'Cucumber Sub Boats', time: '5 min', g: ['veggie', 'protein', 'dairy'], how: 'Halve a cucumber the long way, scoop out the seeds, fill with turkey and a cheese stick, then slice into bites.' },
+  { emoji: '🥜', title: 'Build-a-Trail-Mix', time: '3 min', g: ['grain', 'fruit', 'protein'], how: 'Shake cereal, raisins and sunflower seeds in a little jar. Add nuts only if your school allows them.' },
+  { emoji: '🥙', title: 'Hummus Veggie Pita', time: '5 min', g: ['grain', 'veggie', 'protein'], how: 'Spread hummus inside a pita half and stuff it with shredded carrot, cucumber and lettuce.' },
+  { emoji: '🍇', title: 'Cheese & Grape Kabobs', time: '3 min', g: ['dairy', 'fruit'], how: 'Slide cheese cubes and grapes onto short skewers, switching colors as you go.' },
+  { emoji: '🌽', title: 'Corn & Bean Salsa Cup', time: '6 min', g: ['veggie', 'protein', 'grain'], how: 'Stir corn, black beans and diced tomato with a squeeze of lime. Pack tortilla chips on the side for scooping.' },
+  { emoji: '🍐', title: 'Pear & Cheddar Crackers', time: '4 min', g: ['fruit', 'dairy', 'grain'], how: 'Thin pear slices and cheddar on whole-grain crackers. A little lemon juice keeps the pear from browning.' },
+  { emoji: '🥨', title: 'Pretzel Dippers', time: '3 min', g: ['grain', 'dairy'], how: 'Pretzel rods with a small cup of yogurt dip or cream cheese for dunking.' },
+  { emoji: '🥚', title: 'Deviled Egg Duo', time: '10 min', g: ['protein'], how: 'Use eggs boiled the night before: halve two, mash the yolks with a little mayo and mustard, spoon it back in.' }
+];
+// The Menu tab's idea kitchen picks a theme for each school day (it changes from week to week too).
+const THEMES = [
+  { e: '🍎', name: 'Fruity', bg: '#FFE3EC', ink: '#8A4A5E', line: 'fruity picks', test: i => i.g.includes('fruit') },
+  { e: '🥦', name: 'Green', bg: '#DDF5E8', ink: '#2E6B4F', line: 'veggie-packed picks', test: i => i.g.includes('veggie') },
+  { e: '💪', name: 'Power-up', bg: '#FFE9C7', ink: '#7A4B12', line: 'protein picks', test: i => i.g.includes('protein') },
+  { e: '⚡', name: 'Speedy', bg: '#E1F0FB', ink: '#3B5E7A', line: 'picks ready in 4 minutes or less', test: i => parseInt(i.time) <= 4 },
+  { e: '🌈', name: 'Rainbow', bg: '#F1EAFB', ink: '#5B3F86', line: 'picks with 3 food groups or more', test: i => i.g.length >= 3 },
+  { e: '🧀', name: 'Cheesy', bg: '#FFF1C2', ink: '#7A4B12', line: 'picks with dairy', test: i => i.g.includes('dairy') }
 ];
 const SAMPLE = [
   [['Main', ['Pepperoni Pizza', 'Chicken Caesar Salad']], ['Sides', ['Steamed Broccoli', 'Fresh Apple', 'Chocolate Milk']]],
@@ -2391,11 +2502,12 @@ function mergeSaved(loc, rem) {
     myIdeas, seenMs: unionList(loc.seenMs, rem.seenMs), questDone: mergeDays(loc.questDone, rem.questDone),
     stickers, holos: mergeKeep(loc.holos, rem.holos), peck, myBadges,
     sched: cleanSched(mergeKeep(cleanSched(loc.sched), cleanSched(rem.sched))),
-    cal: mergeCal(loc.cal, rem.cal)
+    cal: mergeCal(loc.cal, rem.cal),
+    passion: cleanPassion(loc.passion).trim() ? cleanPassion(loc.passion) : cleanPassion(rem.passion)
   };
 }
 const hasStuff = d => !!d && (['favs', 'eaten', 'badges', 'questDone', 'stickers', 'holos', 'sched', 'cal'].some(k => isObj(d[k]) && Object.keys(d[k]).length)
-  || ['myIdeas', 'myBadges'].some(k => Array.isArray(d[k]) && d[k].length) || (isObj(d.peck) && (Number(d.peck.pts) > 0 || Object.keys(d.peck.best || {}).length > 0)));
+  || ['myIdeas', 'myBadges'].some(k => Array.isArray(d[k]) && d[k].length) || !!cleanPassion(d.passion).trim() || (isObj(d.peck) && (Number(d.peck.pts) > 0 || Object.keys(d.peck.best || {}).length > 0)));
 const fmtMove = v => { const c = String(v || '').toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 8); return c.length > 4 ? c.slice(0, 4) + '-' + c.slice(4) : c; };
 // ── Badges kids design themselves ──
 const MB_MAX = 12;
@@ -2704,6 +2816,8 @@ const ACT_KIND = {
   screen: { tile: '#D5DAE1', card: '#EEF0F3' }, other: { tile: '#FFD6C7', card: '#FFF0EA' }
 };
 const ACTS = [
+  // The kid's own passion project; its block keeps the project's name in t (like "Something else").
+  { id: 'passion', name: 'Passion project', kind: 'make', pts: 10, cheer: 'Enjoy your passion project! 🔥' },
   { id: 'study', name: 'Homework', kind: 'learn', pts: 10 }, { id: 'reading', name: 'Reading', kind: 'learn', pts: 10 },
   { id: 'music', name: 'Music', kind: 'make', pts: 10, cheer: 'Enjoy your music practice! 🎵' }, { id: 'drawing', name: 'Drawing', kind: 'make', pts: 10, cheer: 'Can’t wait to see your drawing! 🎨' },
   { id: 'chores', name: 'Chores', kind: 'help', pts: 10 },
@@ -2889,6 +3003,11 @@ const ACT_DRAW = (() => {
       h('circle', { cx: 18.5, cy: 30.8, r: 1.9, fill: '#FFB4A2' }),
       tw(h, 34, 14, 4.2, '#fff'), tw(h, 40.5, 22.5, 2.6, '#fff'), tw(h, 29.5, 22, 2.2, '#fff')
     ],
+    passion: h => [
+      h('path', { d: 'M24 7.5 C26.5 13.5 34.5 17.5 34.5 28 C34.5 35 29.8 40.5 24 40.5 C18.2 40.5 13.5 35 13.5 28 C13.5 23 16.2 19.6 18.6 17 C19.2 20.8 20.8 23 22.8 23.6 C21.6 18.2 22 12.4 24 7.5 Z', fill: '#FF8A5B', ...S }),
+      h('path', { d: 'M24 24.5 C25.8 28 29.5 29.8 29.5 33.6 C29.5 36.8 27 39 24 39 C21 39 18.5 36.8 18.5 33.6 C18.5 30.8 20.4 29.2 21.6 27.4 C22.2 29.2 23.2 30 24.2 30 C23.6 28.2 23.6 26.4 24 24.5 Z', fill: '#FFD166', ...S, strokeWidth: 1.9 }),
+      tw(h, 38.5, 12, 3.6, '#fff')
+    ],
     other: h => [
       h('path', { d: star(24, 25.5, 15.5, 6.6), fill: '#FFD166', ...S }),
       h('path', { d: 'M24 21.5 V29.5 M20 25.5 H28', ...S, strokeWidth: 2.6 })
@@ -2922,7 +3041,18 @@ const FDAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 const FDAYSL = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 const PDIRTY = 'lunchbuddy-plan-dirty';   // days whose plan still needs sharing with the family
 const FP_SAMPLE = [{ s: 0, n: 1, a: 'snack', d: 1 }, { s: 1, n: 2, a: 'study', d: 1 }, { s: 3, n: 3, a: 'soccer', d: 0 }, { s: 6, n: 1, a: 'dinner', d: 0 }, { s: 7, n: 2, a: 'reading', d: 0 }, { s: 9, n: 1, a: 'gaming', d: 0 }, { s: 13, n: 1, a: 'bedtime', d: 0 }];
-const FP_LEN = { 1: '30 min', 2: '1 hr', 3: '1½ hr', 4: '2 hr', 5: '2½ hr', 6: '3 hr' };
+const FP_WH = 40;   // height of one row in the start / end time wheels
+// The day card's plan tiles: each one opens the start / end wheels with just its kind of activities.
+const FP_CATS = {
+  learn: { e: '📚', label: 'Learn', title: 'Plan learning time', g10: 'Learning', kinds: ['learn'] },
+  move: { e: '⚽', label: 'Move', title: 'Plan time to move', g10: 'Sports & playing outside', kinds: ['move'] },
+  screen: { e: '🎮', label: 'Screens', title: 'Plan screen time', kinds: ['screen'] },
+  more: { e: '🎨', label: 'More', title: 'Plan something else', g10: 'Make & help', kinds: ['make', 'help', 'life', 'rest', 'other'] }
+};
+const fpDur = n => n <= 1 ? '30 min' : n % 2 ? `${(n - 1) / 2} hr 30 min` : `${n / 2} hr`;   // n half hours
+const NAMED_ACT = { other: 1, passion: 1 };   // activities whose block carries its own name (t)
+const actName = b => NAMED_ACT[b.a] && b.t ? b.t : (ACT[b.a] || ACT.other).name;
+const cleanPassion = v => typeof v === 'string' ? v.replace(/\s+/g, ' ').slice(0, 24) : '';
 const monOf = d => { const x = new Date(d.getFullYear(), d.getMonth(), d.getDate()); return add(x, -((x.getDay() + 6) % 7)); };
 const slotMin = i => FP_START + i * 30;
 const clock = m => `${Math.floor(m / 60) - 12}:${pad(m % 60)}`;
@@ -2936,7 +3066,7 @@ const cleanBlocks = list => {
     if (!(s >= 0 && n >= 1 && s + n <= FP_SLOTS)) return;
     for (let i = s; i < s + n; i++) if (used[i]) return;
     for (let i = s; i < s + n; i++) used[i] = true;
-    const t = b.a === 'other' && typeof b.t === 'string' ? b.t.slice(0, 24) : '';
+    const t = NAMED_ACT[b.a] && typeof b.t === 'string' ? b.t.slice(0, 24) : '';
     out.push({ s, n, a: b.a, ...(t ? { t } : {}), d: b.d ? 1 : 0 });
   });
   return out.sort((x, y) => x.s - y.s);
@@ -3012,12 +3142,12 @@ class Component extends DCLogic {
       menus: {}, source: {}, loading: false, pv: PARSE_V,
       favs: saved.favs || {}, eaten: saved.eaten || {}, badges: saved.badges || {},
       myIdeas: saved.myIdeas || [], showForm: false, draft: { title: '', how: '', emoji: '🥪', picked: false, g: [], time: '5 min' }, iconAll: false,
-      input: '', quickSeed: 0, filter: 'all', toast: '', celebrate: null, queue: [], seenMs: saved.seenMs || null,
+      input: '', quickSeed: 0, filter: 'all', spot: null, spotSeed: 0, toast: '', celebrate: null, queue: [], seenMs: saved.seenMs || null,
       questDone: saved.questDone || {}, holos: saved.holos || {},
       stickers: Object.fromEntries(Object.entries(saved.stickers || {}).map(([d, id]) => [d, LEGACY_Q[id] || id])),
       peck: { pts: 0, best: {}, log: {}, plays: 0, ...migratePeck(saved.peck) }, myBadges: saved.myBadges || [],
       nestView: 'quests', bSheet: false, bDraft: { ...MB_BLANK }, game: null,
-      sched: cleanSched(saved.sched), cal: cleanCal(saved.cal), calM: firstOfMonth(now), calSel: null, calSheet: null, fpWs: monOf(now), fpIdx: (wd + 6) % 7, fpSheet: null, fpKid: null, fpKidSched: {}, fpNotes: [], fpTag: '',
+      sched: cleanSched(saved.sched), cal: cleanCal(saved.cal), passion: cleanPassion(saved.passion), calM: firstOfMonth(now), calSel: null, calSheet: null, fpWs: monOf(now), fpIdx: (wd + 6) % 7, fpSheet: null, fpKid: null, fpKidSched: {}, fpNotes: [], fpTag: '',
       fpNoteDraft: '', fpNoteEdit: false, fpReplyFor: null, fpReplyDraft: '', fpReplyEdit: null, fpBusy: false, tick: 0,
       frWeeks: {}, frBoard: [], frTotals: {}, frSheet: null, frBusy: false, frBoardOpen: false, frPost: '', frReflOpen: false, nestWs: monOf(now),
       art: null, frArtEdit: false, frArtKidDraft: '', frArtDel: null,
@@ -3121,6 +3251,7 @@ class Component extends DCLogic {
         const ses = this.famSession();
         if (ses.bDirty || !ses.bAt) await this.backupNow();
         if (this.state.tab === 'family') { this.famLoadEvents(true); this.famLoadPlans(); }
+        if (this.state.tab === 'menu') this.famLoadPlans();
         if (this.state.tab === 'plan') { this.fpLoad(); this.frLoad(this.state.fpWs); }
         if (this.state.tab === 'nest') this.frLoad(this.state.nestWs);
       } else {
@@ -3132,13 +3263,27 @@ class Component extends DCLogic {
     finally { this._famRefreshing = false; }
   }
   goTab(id) {
+    if (id === 'ideas') { this.goMenuSpot('kitchen'); return; }   // Ideas lives inside the Menu tab now
     if (id !== this.state.tab) this._famSeenBase = null;
     // Opening the Plan tab with unread notes (or replies) jumps to the first day that has one.
     const f = this.state.fam, n = id === 'plan' && f && f.notesNew > 0 && f.notesDay ? new Date(f.notesDay + 'T12:00') : null;
     const jump = n ? { fpWs: monOf(n), fpIdx: (n.getDay() + 6) % 7, ...(f.notesKid ? { fpKid: f.notesKid } : {}) } : {};
     this.setState(s => ({ tab: id, ...jump, ...(id === 'plan' && s.tab !== 'plan' ? { fpNotes: s.fpNotes.map(x => ({ ...x, wasNew: false })), fpNoteEdit: false } : {}) }),
-      () => { if (id === 'family') this.famRefresh(); if (id === 'plan') { this.fpLoad(); this.frLoad(this.state.fpWs); } if (id === 'nest') this.frLoad(this.state.nestWs); });
+      () => { if (id === 'family') this.famRefresh(); if (id === 'menu' && this.famActive()) this.famLoadPlans(); if (id === 'plan') { this.fpLoad(); this.frLoad(this.state.fpWs); } if (id === 'nest') this.frLoad(this.state.nestWs); });
     window.scrollTo(0, 0);
+  }
+  // Open the Menu tab at one of its parts: 'lunch' (tray + add-on), 'quests', 'eat', 'kitchen' (ideas) or 'create' (new idea form).
+  goMenuSpot(where) {
+    if (this.state.tab !== 'menu') this.goTab('menu');
+    this.setState(where === 'create' ? { showForm: true, ideaSheet: false } : {}, () => setTimeout(() => {
+      const el = document.getElementById('lb-' + where); if (el) el.scrollIntoView({ block: 'start', behavior: 'smooth' });
+    }, 60));
+  }
+  // Surprise me: show a random idea (not the one showing now) in the spotlight.
+  surprise() {
+    const all = [...this.state.myIdeas, ...IDEAS].filter(i => i.title !== this.state.spot);
+    const pick = all[Math.floor(Math.random() * all.length)];
+    if (pick) this.setState(x => ({ spot: pick.title, spotSeed: x.spotSeed + 1 }), () => { const el = document.getElementById('lb-spot'); if (el) el.scrollIntoView({ block: 'nearest', behavior: 'smooth' }); });
   }
   async createFamily() {
     const f = this.state.famForm;
@@ -3318,8 +3463,8 @@ class Component extends DCLogic {
     return { emoji, text, when: ago(e.at), isNew, bg: isNew ? '#FFF1C2' : '#FFF7EC' };
   }
   saveData() {
-    const { favs, eaten, badges, myIdeas, seenMs, questDone, stickers, holos, peck, myBadges, sched, cal } = this.state;
-    return { v: 2, favs, eaten, badges, myIdeas, seenMs, questDone, stickers, holos, peck, myBadges, sched, cal };
+    const { favs, eaten, badges, myIdeas, seenMs, questDone, stickers, holos, peck, myBadges, sched, cal, passion } = this.state;
+    return { v: 2, favs, eaten, badges, myIdeas, seenMs, questDone, stickers, holos, peck, myBadges, sched, cal, passion };
   }
   persist() {
     try { localStorage.setItem(KEY, JSON.stringify(this.saveData())); } catch (e) {}
@@ -3504,7 +3649,7 @@ class Component extends DCLogic {
   shiftWeek(n) {
     this.setState(s => ({ weekStart: add(s.weekStart, 7 * n), dayIdx: s.pickIdea ? s.dayIdx : 0, famPlans: [] }), () => {
       this.load();
-      if (this.state.tab === 'family' && this.famActive()) this.famLoadPlans();
+      if ((this.state.tab === 'family' || this.state.tab === 'menu') && this.famActive()) this.famLoadPlans();
     });
   }
   flash(msg) { clearTimeout(this._t); this.setState({ toast: msg }); this._t = setTimeout(() => this.setState({ toast: '' }), 1800); }
@@ -3680,16 +3825,77 @@ class Component extends DCLogic {
     if (!max) return;
     this.setState({ fpSheet: { day, s, idx, a: b ? b.a : null, n: Math.min(b ? b.n : 2, max), t: (b && b.t) || '' } });
   }
+  // Plan time for the passion project: open the sheet at the first free half hour (from now on, if it's today).
+  fpPlanPassion() {
+    const day = this.fpKey(), p = this.state.passion.trim();
+    if (!p) { this.flash('✏️ Type your passion project first'); return; }
+    const s = this.fpFirstFree(day);
+    if (s == null) { this.flash('🙈 No free time left on this day'); return; }
+    this.setState({ fpSheet: { day, s, idx: -1, a: 'passion', n: Math.min(2, this.fpFree(day, s, -1)), t: p } });
+  }
+  // A plan tile (Learn, Move, Screens, More): the same wheels, with only that kind of activity to pick from.
+  fpPlanCat(cat) {
+    const day = this.fpKey(), s = this.fpFirstFree(day);
+    if (s == null) { this.flash('🙈 No free time left on this day'); return; }
+    this.setState({ fpSheet: { day, s, idx: -1, cat, a: null, n: Math.min(2, this.fpFree(day, s, -1)), t: '' } });
+  }
+  // The first free half hour on a day: from now on if it's today (or the earliest one left).
+  fpFirstFree(day) {
+    const now = new Date(), from = day === iso(now) ? Math.max(0, Math.floor((now.getHours() * 60 + now.getMinutes() - FP_START) / 30)) : 0;
+    const starts = this.fpStarts(day, -1);
+    return starts.find(i => i >= from) ?? starts[0];
+  }
+  // Free half hours a block could start at (not counting block `skip`, the one being edited).
+  fpStarts(day, skip) { return [...Array(FP_SLOTS).keys()].filter(i => this.fpFree(day, i, skip) > 0); }
+  // The start / end wheels: when a scroll settles, the row in the middle band is the pick.
+  fpWheel(kind, e) {
+    const el = e.currentTarget; this._wt = this._wt || {};
+    clearTimeout(this._wt[kind]);
+    this._wt[kind] = setTimeout(() => {
+      this._wt[kind] = null;
+      const f = this.state.fpSheet; if (!f) return;
+      const i = Math.round(el.scrollTop / FP_WH);
+      if (kind === 's') {
+        const starts = this.fpStarts(f.day, f.idx), s = starts[Math.max(0, Math.min(starts.length - 1, i))];
+        if (s != null && s !== f.s) { this.fpSetStart(s); return; }
+      } else {
+        const n = Math.max(1, Math.min(this.fpFree(f.day, f.s, f.idx), i + 1));
+        if (n !== f.n) { this.setFpSheet({ n }); return; }
+      }
+      this.fpWheelSync();
+    }, 130);
+  }
+  fpSetStart(s) { const f = this.state.fpSheet; if (f) this.setFpSheet({ s, n: Math.max(1, Math.min(f.n, this.fpFree(f.day, s, f.idx))) }); }
+  // Line each wheel up with its pick (after opening the sheet, a tap, or a new start time), unless it's being scrolled.
+  fpWheelSync() {
+    document.querySelectorAll('[data-fp-wheel]').forEach(el => {
+      const k = el.getAttribute('data-fp-wheel'); if (this._wt && this._wt[k]) return;
+      const want = Number(el.getAttribute('data-idx')) * FP_WH;
+      if (Math.abs(el.scrollTop - want) > 1) el.scrollTop = want;
+    });
+  }
+  // View data for the two wheels in the activity sheet: start time, and end time (up to the next busy half hour).
+  fpWheels(sh, shMax) {
+    if (!sh) return { fpWheelS: { idx: 0, items: [] }, fpWheelE: { idx: 0, items: [] }, fpWhen: '' };
+    const starts = this.fpStarts(sh.day, sh.idx), n = Math.max(1, Math.min(sh.n, shMax));
+    const row = (label, on, onClick) => ({ label, sel: on ? 'true' : 'false', fg: on ? '#3B2A20' : '#A08672', fs: on ? '19px' : '16px', onClick });
+    return {
+      fpWheelS: { idx: Math.max(0, starts.indexOf(sh.s)), onScroll: e => this.fpWheel('s', e), items: starts.map(i => row(`${clock(slotMin(i))} PM`, i === sh.s, () => this.fpSetStart(i))) },
+      fpWheelE: { idx: n - 1, onScroll: e => this.fpWheel('e', e), items: Array.from({ length: shMax }, (_, k) => row(`${clock(slotMin(sh.s + k + 1))} PM`, k + 1 === n, () => this.setFpSheet({ n: k + 1 }))) },
+      fpWhen: `${fpDur(n)} · ${fpRange(sh.s, n)}`
+    };
+  }
   fpSave() {
     const f = this.state.fpSheet; if (!f) return;
     if (!f.a) { this.flash('👆 Pick an activity first'); return; }
     const t = f.t.trim();
     if (f.a === 'other' && !t) { this.flash('✏️ Type what you’ll do'); return; }
+    if (f.a === 'passion' && !t) { this.flash('✏️ Type your passion project'); return; }
     const list = [...(this.state.sched[f.day] || [])], old = f.idx >= 0 ? list[f.idx] : null;
-    const b = { s: f.s, n: Math.max(1, Math.min(f.n, this.fpFree(f.day, f.s, f.idx))), a: f.a, ...(f.a === 'other' ? { t: t.slice(0, 24) } : {}), d: old && old.a === f.a ? old.d : 0 };
+    const b = { s: f.s, n: Math.max(1, Math.min(f.n, this.fpFree(f.day, f.s, f.idx))), a: f.a, ...(NAMED_ACT[f.a] ? { t: t.slice(0, 24) } : {}), d: old && old.a === f.a ? old.d : 0 };
     if (old) list[f.idx] = b; else list.push(b);
-    const name = f.a === 'other' ? t : ACT[f.a].name;
-    this.setState({ fpSheet: null });
+    const name = actName(b);
+    this.setState({ fpSheet: null, ...(f.a === 'passion' && !this.state.passion.trim() ? { passion: t.slice(0, 24) } : {}) });
     this.setSched(f.day, list, () => this.flash(old ? `✏️ ${name} updated` : `🗓️ ${name} added at ${clock(slotMin(b.s))}`));
   }
   fpRemove() {
@@ -4135,7 +4341,7 @@ class Component extends DCLogic {
     while (this.state.badges[iso(cur)]) { n++; cur = add(cur, cur.getDay() === 1 ? -3 : -1); }
     return n;
   }
-  componentDidUpdate() { this.checkPV(); }
+  componentDidUpdate() { this.checkPV(); if (this.state.fpSheet) this.fpWheelSync(); }
   checkPV() {
     if (this.state.pv === PARSE_V || this._pvBusy) return;
     this._pvBusy = true;
@@ -4150,7 +4356,7 @@ class Component extends DCLogic {
     const days = DOW.map((label, i) => {
       const dk = iso(add(ws, i)), m = s.menus[dk], sel = i === s.dayIdx;
       return {
-        label, date: add(ws, i).getDate(), emoji: m ? foodPic(m[0].items[0], `d${i}`) : '🍽️', hasBadge: !!s.badges[dk],
+        label, date: add(ws, i).getDate(), emoji: m ? foodPic(m[0].items[0], `d${i}`) : '🍽️', hasBadge: !!s.badges[dk], hasAdd: !!(s.favs[dk] || []).length,
         bg: sel ? '#FF6B57' : '#fff', fg: sel ? '#fff' : '#3B2A20', shadow: sel ? '0 4px 0 #3B2A20' : 'none',
         onClick: () => this.setState({ dayIdx: i })
       };
@@ -4167,14 +4373,29 @@ class Component extends DCLogic {
     const earnedId = s.badges[k];
     const earned = BADGES.find(b => b.id === earnedId) || {};
     const filters = [['all', 'All 🍴'], ['mine', '💖 Mine'], ['fruit', '🍎 Fruity'], ['veggie', '🥦 Veggie'], ['protein', '🍗 Protein'], ['quick', '⚡ ≤5 min']];
-    const ideas = ALL.filter(i => s.filter === 'all' || (s.filter === 'mine' ? i.mine : s.filter === 'quick' ? parseInt(i.time) <= 5 : i.g.includes(s.filter))).map((i, n) => {
-      const added = DOW.some((_, d) => (s.favs[iso(add(ws, d))] || []).includes(i.title));
+    const gEm = i => i.g.map(g => (GROUPS.find(x => x.id === g) || {}).e || '').join('') || '🍴';
+    const ideaRow = (i, n) => {
+      const on = used.has(i.title), wk = DOW.filter((_, d) => (s.favs[iso(add(ws, d))] || []).includes(i.title));
       return {
-        ...i, mine: !!i.mine, onDelete: () => this.deleteIdea(i.title),
-        bg: i.mine ? '#FFE3EC' : TILE[n % TILE.length], groupEmojis: i.g.map(g => (GROUPS.find(x => x.id === g) || {}).e || '').join('') || '🍴',
-        btn: added ? '✅' : '➕', btnBg: added ? '#DDF5E8' : '#FFD166', onAdd: () => this.setState({ pickIdea: { title: i.title, emoji: i.emoji } })
+        ...i, mine: !!i.mine, onDelete: () => this.deleteIdea(i.title), groupEmojis: gEm(i),
+        bg: i.mine ? '#FFE3EC' : TILE[n % TILE.length], cardBg: on ? '#F2FBF6' : '#fff',
+        btn: on ? '✅' : '➕', btnBg: on ? '#DDF5E8' : '#FFD166', addLabel: on ? `✅ On ${DOW[s.dayIdx]}` : `➕ ${DOW[s.dayIdx]}`,
+        addAria: on ? `Remove ${i.title} from ${DOWL[s.dayIdx]}` : `Add ${i.title} to ${DOWL[s.dayIdx]}`,
+        onAdd: () => this.toggleFavOn(k, i.title, DOW[s.dayIdx]),
+        weekLine: wk.length ? `📅 ${wk.join(' · ')}` : '📅 Pick days', daysAria: `Pick days for ${i.title}`, openAria: `More about ${i.title}`, delAria: `Delete ${i.title}`,
+        onDays: () => this.setState({ pickIdea: { title: i.title, emoji: i.emoji } }),
+        onOpen: () => this.setState({ spot: i.title }, () => { const el = document.getElementById('lb-spot'); if (el) el.scrollIntoView({ block: 'nearest', behavior: 'smooth' }); })
       };
-    });
+    };
+    // Theme of the day: changes with the day and the week; three ideas that fit it, the ones not added yet first.
+    const wkNo = Math.round(ws / 6048e5), th = THEMES[(wkNo * 2 + s.dayIdx) % THEMES.length];
+    const thAll = ALL.filter(th.test), thStart = thAll.length ? (wkNo * 5 + s.dayIdx * 3) % thAll.length : 0;
+    const thPicks = [...thAll.slice(thStart), ...thAll.slice(0, thStart)].sort((a, b) => used.has(a.title) - used.has(b.title)).slice(0, 3);
+    const thSet = new Set(thPicks.map(i => i.title));
+    // The idea shelf (swipe sideways): the theme's picks lead, then the rest that match the filter.
+    const shelf = ALL.filter(i => s.filter === 'all' || (s.filter === 'mine' ? i.mine : s.filter === 'quick' ? parseInt(i.time) <= 5 : i.g.includes(s.filter)));
+    const ideas = [...shelf.filter(i => thSet.has(i.title)), ...shelf.filter(i => !thSet.has(i.title))].map((i, n) => ({ ...ideaRow(i, n), isTheme: thSet.has(i.title) }));
+    const spotIdea = s.spot ? ALL.find(i => i.title === s.spot) : null;
     const counts = {}; Object.values(s.badges).forEach(b => counts[b] = (counts[b] || 0) + 1);
     // Idea icons: the best matches for the name being typed (or the popular ones), plus the one picked.
     const iconHits = iconMatches(s.draft.title).slice(0, 6).map(ic => ic.e);
@@ -4184,7 +4405,7 @@ class Component extends DCLogic {
       return { e, label: ic ? ic.label : 'Icon', pressed: on ? 'true' : 'false', bg: on ? '#FFD166' : '#fff', border: on ? '#3B2A20' : '#E8D3BC', onClick: () => this.setDraft({ emoji: e, picked: true }) }; };
     const total = Object.keys(s.badges).length;
     const yum = ['🥄', '🍴', '🍽️', '😋', '🤩'];
-    const tabs = [['menu', '🍽️', 'Menu'], ['ideas', '💡', 'Ideas'], ['plan', '🗓️', 'Plan'], ['nest', '🐣', 'Nest'], ['game', '🎮', 'Game']];
+    const tabs = [['menu', '🍽️', 'Menu'], ['plan', '🗓️', 'Plan'], ['nest', '🐣', 'Nest'], ['game', '🎮', 'Game']];   // Ideas lives inside Menu
     if (s.famOk) tabs.push(['family', '👪', 'Family']);
     // Family view values
     const fam = s.fam, famIn = !!(fam && fam.me), famAct = famIn && fam.me.status === 'active';
@@ -4221,7 +4442,7 @@ class Component extends DCLogic {
     const wkOff = Math.round((s.fpWs - monOf(nowD)) / 6048e5);
     const firstFun = fpBl.map(b => ACT[b.a]).find(a => a && a.cheer);
     const fpSuggest = [firstFun ? firstFun.cheer : 'Have a great afternoon! 🌤️', fpBl.some(b => b.a === 'study') ? 'Homework first, then fun. You’ve got this! 📚' : 'You’ve got this! 💪', 'So proud of you! 🌟'];
-    const sh = s.fpSheet, shMax = sh ? this.fpFree(sh.day, sh.s, sh.idx) : 0;
+    const sh = s.fpSheet, shMax = sh ? this.fpFree(sh.day, sh.s, sh.idx) : 0, shCat = sh && sh.idx < 0 && FP_CATS[sh.cat] || null;
     const fpView = {
       isPlan: s.tab === 'plan', goPlan: () => this.goTab('plan'),
       fpHasNewNotes: notesNew > 0 && s.tab === 'menu',
@@ -4264,15 +4485,36 @@ class Component extends DCLogic {
           hasNote: s.fpNotes.some(n => n.day === dk), onClick: () => this.fpPick(i)
         };
       }),
+      // The kid's passion project: typed once, kept with their saved data; "Plan time for it" opens the sheet with it picked.
+      fpShowPassion: !famParent, fpPassion: s.passion, onFpPassion: e => this.setState({ passion: cleanPassion(e.target.value) }, () => this.persist()),
+      fpPassionCan: fpEdit, fpPlanPassion: () => this.fpPlanPassion(),
+      fpPassionNote: (() => {
+        const pb = fpBl.filter(b => b.a === 'passion'), n = pb.reduce((t, b) => t + b.n, 0), d = pb.filter(b => b.d).reduce((t, b) => t + b.n, 0);
+        if (n) return `🔥 ${fpDur(n)} planned on this day${d ? ` · ${fpDur(d)} done` : ''}`;
+        if (!s.passion.trim()) return 'What do you love working on? A robot, a song, a comic… Type it here, then plan time for it.';
+        return fpEdit ? 'Pick a start and an end time. Check it off when you’re done for ⭐ 10 every half hour.' : 'No time was planned for it this day.';
+      })(),
       fpDayTitle: famParent ? (viewKid ? `${kidName}’s ${FDAYSL[s.fpIdx]}` : `Example ${FDAYSL[s.fpIdx]}`) : `${FDAYSL[s.fpIdx]}, ${MON[fpD.getMonth()]} ${fpD.getDate()}`,
       fpPts: fpX.pts,
       fpTimeLine: fpBl.length ? `🕒 ${hrs(fpX.planned)} planned · ${hrs(FP_SLOTS - fpX.planned)} free · ${fpX.done} of ${fpBl.length} done`
-        : famParent ? `🕒 Nothing planned for this day yet.` : fpEdit ? '🕒 Nothing planned yet. Tap a time below to add an activity.' : '🕒 Nothing was planned this day.',
-      fpBal: [
-        { e: '📚', label: 'Learn', ok: fpX.learn > 0, text: fpX.learn ? `${hrs(fpX.learn)} done` : 'Homework or reading' },
-        { e: '⚽', label: 'Move', ok: fpX.move > 0, text: fpX.move ? `${hrs(fpX.move)} done` : 'A sport or playing outside' },
-        { e: '🎮', label: 'Screens', ok: fpX.screen <= 2, text: fpX.screen ? `${hrs(fpX.screen)} planned` : 'None planned' }
-      ].map(c => ({ ...c, mark: c.ok ? '✓' : '', bg: c.ok ? '#DDF5E8' : '#FFF7EC', border: c.ok ? '#3DBE8B' : '#E8D3BC' })),
+        : famParent ? `🕒 Nothing planned for this day yet.` : fpEdit ? '🕒 Nothing planned yet. Tap Learn, Move, Screens or More to plan your afternoon.' : '🕒 Nothing was planned this day.',
+      // Learn / Move / Screens show the day's balance; tapping one (or More) opens the time wheels to plan that kind of thing.
+      fpBal: (() => {
+        const kindN = k => fpBl.filter(b => FP_CATS[k].kinds.includes((ACT[b.a] || ACT.other).kind)).reduce((t, b) => t + b.n, 0);
+        const said = (done, k, none) => done ? `${hrs(done)} done` : kindN(k) ? `${hrs(kindN(k))} planned` : none;
+        return [
+          { k: 'learn', ok: fpX.learn > 0, text: said(fpX.learn, 'learn', 'Homework or reading') },
+          { k: 'move', ok: fpX.move > 0, text: said(fpX.move, 'move', 'A sport or playing outside') },
+          { k: 'screen', ok: fpX.screen <= 2, text: fpX.screen ? `${hrs(fpX.screen)} planned` : 'None planned' },
+          { k: 'more', ok: false, text: said(0, 'more', 'Music, chores, rest…') }
+        ].map(c => {
+          const ct = FP_CATS[c.k];
+          return { ...c, e: ct.e, label: ct.label, mark: c.ok ? '✓' : '', bg: c.ok ? '#DDF5E8' : '#FFF7EC', plan: fpEdit,
+            border: fpEdit ? '#3B2A20' : c.ok ? '#3DBE8B' : '#E8D3BC', shadow: fpEdit ? '0 3px 0 #3B2A20' : 'none', cursor: famParent ? 'default' : 'pointer',
+            aria: fpEdit ? `${ct.title}. ${c.text}` : `${ct.label}: ${c.text}`,
+            onClick: () => fpSample ? this.flash('👀 This is just an example') : famParent ? null : !fpEdit ? this.flash('🔒 That day is locked') : this.fpPlanCat(c.k) };
+        });
+      })(),
       fpBalLine: fpX.bal ? `⚖️ Balanced afternoon! +${BAL_BONUS} ⭐ bonus` : fpX.screen > 2 ? `More than 1 hour of screens, so no balance bonus today.`
         : `Finish some learning and some moving, with 1 hour of screens or less, for a +${BAL_BONUS} ⭐ balance bonus.`,
       fpBalColor: fpX.bal ? '#1F7A50' : fpX.screen > 2 ? '#B23A50' : '#8A6E5A',
@@ -4282,33 +4524,34 @@ class Component extends DCLogic {
         : `🔒 This day is locked. You can add and check off activities for today, the days ahead, and the last ${FP_PAST} days.`,
       fpShowGrid: !famParent || fpSample || (!!viewKid && kidLoaded), fpLoadingKid: !!(famParent && viewKid && !kidLoaded), fpKidName: kidName,
       fpTimes: Array.from({ length: FP_SLOTS + 1 }, (_, i) => { const m = slotMin(i), half = m % 60 !== 0; return { row: String(i + 1), label: half ? clock(m) : `${Math.floor(m / 60) - 12} PM`, color: half ? '#B49A86' : '#5A4334', fs: half ? '11px' : '12px' }; }),
-      fpEmpty: fpEdit ? freeSlots.map(i => ({ row: String(i + 1), label: i === freeSlots[0] ? 'Add an activity' : '', aria: `Add an activity at ${clock(slotMin(i))} PM`, onClick: () => this.fpOpen(fk, i, -1) })) : [],
-      fpGaps: fpEdit ? [] : freeSlots.map(i => ({ row: String(i + 1) })),
+      fpGaps: freeSlots.map(i => ({ row: String(i + 1) })),   // free time; plans are added from the tiles above, not typed into the timeline
       fpBlocks: fpBl.map((b, i) => {
-        const a = ACT[b.a] || ACT.other, name = b.a === 'other' ? (b.t || a.name) : a.name, p = a.pts * b.n, range = fpRange(b.s, b.n);
+        const a = ACT[b.a] || ACT.other, name = actName(b), p = a.pts * b.n, range = fpRange(b.s, b.n);
         return {
           row: `${b.s + 1} / span ${b.n}`, bg: ACT_KIND[a.kind].card, icon: actIcon(a.id, 38), name,
           sub: a.kind === 'screen' ? `${range} · screen` : `${range} · ${b.d ? '+' : ''}${p} ⭐`,
           aria: famParent ? `${name}, ${range}` : `Change ${name}, ${range}`,
           onOpen: () => fpSample ? this.flash('👀 This is just an example') : famParent ? null : !fpEdit ? this.flash('🔒 That day is locked') : this.fpOpen(fk, b.s, i),
-          checkAria: famParent ? (b.d ? `${name} is done` : `${name} is not done yet`) : (b.d ? `Mark ${name} not done` : `Mark ${name} done`), pressed: b.d ? 'true' : 'false',
-          checkBg: b.d ? '#3DBE8B' : '#fff', dotBg: b.d ? '#fff' : '#FFF7EC', check: b.d ? '✓' : '',
+          checkAria: famParent ? (b.d ? `${name} is done` : `${name} is not done yet`) : `${name} done`, pressed: b.d ? 'true' : 'false',
+          checkBg: b.d ? '#3DBE8B' : '#fff', dotBg: b.d ? '#fff' : '#FFF7EC', check: b.d ? '✓' : '', checkWord: b.d ? 'Done' : 'Done?', checkFg: b.d ? '#fff' : '#8A6E5A',
           onCheck: () => fpSample ? this.flash('👀 This is just an example') : famParent ? this.flash(`✓ marks appear when ${kidName} finishes`) : this.fpToggle(fk, i)
         };
       }),
       fpHasNow: fk === tIso && nowMin >= FP_START && nowMin <= slotMin(FP_SLOTS) && (!famParent || kidLoaded || fpSample), fpNowTop: `${(nowMin - FP_START) / 30 * FP_ROW}px`,
       fpHasSheet: !!sh, fpClose: () => this.setState({ fpSheet: null }),
-      fpSh: sh ? { title: sh.idx >= 0 ? 'Change activity' : 'Add an activity', sub: `${FDAYS[(new Date(sh.day + 'T12:00').getDay() + 6) % 7]} · ${fpRange(sh.s, sh.n)}` } : {},
-      fpShOther: !!(sh && sh.a === 'other'), fpShT: sh ? sh.t : '', onFpT: e => this.setFpSheet({ t: e.target.value.slice(0, 24) }),
-      fpLens: sh ? [1, 2, 3, 4, 5, 6].filter(n => n <= shMax).map(n => ({ label: FP_LEN[n], pressed: sh.n === n ? 'true' : 'false', bg: sh.n === n ? '#3B2A20' : '#fff', fg: sh.n === n ? '#FFD166' : '#3B2A20', onClick: () => this.setFpSheet({ n }) })) : [],
+      fpSh: sh ? { title: sh.idx >= 0 ? 'Change activity' : shCat ? `${shCat.e} ${shCat.title}` : 'Add an activity', sub: `${FDAYS[(new Date(sh.day + 'T12:00').getDay() + 6) % 7]} · ${fpRange(sh.s, sh.n)}` } : {},
+      fpShOther: !!(sh && NAMED_ACT[sh.a]), fpShT: sh ? sh.t : '', onFpT: e => this.setFpSheet({ t: e.target.value.slice(0, 24) }),
+      fpShTLabel: sh && sh.a === 'passion' ? 'Your passion project' : 'What is it?', fpShTPh: sh && sh.a === 'passion' ? 'e.g. Building a robot' : 'e.g. Chess club',
+      ...this.fpWheels(sh, shMax),
       fpGroups: sh ? [['Learn, move & make', '⭐ 10 per half hour', 10], ['Recharge', '⭐ 5 per half hour', 5], ['Screens', 'No points · keep it to 1 hr', 0]].map(([title, pts, v]) => ({
-        title, pts, acts: ACTS.filter(a => a.pts === v).map(a => {
+        title: shCat && v === 10 && shCat.g10 ? shCat.g10 : title, pts, acts: ACTS.filter(a => a.pts === v && (!shCat || shCat.kinds.includes(a.kind))).map(a => {
           const on = sh.a === a.id;
-          return { name: a.name, icon: actIcon(a.id, 44), pressed: on ? 'true' : 'false', bg: on ? '#FFD166' : '#fff', border: on ? '#3B2A20' : '#E8D3BC', shadow: on ? '0 3px 0 #3B2A20' : 'none', onClick: () => this.setFpSheet({ a: a.id }) };
+          return { name: a.id === 'passion' ? (s.passion.trim() || a.name) : a.name, icon: actIcon(a.id, 44), pressed: on ? 'true' : 'false', bg: on ? '#FFD166' : '#fff', border: on ? '#3B2A20' : '#E8D3BC', shadow: on ? '0 3px 0 #3B2A20' : 'none',
+            onClick: () => this.setFpSheet(a.id === 'passion' ? { a: a.id, t: sh.a === 'passion' ? sh.t : s.passion.trim() } : a.id === 'other' && sh.a !== 'other' ? { a: a.id, t: '' } : { a: a.id }) };
         })
-      })) : [],
+      })).filter(g => g.acts.length) : [],
       fpShEditing: !!(sh && sh.idx >= 0), fpSave: () => this.fpSave(), fpRemove: () => this.fpRemove(),
-      fpSaveLabel: !sh || !sh.a ? 'Pick an activity' : `${sh.idx >= 0 ? 'Save' : 'Add'} ${sh.a === 'other' ? (sh.t.trim() || 'it') : ACT[sh.a].name} · ${FP_LEN[sh.n] || ''}`,
+      fpSaveLabel: !sh || !sh.a ? 'Pick an activity' : `${sh.idx >= 0 ? 'Save' : 'Add'} ${NAMED_ACT[sh.a] ? (sh.t.trim() || 'it') : ACT[sh.a].name} · ${hrs(Math.min(sh.n, shMax))}`,
       fpSaveBg: sh && sh.a ? '#FFD166' : '#F3E6D3', fpSaveOp: sh && sh.a ? 1 : 0.7
     };
     // ── Family Rhythm: the family's day on the Plan tab, the weekly review in the Nest ──
@@ -4364,16 +4607,18 @@ class Component extends DCLogic {
     const entree = schoolDay && lunchM && lunchM[0] && lunchM[0].items[0];
     const kidAdd = famParent && viewKid && frWk ? (frWk.addons.find(a => a.memberId === viewKid.id && a.day === fk) || {}).items || [] : null;
     const addOns = kidAdd || s.favs[fk] || [];
+    // The claude.ai artifact copy leaves out the add-on row (the owner asked); add-ons are still picked on the Menu tab there.
+    const noAddRow = !!(window.claude && !s.famOk);
     const frMenu = [
       ...(famAct ? [mealRow('breakfast', '🍳', 'Breakfast')] : []),
       { e: entree ? foodPic(entree, 'fr') : '🏫', label: 'Lunch', main: !schoolDay ? 'No school lunch on weekends' : entree || 'See the school menu', mainFg: entree ? '#3B2A20' : '#B49A86',
         sub: !schoolDay ? 'Enjoy the weekend!' : entree ? 'School lunch · tap for the full menu' : 'Tap to open the Menu tab', aria: `Lunch: ${entree || 'school menu'}. Open the Menu tab`,
         onClick: () => this.frSchoolDay(fk, false) },
-      { e: addOns.length ? (IDEAS.find(i => i.title === addOns[0]) || {}).emoji || emojiFor(addOns[0]) : '🥕', label: kidAdd ? `${kidName}’s school add-on` : 'School add-on',
+      ...(noAddRow ? [] : [{ e: addOns.length ? (IDEAS.find(i => i.title === addOns[0]) || {}).emoji || emojiFor(addOns[0]) : '🥕', label: kidAdd ? `${kidName}’s school add-on` : 'School add-on',
         main: addOns.length ? addOns.join(', ') : kidAdd ? 'Nothing picked yet' : !schoolDay ? 'Nothing to pack' : 'Pick an add-on', mainFg: addOns.length ? '#3B2A20' : '#B49A86',
         sub: kidAdd ? `${kidName} picks add-ons on their Menu tab` : !schoolDay ? 'Weekend: no school lunch' : addOns.length ? 'Tap to change' : 'Something to bring along with lunch',
         aria: kidAdd ? `${kidName}’s add-on: ${addOns.join(', ') || 'nothing yet'}` : `School add-on: ${addOns.join(', ') || 'none yet'}. Pick an add-on`,
-        onClick: () => kidAdd ? this.flash(`🥕 ${kidName} picks their own add-ons`) : this.frSchoolDay(fk, true) },
+        onClick: () => kidAdd ? this.flash(`🥕 ${kidName} picks their own add-ons`) : this.frSchoolDay(fk, true) }]),
       ...(famAct ? [mealRow('dinner', '🍽️', 'Dinner')] : [])
     ];
     // Credits for the selected day. Parents score; kids see their own, read-only.
@@ -4405,6 +4650,7 @@ class Component extends DCLogic {
       frHlView: hl ? taskView(hl) : { e: '', title: '', sub: '' },
       frHlOpen: () => hl && (canTouch(hl) ? this.frTaskOpen(fk, hl) : this.flash(`👀 ${memName(hl.memberId)} planned this`)),
       frAddTask: () => this.frTaskOpen(fk, null),
+      frShowMenu: !noAddRow,   // the artifact copy has no family breakfast/dinner plans, so the lunch card is left out there
       frMenuTitle: famAct ? 'What’s on the menu?' : 'What’s for lunch?',
       frMenu, frMenuHint: s.famOk && !famAct ? 'Breakfast and dinner plans for the whole family show up here once your family is set up.' : '',
       frHasMenuHint: s.famOk && !famAct,
@@ -4577,14 +4823,17 @@ class Component extends DCLogic {
       const dd = new Date(cy, cmo, i + 1, 12), day = iso(dd), col = (lead + i) % 7, row = Math.floor((lead + i) / 7);
       const evs = eventsOn(day), imp = evs.some(e => e.imp);
       const big = day === zDay, inRow = !!zDay && !big && row === zRow, squeezed = !!zDay && !big && col !== zCol && !inRow, today = day === tIso;
+      // Dates near the lens catch its light, from the side that faces it (strong next to it, faint one step further).
+      const dr = row - zRow, dc = col - zCol, ring = zDay && !big ? Math.max(Math.abs(dr), Math.abs(dc)) : 9;
+      const glow = ring <= 2 ? `radial-gradient(circle at ${dc < 0 ? '100%' : dc > 0 ? '0%' : '50%'} ${dr < 0 ? '100%' : dr > 0 ? '0%' : '50%'},rgba(255,206,92,${ring === 1 ? .62 : .3}) 0%,rgba(255,206,92,0) 80%),` : '';
       const show = squeezed ? 1 : inRow ? 3 : 2, icons = evs.map(e => CAL_KIND[e.k].e);
       const marks = icons.slice(0, show).join('') + (icons.length > show ? '+' : '');
       return {
         col: String(col + 1), row: String(row + 1), num: String(i + 1), big, compact: !big,
         wd: `${FDAYS[col]} · ${MON[cmo]}`,
-        bg: big ? '#FFF7EC' : imp ? '#FFE08A' : col >= 5 ? '#FFF9F1' : '#fff',
-        border: big ? '2px solid #3B2A20' : imp ? '2px solid #E8B93A' : '1.5px solid #EAD9C6',
-        shadow: big ? '3px 3px 0 #3B2A20' : 'none',
+        bg: big ? 'transparent' : glow + (imp ? '#FFE08A' : col >= 5 ? '#FFF9F1' : '#fff'),
+        border: big ? 'none' : imp ? '2px solid #E8B93A' : ring === 1 ? '1.5px solid #F2CF86' : '1.5px solid #EAD9C6',
+        z: big ? '2' : 'auto', ovf: big ? 'visible' : 'hidden',
         numFs: squeezed ? '11px' : '14px', markFs: squeezed ? '9px' : '12px',
         numBg: today ? '#FF6B57' : 'transparent', numFg: today ? '#fff' : '#3B2A20', marks, markWs: inRow ? 'normal' : 'nowrap',
         aria: `${FDAYSL[col]}, ${MON[cmo]} ${i + 1}${today ? ', today' : ''}${evs.length ? `, ${evs.length} event${evs.length > 1 ? 's' : ''}` : ''}${imp ? ', important' : ''}`,
@@ -4606,8 +4855,9 @@ class Component extends DCLogic {
       calMonthLabel: cm.toLocaleDateString('en-US', { month: 'long', year: 'numeric' }),
       calShowToday: mKey !== tIso.slice(0, 7) || !!zDay, calToday: () => this.setState({ calM: firstOfMonth(nowD), calSel: null }),
       calPrev: () => this.calShift(-1), calNext: () => this.calShift(1),
-      calCols: Array.from({ length: 7 }, (_, i) => i === zCol ? '4.6fr' : '1fr').join(' '),
-      calRows: Array.from({ length: nRows }, (_, r) => zRow < 0 ? '50px' : r === zRow ? '196px' : '38px').join(' '),
+      // The zoomed date becomes a round lens: its column and row open up to about the same size.
+      calCols: Array.from({ length: 7 }, (_, i) => i === zCol ? '7.6fr' : '1fr').join(' '),
+      calRows: Array.from({ length: nRows }, (_, r) => zRow < 0 ? '50px' : r === zRow ? '164px' : '38px').join(' '),
       calWd: FDAYS.map((d, i) => ({ label: i === zCol ? FDAYSL[i] : d.charAt(0), color: i === zCol ? '#E2553F' : i >= 5 ? '#B49A86' : '#8A6E5A' })),
       calCells,
       calHasSoon: soon.length > 0,
@@ -4747,15 +4997,29 @@ class Component extends DCLogic {
     const c = s.celebrate || {};
     return {
       yumLine: yum.slice(0, Math.min(5, 1 + badgeTotal)).join(' ') + (badgeTotal ? `  ${badgeTotal} badge${badgeTotal > 1 ? 's' : ''}` : '  earn your first badge!'),
-      isMenu: s.tab === 'menu', isIdeas: s.tab === 'ideas', isNest: s.tab === 'nest', isGame: s.tab === 'game',
+      isMenu: s.tab === 'menu', isNest: s.tab === 'nest', isGame: s.tab === 'game',
       goQuests: () => { this.setState({ nestView: 'quests' }); this.goTab('nest'); },
       questSummary: hasSticker ? `Badge found: ${todaySticker.e} ${todaySticker.name}` : `${qDone} of 3 done · reward: mystery badge`,
       questDots: qs.map(q => q.done ? '✅' : '⬜').join(' '),
       quests: qs.map(q => ({
-        e: q.e, text: q.text, hint: q.manual ? 'Tap when you’ve done it' : q.done ? 'Auto-checked' : q.tab === 'ideas' ? 'Go to Ideas →' : 'Track it on the Menu tab →',
-        bg: q.done ? '#DDF5E8' : '#fff', check: q.done ? '✓' : '', checkBg: q.done ? '#3DBE8B' : '#fff',
-        onClick: () => q.manual ? this.toggleManual(k, q.id) : (!q.done && this.goTab(q.tab))
+        e: q.e, text: q.text, hint: q.manual ? 'Tap when you’ve done it' : q.done ? 'Auto-checked' : s.tab === 'menu' ? (q.go === 'create' ? 'Create one in the idea kitchen ↑' : q.go === 'lunch' ? 'Pick one in your lunch ↑' : 'Tap your food groups below ↓')
+          : q.go === 'create' ? 'Create one on the Menu tab →' : 'Track it on the Menu tab →',
+        bg: q.done ? '#DDF5E8' : '#fff', check: q.done ? '✓' : '', checkBg: q.done ? '#3DBE8B' : '#fff', checked: q.done ? 'true' : 'false',
+        onClick: () => q.manual ? this.toggleManual(k, q.id) : (!q.done && this.goMenuSpot(q.go || 'lunch'))
       })),
+      goQuestBoard: () => { this.setState({ nestView: 'quests' }); this.goTab('nest'); },
+      questReward: hasSticker ? `🎉 Mystery badge found: ${todaySticker.e} ${todaySticker.name}` : qDone === 3 ? '🎁 All 3 done! Reveal your mystery badge.' : `🎁 Finish all 3 to reveal a mystery badge (${qDone} of 3)`,
+      jumps: [['lunch', '🍽️', 'Lunch'], ['kitchen', '💡', 'Ideas'], ['quests', '🎯', 'Quests'], ['eat', '🌈', 'I ate']].map(([id, e, label]) => ({ e, label, aria: `Jump to ${label}`, onClick: () => this.goMenuSpot(id) })),
+      // Theme of the day and the spotlight (Surprise me, or tapping an idea tile).
+      thTitle: `${th.e} ${th.name} ${DOWL[s.dayIdx]}`, thBg: th.bg, thInk: th.ink,
+      hasSpot: !!spotIdea, spot: spotIdea ? ideaRow(spotIdea, ALL.indexOf(spotIdea)) : {},
+      surprise: () => this.surprise(), closeSpot: () => this.setState({ spot: null }),
+      ideaCount: ideas.length > 2 ? `${ideas.length} ideas · swipe for more →` : `${ideas.length} idea${ideas.length === 1 ? '' : 's'}`,
+      // Family glance: what everyone else in the family picked for this day.
+      famDayPicks: (famAct ? s.famPlans : []).filter(p => !p.mine && p.day === k && p.items.length).map(p => ({ who: `${ROLE_EMO[p.role] || '🙂'} ${p.nickname}`, text: p.items.map(t => `${this.itemEmoji(t)} ${t}`).join(' · ') })),
+      hasFamDay: famAct && s.famPlans.some(p => !p.mine && p.day === k && p.items.length),
+      famDayNone: famParent && !s.famPlans.some(p => !p.mine && p.day === k && p.items.length) && famMembersAll.some(m => m.role === 'kid' && m.status === 'active'),
+      famDayNoneText: `👪 No add-on picked by your kids for ${DOWL[s.dayIdx]} yet.`,
       qDone, qPct: `${qDone / 3 * 100}%`, canSticker: qDone === 3 && !hasSticker, hasSticker, notSticker: !hasSticker,
       claimSticker: () => this.claimSticker(k),
       stickerPreview: hasSticker ? todaySticker.e : '❔', stickerName: hasSticker ? todaySticker.name : 'Mystery badge',
@@ -4784,9 +5048,9 @@ class Component extends DCLogic {
       groupCount: food, threshold, progress: `${Math.min(100, food / 5 * 100)}%`,
       progressMsg: earnedId ? 'Badge earned! 🎉' : food >= threshold ? 'Badge ready! ✨' : `${threshold - food} more to go`,
       canClaim: food >= threshold && !earnedId, hasEarned: !!earnedId, earned, claim: () => this.claim(),
-      filters: filters.map(([id, label]) => ({ label, bg: s.filter === id ? '#3B2A20' : '#fff', fg: s.filter === id ? '#FFD166' : '#3B2A20', onClick: () => this.setState({ filter: id }) })),
-      ideaSheet: !!s.ideaSheet, openIdeaSheet: () => this.setState({ ideaSheet: true }), closeIdeaSheet: () => this.setState({ ideaSheet: false }),
-      goCreate: () => { this.setState({ ideaSheet: false, tab: 'ideas', showForm: true }); window.scrollTo(0, 0); },
+      filters: filters.map(([id, label]) => ({ label, pressed: s.filter === id ? 'true' : 'false', bg: s.filter === id ? '#3B2A20' : '#fff', fg: s.filter === id ? '#FFD166' : '#3B2A20', onClick: () => this.setState({ filter: id }) })),
+      ideaSheet: !!s.ideaSheet, openIdeaSheet: () => this.setState({ ideaSheet: true }), goKitchen: () => this.goMenuSpot('kitchen'), closeIdeaSheet: () => this.setState({ ideaSheet: false }),
+      goCreate: () => this.goMenuSpot('create'),
       sheetIdeas: ALL.map((i, n) => {
         const on = used.has(i.title);
         return {

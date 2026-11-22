@@ -154,6 +154,7 @@ function cleanBlocks(v) {
     for (let j = s; j < s + n; j++) { if (used[j]) throw new HttpError(400, 'bad_plan', 'Activities overlap'); used[j] = true; }
     const x = { s, n, a, d: b.d ? 1 : 0 };
     if (a === 'other') x.t = clean(b.t, 24, 'Activity name');
+    if (a === 'passion' && b.t) x.t = clean(b.t, 24, 'Passion project');   // the kid's own project name
     out.push(x);
   }
   return out.sort((p, q) => p.s - q.s);
