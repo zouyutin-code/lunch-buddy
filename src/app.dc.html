@@ -361,41 +361,52 @@ input::placeholder{color:#B49A86}
 
 <div style="max-width:440px;margin:0 auto;min-height:100vh;background:#FFF7EC;position:relative;padding-bottom:96px;box-shadow:0 0 0 1px #F1D9C2">
 
-  <header style="padding:22px 20px 14px;background:#FFD166;border-radius:0 0 28px 28px;position:relative;overflow:hidden">
-    <div style="position:absolute;right:-8px;top:-6px;font-size:84px;opacity:.9;transform:rotate(12deg)">🍱</div>
-    <div style="display:flex;align-items:center;gap:8px;font-size:13px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#7A4B12">
+  <header style="padding:20px 20px 16px;box-sizing:border-box;text-align:center;background:radial-gradient(75% 52% at 50% 74%,#FFEDB5 0%,rgba(255,237,181,0) 72%),#FFD166;border-radius:0 0 30px 30px;position:relative;overflow:hidden">
+    <div style="display:flex;align-items:center;justify-content:center;gap:8px;font-size:13px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#7A4B12">
       <span>🏫</span><span>Southeast Bulloch Middle</span>
     </div>
-    <h1 style="font-family:'Baloo 2',sans-serif;font-size:34px;line-height:1;margin:6px 0 0;font-weight:800;color:#3B2A20">Lunch Buddy</h1>
+    <h1 style="font-family:'Baloo 2',sans-serif;font-size:36px;line-height:1;margin:6px 0 0;font-weight:800;color:#3B2A20">Lunch Buddy</h1>
     <div style="font-size:14px;font-weight:700;color:#7A4B12;margin-top:4px">Yum-o-meter: {{ yumLine }}</div>
+    <div role="img" aria-label="A bento box, a hamburger and a sandwich, with fresh lettuce and tomato" style="position:relative;height:150px;max-width:350px;margin:6px auto 0;pointer-events:none">
+      <div style="position:absolute;left:50%;top:50%;width:300px;height:170px;margin:-85px 0 0 -150px;border-radius:50%;background:radial-gradient(closest-side,rgba(255,252,235,.95) 0%,rgba(255,240,190,.55) 45%,rgba(255,231,160,0) 100%);z-index:0"></div>
+      <div style="position:absolute;left:calc(50% + -40px);bottom:30px;width:96px;height:18px;border-radius:50%;background:radial-gradient(closest-side,rgba(110,60,5,0.34),rgba(110,60,5,0));z-index:0"></div>
+      <div style="position:absolute;left:calc(50% + -140px);bottom:0px;width:100px;height:18px;border-radius:50%;background:radial-gradient(closest-side,rgba(110,60,5,0.42),rgba(110,60,5,0));z-index:0"></div>
+      <div style="position:absolute;left:calc(50% + 44px);bottom:0px;width:92px;height:18px;border-radius:50%;background:radial-gradient(closest-side,rgba(110,60,5,0.4),rgba(110,60,5,0));z-index:0"></div>
+      <span style="position:absolute;left:calc(50% + -168px);bottom:92px;font-size:32px;line-height:1;z-index:0;transform:rotate(-28deg);filter:drop-shadow(0 10px 8px rgba(90,50,10,0.22))">🥬</span>
+      <span style="position:absolute;left:calc(50% + 120px);bottom:104px;font-size:28px;line-height:1;z-index:0;transform:rotate(18deg);filter:drop-shadow(0 10px 8px rgba(90,50,10,0.22))">🍅</span>
+      <span style="position:absolute;left:calc(50% + 34px);bottom:86px;font-size:40px;line-height:1;z-index:0;transform:rotate(22deg);filter:drop-shadow(0 10px 8px rgba(90,50,10,0.22))">🥢</span>
+      <span style="position:absolute;left:calc(50% + -50px);bottom:34px;font-size:100px;line-height:1;z-index:1;transform:rotate(-5deg);filter:drop-shadow(0 10px 8px rgba(90,50,10,0.3))">🍱</span>
+      <span style="position:absolute;left:calc(50% + 38px);bottom:3px;font-size:86px;line-height:1;z-index:2;transform:rotate(9deg);filter:drop-shadow(0 10px 8px rgba(90,50,10,0.3))">🥪</span>
+      <span style="position:absolute;left:calc(50% + -146px);bottom:4px;font-size:94px;line-height:1;z-index:3;transform:rotate(-7deg);filter:drop-shadow(0 10px 8px rgba(90,50,10,0.3))">🍔</span>
+    </div>
   </header>
 
   <sc-if value="{{ isMenu }}" hint-placeholder-val="{{ true }}">
     <div style="padding:16px 16px 0;display:flex;flex-direction:column;gap:14px">
 
       <sc-if value="{{ famHasUnread }}" hint-placeholder-val="{{ false }}">
-        <button sc-camel-on-click="{{ goFamily }}" style="display:flex;align-items:center;gap:10px;min-height:52px;background:#FFF1C2;border:2px solid #3B2A20;border-radius:18px;padding:8px 14px;font-family:inherit;font-weight:800;font-size:15px;color:#3B2A20;cursor:pointer;text-align:left;box-shadow:3px 3px 0 #3B2A20">
+        <button sc-camel-on-click="{{ goFamily }}" style="display:flex;align-items:center;gap:10px;min-height:52px;background:#FFF1C2;border:none;border-radius:18px;padding:8px 14px;font-family:inherit;font-weight:800;font-size:15px;color:#3B2A20;cursor:pointer;text-align:left;box-shadow:0 10px 16px -10px rgba(80,55,30,.5),inset 0 1px 0 rgba(255,255,255,.7)">
           <span style="font-size:24px;flex:none">🔔</span><span style="flex:1;min-width:0">{{ famUnreadText }}</span><span style="font-size:18px">›</span>
         </button>
       </sc-if>
       <sc-if value="{{ fpHasNewNotes }}" hint-placeholder-val="{{ false }}">
-        <button sc-camel-on-click="{{ goPlan }}" style="display:flex;align-items:center;gap:10px;min-height:52px;background:#FFE3EC;border:2px solid #3B2A20;border-radius:18px;padding:8px 14px;font-family:inherit;font-weight:800;font-size:15px;color:#3B2A20;cursor:pointer;text-align:left;box-shadow:3px 3px 0 #3B2A20">
+        <button sc-camel-on-click="{{ goPlan }}" style="display:flex;align-items:center;gap:10px;min-height:52px;background:#FFE3EC;border:none;border-radius:18px;padding:8px 14px;font-family:inherit;font-weight:800;font-size:15px;color:#3B2A20;cursor:pointer;text-align:left;box-shadow:0 10px 16px -10px rgba(80,55,30,.5),inset 0 1px 0 rgba(255,255,255,.7)">
           <span style="font-size:24px;flex:none">💌</span><span style="flex:1;min-width:0">{{ fpNewNotesText }}</span><span style="font-size:18px">›</span>
         </button>
       </sc-if>
 
       <div style="display:flex;align-items:center;justify-content:space-between;gap:8px">
-        <button sc-camel-on-click="{{ prevWeek }}" style="width:44px;height:44px;border-radius:50%;border:2px solid #3B2A20;background:#fff;font-size:18px;font-weight:800;cursor:pointer;color:#3B2A20">‹</button>
+        <button sc-camel-on-click="{{ prevWeek }}" aria-label="Previous week" style="width:44px;height:44px;border-radius:50%;border:none;background:#fff;box-shadow:0 6px 12px -7px rgba(80,55,30,.45),inset 0 -2px 0 rgba(120,90,60,.08);font-size:18px;font-weight:800;cursor:pointer;color:#3B2A20">‹</button>
         <div style="text-align:center">
           <div style="font-family:'Baloo 2',sans-serif;font-weight:700;font-size:18px">{{ weekLabel }}</div>
           <div style="font-size:12px;font-weight:700;color:{{ sourceColor }}">{{ sourceNote }}</div>
         </div>
-        <button sc-camel-on-click="{{ nextWeek }}" style="width:44px;height:44px;border-radius:50%;border:2px solid #3B2A20;background:#fff;font-size:18px;font-weight:800;cursor:pointer;color:#3B2A20">›</button>
+        <button sc-camel-on-click="{{ nextWeek }}" aria-label="Next week" style="width:44px;height:44px;border-radius:50%;border:none;background:#fff;box-shadow:0 6px 12px -7px rgba(80,55,30,.45),inset 0 -2px 0 rgba(120,90,60,.08);font-size:18px;font-weight:800;cursor:pointer;color:#3B2A20">›</button>
       </div>
 
       <div style="display:grid;grid-template-columns:repeat({{ dayCols }},minmax(0,1fr));gap:{{ dayGap }}">
         <sc-for list="{{ days }}" as="d" hint-placeholder-count="5">
-          <button sc-camel-on-click="{{ d.onClick }}" style="border:2px solid #3B2A20;border-radius:18px;padding:8px 0 6px;background:{{ d.bg }};color:{{ d.fg }};cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:2px;font-family:inherit;box-shadow:{{ d.shadow }};position:relative">
+          <button sc-camel-on-click="{{ d.onClick }}" style="border:1px solid {{ d.border }};border-radius:18px;padding:8px 0 6px;background:{{ d.bg }};color:{{ d.fg }};cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:2px;font-family:inherit;box-shadow:{{ d.shadow }};position:relative">
             <span style="font-size:22px;line-height:1">{{ d.emoji }}</span>
             <span style="font-size:12px;font-weight:800">{{ d.label }}</span>
             <span style="font-size:11px;font-weight:700;opacity:.75">{{ d.date }}</span>
@@ -409,14 +420,51 @@ input::placeholder{color:#B49A86}
         </sc-for>
       </div>
 
+      <sc-if value="{{ showBreakfast }}" hint-placeholder-val="{{ false }}">
+      <section id="lb-breakfast" aria-label="Breakfast at home" style="scroll-margin-top:12px;border-radius:30px;padding:16px;background:radial-gradient(95% 75% at 92% 0%,rgba(255,206,84,.62) 0%,rgba(255,206,84,0) 62%),linear-gradient(180deg,#FFF3D2 0%,#FFFAEC 100%);border:1px solid #F2DDA8;box-shadow:0 22px 30px -18px rgba(150,95,15,.45),0 6px 14px -4px rgba(150,95,15,.14),inset 0 1px 0 #fff,inset 0 -4px 10px rgba(220,160,50,.14);display:flex;flex-direction:column;gap:12px">
+        <div style="display:flex;align-items:baseline;justify-content:space-between;flex-wrap:wrap;gap:2px 10px">
+          <h2 style="font-family:'Baloo 2',sans-serif;font-size:22px;margin:0;font-weight:800;line-height:1.1;white-space:nowrap">🌅 Breakfast at home</h2>
+          <span style="font-size:13px;font-weight:700;color:#A4660E;white-space:nowrap">{{ bf.day }}</span>
+        </div>
+        <div style="position:relative;overflow:hidden;isolation:isolate;border-radius:24px;padding:20px 12px 16px;background-color:#FFF6DD;background-image:radial-gradient(120% 95% at 100% 0%,rgba(255,236,160,.85) 0%,rgba(255,214,110,.35) 38%,rgba(255,214,110,0) 72%),repeating-conic-gradient(from 180deg at 100% 0%,rgba(255,255,255,.42) 0deg 5deg,rgba(255,255,255,0) 5deg 13deg),repeating-linear-gradient(0deg,rgba(232,160,30,.15) 0 13px,transparent 13px 26px),repeating-linear-gradient(90deg,rgba(232,160,30,.15) 0 13px,transparent 13px 26px);box-shadow:inset 0 2px 7px rgba(150,95,15,.16),0 1px 0 #fff;display:flex;flex-direction:column;align-items:center;gap:14px">
+          <div aria-hidden="true" style="position:absolute;top:-46px;right:-46px;width:124px;height:124px;border-radius:50%;z-index:-1;background:radial-gradient(circle closest-side,#FFFBE6 0 34%,#FFE680 46%,#FFCB45 58%,rgba(255,196,60,.45) 72%,rgba(255,196,60,0) 100%);box-shadow:0 0 40px 18px rgba(255,205,80,.45)"></div>
+          <div style="display:flex;align-items:center;justify-content:center;gap:8px">
+            <span aria-hidden="true" style="font-size:30px;line-height:1;transform:rotate(-10deg);filter:drop-shadow(0 4px 3px rgba(130,80,10,.25))">🥄</span>
+            <div style="width:168px;height:168px;border-radius:50%;flex:none;display:flex;align-items:center;justify-content:center;background:radial-gradient(circle closest-side,#FFFFFF 0 60%,#EFE6DB 62% 64%,#FFFFFF 66% 80%,#E2A93A 81% 83%,#FFFFFF 84% 86%,#E2A93A 87% 88%,#FBF7F1 90% 100%);box-shadow:0 18px 22px -12px rgba(150,95,15,.42),0 4px 8px rgba(150,95,15,.12),inset 0 -5px 10px rgba(210,160,70,.16),inset 0 3px 0 #fff">
+              <span aria-hidden="true" style="font-size:62px;line-height:1;opacity:{{ bf.emojiOp }};filter:drop-shadow(0 6px 6px rgba(90,50,30,.28))">{{ bf.emoji }}</span>
+            </div>
+            <span aria-hidden="true" style="font-size:30px;line-height:1;transform:rotate(6deg);filter:drop-shadow(0 4px 3px rgba(130,80,10,.25))">🥛</span>
+          </div>
+          <div style="text-align:center;background:rgba(255,252,247,.95);border-radius:16px;padding:8px 14px;box-shadow:0 6px 12px -6px rgba(150,95,15,.35);max-width:100%;box-sizing:border-box">
+            <div style="font-family:'Baloo 2',sans-serif;font-size:20px;font-weight:800;line-height:1.15;overflow-wrap:anywhere">{{ bf.title }}</div>
+            <div style="font-size:12px;font-weight:700;color:#A4660E;margin-top:2px">{{ bf.sub }}</div>
+          </div>
+        </div>
+        <sc-if value="{{ bf.showForm }}" hint-placeholder-val="{{ false }}">
+          <div style="display:flex;gap:8px">
+            <input value="{{ bf.val }}" sc-camel-on-change="{{ bf.onInput }}" maxlength="40" aria-label="Breakfast dish" placeholder="{{ bf.ph }}" style="flex:1;min-width:0;height:48px;border-radius:16px;border:1px solid #F0DCA8;padding:0 14px;font-family:inherit;font-size:16px;font-weight:700;color:#3B2A20;background:#fff;outline:none;box-shadow:inset 0 2px 4px rgba(150,95,15,.12)">
+            <button sc-camel-on-click="{{ bf.save }}" style="flex:none;height:48px;padding:0 18px;border-radius:16px;border:none;background:linear-gradient(180deg,#FFD873 0%,#F4B740 100%);color:#3B2A20;font-family:'Baloo 2',sans-serif;font-size:18px;font-weight:800;cursor:pointer;text-shadow:0 1px 0 rgba(255,255,255,.5);box-shadow:0 7px 12px -5px rgba(190,130,20,.55),inset 0 1px 0 rgba(255,255,255,.55)">Save</button>
+          </div>
+          <sc-if value="{{ bf.cancelShow }}" hint-placeholder-val="{{ false }}">
+            <div style="display:flex;justify-content:center;gap:8px">
+              <button sc-camel-on-click="{{ bf.cancel }}" style="min-height:40px;padding:0 14px;border-radius:999px;border:none;background:#fff;font-family:inherit;font-weight:800;font-size:13px;color:#3B2A20;cursor:pointer;box-shadow:0 5px 9px -5px rgba(150,95,15,.4),inset 0 -2px 0 #F6E7C2">Keep it</button>
+              <button sc-camel-on-click="{{ bf.remove }}" style="min-height:40px;padding:0 14px;border-radius:999px;border:none;background:#fff;font-family:inherit;font-weight:800;font-size:13px;color:#A23A2A;cursor:pointer;box-shadow:0 5px 9px -5px rgba(150,95,15,.4),inset 0 -2px 0 #F6E7C2">🗑️ Clear the plate</button>
+            </div>
+          </sc-if>
+        </sc-if>
+        <sc-if value="{{ bf.showChange }}" hint-placeholder-val="{{ false }}">
+          <button sc-camel-on-click="{{ bf.change }}" style="align-self:center;min-height:44px;padding:0 18px;border-radius:999px;border:none;background:#fff;font-family:inherit;font-weight:800;font-size:14px;color:#3B2A20;cursor:pointer;box-shadow:0 5px 9px -5px rgba(150,95,15,.4),inset 0 -2px 0 #F6E7C2">✏️ Change breakfast</button>
+        </sc-if>
+      </section>
+      </sc-if>
       <section id="lb-lunch" style="scroll-margin-top:12px;background:{{ secBg }};border:{{ secBorder }};border-radius:{{ secRadius }};padding:16px;box-shadow:{{ secShadow }}">
-        <div style="display:flex;align-items:baseline;justify-content:space-between;gap:8px;margin-bottom:10px">
-          <h2 style="font-family:'Baloo 2',sans-serif;font-size:22px;margin:0;font-weight:800;line-height:1.1;min-width:0">{{ trayTitle }}</h2>
+        <div style="display:flex;align-items:baseline;justify-content:space-between;flex-wrap:wrap;gap:2px 10px;margin-bottom:10px">
+          <h2 style="font-family:'Baloo 2',sans-serif;font-size:22px;margin:0;font-weight:800;line-height:1.1;white-space:nowrap">{{ trayTitle }}</h2>
           <span style="font-size:13px;font-weight:700;color:#8A6E5A;white-space:nowrap">{{ dayTitle }}</span>
         </div>
         <sc-if value="{{ mMeals }}" hint-placeholder-val="{{ false }}">
-          <button aria-label="{{ mBreakfast.aria }}" sc-camel-on-click="{{ mBreakfast.onClick }}" style="display:flex;align-items:center;gap:10px;width:100%;min-height:62px;padding:6px 10px;border-radius:18px;border:2px solid #3B2A20;background:#FFF1C2;box-shadow:0 3px 0 #3B2A20;font-family:inherit;color:#3B2A20;text-align:left;cursor:pointer">
-            <span aria-hidden="true" style="width:42px;height:42px;flex:none;border-radius:12px;background:#fff;border:2px solid #3B2A20;display:flex;align-items:center;justify-content:center;font-size:23px;line-height:1">{{ mBreakfast.e }}</span>
+          <button aria-label="{{ mBreakfast.aria }}" sc-camel-on-click="{{ mBreakfast.onClick }}" style="display:flex;align-items:center;gap:10px;width:100%;min-height:62px;padding:6px 10px;border-radius:20px;border:none;background:#FFF1C2;box-shadow:0 10px 16px -10px rgba(150,100,20,.55),inset 0 1px 0 rgba(255,255,255,.7),inset 0 -2px 0 rgba(150,100,20,.1);font-family:inherit;color:#3B2A20;text-align:left;cursor:pointer">
+            <span aria-hidden="true" style="width:42px;height:42px;flex:none;border-radius:50%;background:#fff;display:flex;align-items:center;justify-content:center;font-size:23px;line-height:1;box-shadow:0 4px 8px -4px rgba(150,100,20,.45),inset 0 -2px 0 rgba(150,100,20,.08)">{{ mBreakfast.e }}</span>
             <span style="flex:1;min-width:0">
               <span style="display:block;font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#7A4B12">🌅 {{ mBreakfast.label }}</span>
               <span style="display:block;font-size:16px;font-weight:800;line-height:1.2;color:{{ mBreakfast.mainFg }};overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ mBreakfast.main }}</span>
@@ -476,17 +524,6 @@ input::placeholder{color:#B49A86}
           </sc-if>
         </div>
         <sc-if value="{{ isSchoolDay }}" hint-placeholder-val="{{ true }}">
-        <sc-if value="{{ showQuick }}" hint-placeholder-val="{{ true }}">
-          <div style="margin-top:12px;display:flex;flex-direction:column;gap:8px">
-            <div style="font-size:11px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:#9C4C68;margin:0 4px">Need an add-on? Tap one</div>
-            <div style="display:flex;flex-wrap:wrap;gap:8px">
-              <sc-for list="{{ quickIdeas }}" as="q" hint-placeholder-count="3">
-                <button sc-camel-on-click="{{ q.onAdd }}" style="display:flex;align-items:center;gap:6px;min-height:40px;background:#fff;border:none;border-radius:999px;padding:4px 12px;font-family:inherit;font-weight:700;font-size:14px;color:#3B2A20;cursor:pointer;box-shadow:0 5px 10px -5px rgba(90,60,30,.4),inset 0 -2px 0 #F3E6EB"><span style="font-size:18px">{{ q.emoji }}</span>{{ q.title }}</button>
-              </sc-for>
-              <button sc-camel-on-click="{{ shuffle }}" style="min-height:40px;border:none;background:none;font-family:inherit;font-weight:800;font-size:14px;color:#8A4A5E;cursor:pointer">🎲 more</button>
-            </div>
-          </div>
-        </sc-if>
         <sc-if value="{{ hasFamDay }}" hint-placeholder-val="{{ false }}">
           <div style="margin-top:12px;background:linear-gradient(180deg,#F1EADF 0%,#FBF8F3 40%);border-radius:18px;padding:9px 12px;display:flex;flex-direction:column;gap:4px;box-shadow:inset 0 2px 6px rgba(105,78,50,.16),inset 0 -1px 0 #fff">
             <div style="font-size:11px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:#7A4B12">👪 Family picks · {{ dayShort }}</div>
@@ -502,8 +539,8 @@ input::placeholder{color:#B49A86}
         </sc-if>
         </div>
         <sc-if value="{{ mMeals }}" hint-placeholder-val="{{ false }}">
-          <button aria-label="{{ mDinner.aria }}" sc-camel-on-click="{{ mDinner.onClick }}" style="display:flex;align-items:center;gap:10px;width:100%;min-height:62px;padding:6px 10px;border-radius:18px;border:2px solid #3B2A20;background:#E1F0FB;box-shadow:0 3px 0 #3B2A20;font-family:inherit;color:#3B2A20;text-align:left;cursor:pointer">
-            <span aria-hidden="true" style="width:42px;height:42px;flex:none;border-radius:12px;background:#fff;border:2px solid #3B2A20;display:flex;align-items:center;justify-content:center;font-size:23px;line-height:1">{{ mDinner.e }}</span>
+          <button aria-label="{{ mDinner.aria }}" sc-camel-on-click="{{ mDinner.onClick }}" style="display:flex;align-items:center;gap:10px;width:100%;min-height:62px;padding:6px 10px;border-radius:20px;border:none;background:#E1F0FB;box-shadow:0 10px 16px -10px rgba(40,90,140,.55),inset 0 1px 0 rgba(255,255,255,.7),inset 0 -2px 0 rgba(40,90,140,.1);font-family:inherit;color:#3B2A20;text-align:left;cursor:pointer">
+            <span aria-hidden="true" style="width:42px;height:42px;flex:none;border-radius:50%;background:#fff;display:flex;align-items:center;justify-content:center;font-size:23px;line-height:1;box-shadow:0 4px 8px -4px rgba(40,90,140,.45),inset 0 -2px 0 rgba(40,90,140,.08)">{{ mDinner.e }}</span>
             <span style="flex:1;min-width:0">
               <span style="display:block;font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#2D5B85">🌙 {{ mDinner.label }}</span>
               <span style="display:block;font-size:16px;font-weight:800;line-height:1.2;color:{{ mDinner.mainFg }};overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ mDinner.main }}</span>
@@ -513,72 +550,109 @@ input::placeholder{color:#B49A86}
           </button>
         </sc-if>
       </section>
+      <sc-if value="{{ showDinner }}" hint-placeholder-val="{{ false }}">
+      <section id="lb-dinner" aria-label="Dinner at home" style="scroll-margin-top:12px;border-radius:30px;padding:16px;background:radial-gradient(120% 70% at 50% 0%,rgba(255,210,140,.42) 0%,rgba(255,210,140,0) 62%),linear-gradient(180deg,#FFF9F1 0%,#FCEEE0 100%);border:1px solid #F0DCC6;box-shadow:0 22px 30px -18px rgba(110,55,25,.45),0 6px 14px -4px rgba(110,55,25,.14),inset 0 1px 0 #fff,inset 0 -4px 10px rgba(190,120,80,.12);display:flex;flex-direction:column;gap:12px">
+        <div style="display:flex;align-items:baseline;justify-content:space-between;flex-wrap:wrap;gap:2px 10px">
+          <h2 style="font-family:'Baloo 2',sans-serif;font-size:22px;margin:0;font-weight:800;line-height:1.1;white-space:nowrap">🏡 Dinner at home</h2>
+          <span style="font-size:13px;font-weight:700;color:#9A5B3A;white-space:nowrap">{{ dn.day }}</span>
+        </div>
+        <div style="border-radius:24px;padding:20px 12px 16px;background-color:#FFF6EE;background-image:repeating-linear-gradient(0deg,rgba(214,98,88,.16) 0 13px,transparent 13px 26px),repeating-linear-gradient(90deg,rgba(214,98,88,.16) 0 13px,transparent 13px 26px);box-shadow:inset 0 2px 7px rgba(140,60,40,.16),0 1px 0 #fff;display:flex;flex-direction:column;align-items:center;gap:14px">
+          <div style="display:flex;align-items:center;justify-content:center;gap:8px">
+            <span aria-hidden="true" style="font-size:30px;line-height:1;transform:rotate(-10deg);filter:drop-shadow(0 4px 3px rgba(90,50,30,.25))">🍴</span>
+            <div style="width:168px;height:168px;border-radius:50%;flex:none;display:flex;align-items:center;justify-content:center;background:radial-gradient(circle closest-side,#FFFFFF 0 60%,#EFE6DB 62% 64%,#FFFFFF 66% 80%,#E5917D 81% 83%,#FFFFFF 84% 86%,#E5917D 87% 88%,#FBF7F1 90% 100%);box-shadow:0 18px 22px -12px rgba(110,55,25,.5),0 4px 8px rgba(110,55,25,.14),inset 0 -5px 10px rgba(150,110,80,.16),inset 0 3px 0 #fff">
+              <span aria-hidden="true" style="font-size:62px;line-height:1;opacity:{{ dn.emojiOp }};filter:drop-shadow(0 6px 6px rgba(90,50,30,.28))">{{ dn.emoji }}</span>
+            </div>
+            <span aria-hidden="true" style="font-size:30px;line-height:1;transform:rotate(10deg);filter:drop-shadow(0 4px 3px rgba(90,50,30,.25))">🥄</span>
+          </div>
+          <div style="text-align:center;background:rgba(255,252,247,.95);border-radius:16px;padding:8px 14px;box-shadow:0 6px 12px -6px rgba(110,55,25,.35);max-width:100%;box-sizing:border-box">
+            <div style="font-family:'Baloo 2',sans-serif;font-size:20px;font-weight:800;line-height:1.15;overflow-wrap:anywhere">{{ dn.title }}</div>
+            <div style="font-size:12px;font-weight:700;color:#9A5B3A;margin-top:2px">{{ dn.sub }}</div>
+          </div>
+        </div>
+        <sc-if value="{{ dn.showForm }}" hint-placeholder-val="{{ false }}">
+          <div style="display:flex;gap:8px">
+            <input value="{{ dn.val }}" sc-camel-on-change="{{ dn.onInput }}" maxlength="40" aria-label="Tonight’s dinner" placeholder="{{ dn.ph }}" style="flex:1;min-width:0;height:48px;border-radius:16px;border:1px solid #EBD3BE;padding:0 14px;font-family:inherit;font-size:16px;font-weight:700;color:#3B2A20;background:#fff;outline:none;box-shadow:inset 0 2px 4px rgba(140,80,40,.12)">
+            <button sc-camel-on-click="{{ dn.save }}" style="flex:none;height:48px;padding:0 18px;border-radius:16px;border:none;background:linear-gradient(180deg,#D4663A 0%,#B4481F 100%);color:#fff;font-family:'Baloo 2',sans-serif;font-size:18px;font-weight:800;cursor:pointer;text-shadow:0 1px 0 rgba(100,30,5,.3);box-shadow:0 7px 12px -5px rgba(170,70,25,.55),inset 0 1px 0 rgba(255,255,255,.35)">Save</button>
+          </div>
+          <sc-if value="{{ dn.cancelShow }}" hint-placeholder-val="{{ false }}">
+            <div style="display:flex;justify-content:center;gap:8px">
+              <button sc-camel-on-click="{{ dn.cancel }}" style="min-height:40px;padding:0 14px;border-radius:999px;border:none;background:#fff;font-family:inherit;font-weight:800;font-size:13px;color:#3B2A20;cursor:pointer;box-shadow:0 5px 9px -5px rgba(110,55,25,.45),inset 0 -2px 0 #F3E4D6">Keep it</button>
+              <button sc-camel-on-click="{{ dn.remove }}" style="min-height:40px;padding:0 14px;border-radius:999px;border:none;background:#fff;font-family:inherit;font-weight:800;font-size:13px;color:#A23A2A;cursor:pointer;box-shadow:0 5px 9px -5px rgba(110,55,25,.45),inset 0 -2px 0 #F3E4D6">🗑️ Clear the plate</button>
+            </div>
+          </sc-if>
+        </sc-if>
+        <sc-if value="{{ dn.showChange }}" hint-placeholder-val="{{ false }}">
+          <button sc-camel-on-click="{{ dn.change }}" style="align-self:center;min-height:44px;padding:0 18px;border-radius:999px;border:none;background:#fff;font-family:inherit;font-weight:800;font-size:14px;color:#3B2A20;cursor:pointer;box-shadow:0 5px 9px -5px rgba(110,55,25,.45),inset 0 -2px 0 #F3E4D6">✏️ Change tonight’s dinner</button>
+        </sc-if>
+      </section>
+      </sc-if>
 
-      <section id="lb-kitchen" aria-label="Idea kitchen" style="scroll-margin-top:12px;background:#FFF1C2;border:2px solid #3B2A20;border-radius:24px;padding:14px 16px;box-shadow:4px 4px 0 #3B2A20;display:flex;flex-direction:column;gap:10px">
+      <section id="lb-kitchen" aria-label="Idea kitchen" style="position:relative;scroll-margin-top:12px;background:linear-gradient(180deg,rgba(255,244,225,.45) 0,rgba(255,244,225,0) 34px),repeating-linear-gradient(177deg,rgba(140,85,35,0) 0,rgba(140,85,35,.08) 2px,rgba(140,85,35,0) 6px,rgba(140,85,35,0) 11px,rgba(110,65,25,.06) 13px,rgba(140,85,35,0) 17px),repeating-linear-gradient(184deg,rgba(255,236,205,0) 0,rgba(255,236,205,.22) 28px,rgba(255,236,205,0) 61px),linear-gradient(160deg,#EBC898 0%,#DFB27D 50%,#D4A16B 100%);border-radius:28px;padding:30px 16px 16px;box-shadow:0 5px 0 #B9814B,0 26px 30px -18px rgba(70,40,15,.55),0 10px 18px -8px rgba(70,40,15,.22),inset 0 2px 0 rgba(255,240,215,.75),inset 0 -5px 10px rgba(120,70,30,.22);display:flex;flex-direction:column;gap:10px">
+        <div aria-hidden="true" style="position:absolute;top:9px;left:50%;width:34px;height:13px;margin-left:-17px;border-radius:999px;background:#FFF7EC;box-shadow:inset 0 3px 5px rgba(90,50,20,.5),0 1px 0 rgba(255,236,205,.8)"></div>
         <div style="display:flex;align-items:center;justify-content:space-between;gap:10px">
           <div style="min-width:0">
             <h2 style="font-family:'Baloo 2',sans-serif;font-size:22px;margin:0;font-weight:800;line-height:1.1">💡 Idea kitchen</h2>
-            <div style="font-size:12px;font-weight:800;color:{{ thInk }};margin-top:2px">Today’s theme: {{ thTitle }}</div>
           </div>
-          <button sc-camel-on-click="{{ surprise }}" style="flex:none;min-height:42px;padding:0 12px;border-radius:16px;border:2px solid #3B2A20;background:#FF6B8A;color:#fff;font-family:inherit;font-weight:800;font-size:14px;cursor:pointer;box-shadow:0 3px 0 #3B2A20;white-space:nowrap">🎲 Surprise me</button>
+          <button sc-camel-on-click="{{ surprise }}" style="flex:none;min-height:44px;padding:0 14px;border-radius:16px;border:none;background:linear-gradient(180deg,#EE6C93 0%,#D2416F 100%);color:#fff;font-family:inherit;font-weight:800;font-size:14px;cursor:pointer;text-shadow:0 1px 0 rgba(120,20,60,.25);box-shadow:0 8px 12px -6px rgba(110,40,20,.55),inset 0 1px 0 rgba(255,255,255,.4);white-space:nowrap">🎲 Surprise me</button>
         </div>
 
         <sc-if value="{{ hasSpot }}" hint-placeholder-val="{{ false }}">
-          <div id="lb-spot" aria-live="polite" style="scroll-margin-top:12px;background:#fff;border:2px solid #3B2A20;border-radius:20px;padding:12px;box-shadow:0 4px 0 #3B2A20;display:flex;flex-direction:column;gap:10px;animation:lb-pop .35s ease-out">
+          <div id="lb-spot" aria-live="polite" style="scroll-margin-top:12px;background:radial-gradient(130% 100% at 30% 0%,#FFFFFF 0%,#FCFAF6 60%,#F3EDE4 100%);border:1px solid #EFE6DA;border-radius:22px;padding:12px;box-shadow:0 12px 18px -10px rgba(70,40,15,.55),0 2px 4px rgba(70,40,15,.12),inset 0 1px 0 #fff,inset 0 -3px 6px rgba(150,120,90,.12);display:flex;flex-direction:column;gap:10px;animation:lb-pop .35s ease-out">
             <div style="display:flex;gap:12px;align-items:center">
-              <span aria-hidden="true" style="width:64px;height:64px;border-radius:20px;background:{{ spot.bg }};display:flex;align-items:center;justify-content:center;font-size:38px;flex:none;border:2px solid #3B2A20">{{ spot.emoji }}</span>
+              <span aria-hidden="true" style="width:64px;height:64px;border-radius:50%;background:{{ spot.bg }};display:flex;align-items:center;justify-content:center;font-size:36px;flex:none;box-shadow:0 5px 9px -4px rgba(90,60,30,.35),inset 0 1px 0 rgba(255,255,255,.75)">{{ spot.emoji }}</span>
               <div style="flex:1;min-width:0">
                 <div style="font-size:11px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:#E2553F">✨ Spotlight</div>
                 <div style="font-family:'Baloo 2',sans-serif;font-size:20px;font-weight:800;line-height:1.1;overflow-wrap:anywhere">{{ spot.title }}</div>
                 <div style="font-size:12px;font-weight:800;color:#8A6E5A;margin-top:2px">⏱ {{ spot.time }} · {{ spot.groupEmojis }}</div>
               </div>
-              <button aria-label="Close the spotlight" sc-camel-on-click="{{ closeSpot }}" style="width:36px;height:36px;border-radius:50%;border:2px solid #3B2A20;background:#fff;font-size:14px;font-weight:800;color:#3B2A20;cursor:pointer;flex:none;padding:0;align-self:flex-start">✕</button>
+              <button aria-label="Close the spotlight" sc-camel-on-click="{{ closeSpot }}" style="width:36px;height:36px;border-radius:50%;border:none;background:#fff;font-size:14px;font-weight:800;color:#3B2A20;cursor:pointer;flex:none;padding:0;align-self:flex-start;box-shadow:0 3px 7px -2px rgba(90,60,30,.35)">✕</button>
             </div>
             <div style="font-size:14px;font-weight:600;line-height:1.4;color:#5A4334;text-wrap:pretty">{{ spot.how }}</div>
             <div style="display:flex;gap:8px">
-              <button aria-label="{{ spot.addAria }}" sc-camel-on-click="{{ spot.onAdd }}" style="flex:1;min-width:0;height:48px;border-radius:16px;border:2px solid #3B2A20;background:{{ spot.btnBg }};font-family:'Baloo 2',sans-serif;font-size:17px;font-weight:800;color:#3B2A20;cursor:pointer;box-shadow:0 3px 0 #3B2A20;white-space:nowrap">{{ spot.addLabel }}</button>
-              <button aria-label="{{ spot.daysAria }}" sc-camel-on-click="{{ spot.onDays }}" style="flex:none;height:48px;padding:0 12px;border-radius:16px;border:2px solid #3B2A20;background:#fff;font-family:inherit;font-weight:800;font-size:14px;color:#3B2A20;cursor:pointer">📅 Days</button>
-              <button aria-label="Show another idea" sc-camel-on-click="{{ surprise }}" style="flex:none;height:48px;padding:0 12px;border-radius:16px;border:2px solid #3B2A20;background:#fff;font-family:inherit;font-weight:800;font-size:14px;color:#3B2A20;cursor:pointer">🎲</button>
+              <button aria-label="{{ spot.addAria }}" sc-camel-on-click="{{ spot.onAdd }}" style="flex:1;min-width:0;height:48px;border-radius:16px;border:none;background:{{ spot.btnBg }};font-family:'Baloo 2',sans-serif;font-size:17px;font-weight:800;color:#3B2A20;cursor:pointer;box-shadow:0 6px 10px -5px rgba(90,60,30,.45),inset 0 -2px 0 rgba(0,0,0,.07),inset 0 1px 0 rgba(255,255,255,.6);white-space:nowrap">{{ spot.addLabel }}</button>
+              <button aria-label="{{ spot.daysAria }}" sc-camel-on-click="{{ spot.onDays }}" style="flex:none;height:48px;padding:0 12px;border-radius:16px;border:none;background:#fff;font-family:inherit;font-weight:800;font-size:14px;color:#3B2A20;cursor:pointer;box-shadow:0 5px 9px -5px rgba(90,60,30,.45),inset 0 -2px 0 #F1E9DE">📅 Days</button>
+              <button aria-label="Show another idea" sc-camel-on-click="{{ surprise }}" style="flex:none;height:48px;padding:0 12px;border-radius:16px;border:none;background:#fff;font-family:inherit;font-weight:800;font-size:14px;color:#3B2A20;cursor:pointer;box-shadow:0 5px 9px -5px rgba(90,60,30,.45),inset 0 -2px 0 #F1E9DE">🎲</button>
             </div>
           </div>
         </sc-if>
 
-        <div role="group" aria-label="Show ideas" style="display:flex;gap:6px;overflow-x:auto;margin:0 -16px;padding:2px 16px 4px;scrollbar-width:none">
+        <div role="group" aria-label="Show ideas" style="display:flex;gap:6px;overflow-x:auto;margin:0 -16px;padding:2px 16px 8px;scrollbar-width:none">
           <sc-for list="{{ filters }}" as="fl" hint-placeholder-count="4">
-            <button aria-pressed="{{ fl.pressed }}" sc-camel-on-click="{{ fl.onClick }}" style="flex:none;min-height:36px;padding:0 12px;border-radius:999px;border:2px solid #3B2A20;background:{{ fl.bg }};color:{{ fl.fg }};font-family:inherit;font-weight:800;font-size:13px;cursor:pointer;white-space:nowrap">{{ fl.label }}</button>
+            <button aria-pressed="{{ fl.pressed }}" sc-camel-on-click="{{ fl.onClick }}" style="flex:none;min-height:36px;padding:0 12px;border-radius:999px;border:none;background:{{ fl.bg }};color:{{ fl.fg }};box-shadow:0 4px 7px -4px rgba(80,45,15,.6),inset 0 -1px 0 rgba(0,0,0,.06);font-family:inherit;font-weight:800;font-size:13px;cursor:pointer;white-space:nowrap">{{ fl.label }}</button>
           </sc-for>
         </div>
 
         <sc-if value="{{ noIdeas }}" hint-placeholder-val="{{ false }}">
-          <div style="text-align:center;padding:10px;color:#7A4B12;font-weight:700"><div style="font-size:32px">📝</div>No ideas of your own yet. Create one below!</div>
+          <div style="text-align:center;padding:10px;color:#5A3510;font-weight:700"><div style="font-size:32px">📝</div>No ideas of your own yet. Create one below!</div>
         </sc-if>
-        <div aria-label="{{ ideaCount }}" style="display:flex;gap:10px;overflow-x:auto;scroll-snap-type:x mandatory;scroll-padding:0 16px;margin:0 -16px;padding:2px 16px 8px;scrollbar-width:none;overscroll-behavior-x:contain">
-          <sc-for list="{{ ideas }}" as="ig" hint-placeholder-count="3">
-            <div style="flex:none;width:132px;box-sizing:border-box;scroll-snap-align:start;background:{{ ig.cardBg }};border:2px solid #3B2A20;border-radius:18px;padding:8px;display:flex;flex-direction:column;gap:6px;box-shadow:0 3px 0 #3B2A20;position:relative">
-              <sc-if value="{{ ig.isTheme }}" hint-placeholder-val="{{ false }}">
-                <span style="position:absolute;top:-2px;right:-2px;background:{{ thBg }};border:2px solid #3B2A20;border-radius:0 16px 0 10px;padding:1px 7px;font-size:10px;font-weight:800;color:{{ thInk }}">✨ Theme</span>
-              </sc-if>
-              <button aria-label="{{ ig.openAria }}" sc-camel-on-click="{{ ig.onOpen }}" style="border:none;background:none;padding:0;display:flex;flex-direction:column;align-items:flex-start;gap:5px;text-align:left;cursor:pointer;font-family:inherit;color:#3B2A20;min-width:0;flex:1">
-                <span style="width:46px;height:46px;border-radius:14px;background:{{ ig.bg }};display:flex;align-items:center;justify-content:center;font-size:28px;flex:none">{{ ig.emoji }}</span>
-                <span style="font-family:'Baloo 2',sans-serif;font-size:15px;font-weight:800;line-height:1.1;overflow-wrap:anywhere;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden">{{ ig.title }}</span>
-                <span style="font-size:11px;font-weight:800;color:#8A6E5A">⏱ {{ ig.time }} · {{ ig.groupEmojis }}</span>
+        <div id="lb-shelf" aria-label="{{ ideaCount }}" sc-camel-on-scroll="{{ onShelfScroll }}" style="display:flex;gap:32px;overflow-x:auto;scroll-snap-type:x mandatory;scroll-padding:0 16px;margin:0 -16px;padding:2px 16px 4px;scrollbar-width:none;overscroll-behavior-x:contain">
+          <sc-for list="{{ ideas }}" as="ig" hint-placeholder-count="2">
+            <div style="flex:0 0 100%;box-sizing:border-box;scroll-snap-align:start;scroll-snap-stop:always;position:relative;display:flex;flex-direction:column;align-items:center;gap:8px;text-align:center;padding:6px 0 4px">
+              <button aria-label="{{ ig.openAria }}" sc-camel-on-click="{{ ig.onOpen }}" style="border:none;background:none;padding:0;display:flex;flex-direction:column;align-items:center;gap:6px;cursor:pointer;font-family:inherit;color:#3B2A20;max-width:100%;min-width:0">
+                <span aria-hidden="true" style="font-size:78px;line-height:1.05;filter:drop-shadow(0 10px 7px rgba(80,40,10,.34)) drop-shadow(0 2px 2px rgba(80,40,10,.22))">{{ ig.emoji }}</span>
+                <span style="font-family:'Baloo 2',sans-serif;font-size:24px;font-weight:800;line-height:1.1;overflow-wrap:anywhere;text-wrap:balance;text-shadow:0 1px 0 rgba(255,236,205,.7)">{{ ig.title }}</span>
+                <span style="font-size:13px;font-weight:800;color:#5A3510">⏱ {{ ig.time }} · {{ ig.groupEmojis }}</span>
               </button>
-              <sc-if value="{{ ig.mine }}" hint-placeholder-val="{{ false }}">
-                <div style="display:flex;align-items:center;justify-content:space-between;gap:4px">
-                  <span style="background:#FFE3EC;border-radius:999px;padding:2px 8px;font-size:11px;font-weight:800;color:#8A4A5E;white-space:nowrap">💖 Mine</span>
-                  <button aria-label="{{ ig.delAria }}" sc-camel-on-click="{{ ig.onDelete }}" style="width:30px;height:30px;flex:none;border-radius:50%;border:2px solid #E1CDB8;background:#fff;font-size:13px;cursor:pointer;padding:0">🗑️</button>
-                </div>
-              </sc-if>
-              <div style="display:flex;gap:6px">
-                <button aria-label="{{ ig.addAria }}" sc-camel-on-click="{{ ig.onAdd }}" style="flex:1;min-width:0;min-height:36px;border-radius:12px;border:2px solid #3B2A20;background:{{ ig.btnBg }};font-family:inherit;font-weight:800;font-size:12px;color:#3B2A20;cursor:pointer;white-space:nowrap;padding:0 4px">{{ ig.addLabel }}</button>
-                <button aria-label="{{ ig.daysAria }}" sc-camel-on-click="{{ ig.onDays }}" style="width:36px;min-height:36px;flex:none;border-radius:12px;border:2px solid #3B2A20;background:#fff;font-size:14px;cursor:pointer;padding:0">📅</button>
+              <div style="display:flex;align-items:center;justify-content:center;gap:8px;flex-wrap:wrap">
+                <sc-if value="{{ ig.mine }}" hint-placeholder-val="{{ false }}">
+                  <span style="background:#FFE3EC;border-radius:999px;padding:3px 10px;font-size:12px;font-weight:800;color:#8A4A5E;white-space:nowrap;box-shadow:0 5px 9px -5px rgba(80,45,15,.55),inset 0 -2px 0 #F1E9DE">💖 Mine</span>
+                  <button aria-label="{{ ig.delAria }}" sc-camel-on-click="{{ ig.onDelete }}" style="width:44px;height:44px;flex:none;border-radius:14px;border:none;background:#FFFBF3;font-size:16px;cursor:pointer;padding:0;box-shadow:0 5px 9px -5px rgba(80,45,15,.55),inset 0 -2px 0 #F1E9DE">🗑️</button>
+                </sc-if>
+                <button aria-label="{{ ig.addAria }}" sc-camel-on-click="{{ ig.onAdd }}" style="min-width:128px;min-height:44px;border-radius:14px;border:none;background:{{ ig.btnBg }};font-family:inherit;font-weight:800;font-size:14px;color:#3B2A20;cursor:pointer;white-space:nowrap;padding:0 16px;box-shadow:0 6px 10px -5px rgba(80,45,15,.6),inset 0 -2px 0 rgba(0,0,0,.07),inset 0 1px 0 rgba(255,255,255,.5)">{{ ig.addLabel }}</button>
+                <button aria-label="{{ ig.daysAria }}" sc-camel-on-click="{{ ig.onDays }}" style="width:44px;height:44px;flex:none;border-radius:14px;border:none;background:#FFFBF3;font-size:17px;cursor:pointer;padding:0;box-shadow:0 5px 9px -5px rgba(80,45,15,.55),inset 0 -2px 0 #F1E9DE">📅</button>
               </div>
             </div>
           </sc-for>
         </div>
-        <div style="font-size:12px;font-weight:800;color:#7A4B12;margin-top:-4px">{{ ideaCount }}</div>
+        <sc-if value="{{ shelfNav }}" hint-placeholder-val="{{ true }}">
+          <div style="display:flex;align-items:center;justify-content:center;gap:14px">
+            <button aria-label="Previous idea" sc-camel-on-click="{{ shelfPrev }}" style="width:44px;height:44px;border-radius:50%;border:none;background:#FFFBF3;color:#3B2A20;font-size:22px;font-weight:800;cursor:pointer;padding:0;opacity:{{ shelfPrevOp }};box-shadow:0 5px 9px -5px rgba(80,45,15,.55),inset 0 -2px 0 #F1E9DE">‹</button>
+            <span aria-live="polite" style="font-size:13px;font-weight:800;color:#5A3510;min-width:110px;text-align:center;text-shadow:0 1px 0 rgba(255,236,205,.6)">{{ shelfPos }}</span>
+            <button aria-label="Next idea" sc-camel-on-click="{{ shelfNext }}" style="width:44px;height:44px;border-radius:50%;border:none;background:#FFFBF3;color:#3B2A20;font-size:22px;font-weight:800;cursor:pointer;padding:0;opacity:{{ shelfNextOp }};box-shadow:0 5px 9px -5px rgba(80,45,15,.55),inset 0 -2px 0 #F1E9DE">›</button>
+          </div>
+        </sc-if>
 
-        <section id="lb-create" style="scroll-margin-top:12px;background:#fff;border:2px solid #3B2A20;border-radius:20px;padding:12px 14px">
+        <section id="lb-create" style="scroll-margin-top:12px;background:radial-gradient(130% 100% at 30% 0%,#FFFFFF 0%,#FCFAF6 60%,#F3EDE4 100%);border:1px solid #EFE6DA;border-radius:22px;padding:12px 14px;box-shadow:0 12px 18px -10px rgba(70,40,15,.55),0 2px 4px rgba(70,40,15,.12),inset 0 1px 0 #fff,inset 0 -3px 6px rgba(150,120,90,.12)">
           <button sc-camel-on-click="{{ toggleForm }}" style="width:100%;display:flex;align-items:center;justify-content:space-between;gap:8px;background:none;border:none;padding:0;cursor:pointer;font-family:inherit;color:#3B2A20;min-height:40px">
             <span style="font-family:'Baloo 2',sans-serif;font-size:19px;font-weight:800">✏️ Create my own idea</span>
             <span style="width:36px;height:36px;border-radius:50%;background:#3B2A20;color:#FFD166;display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:800">{{ formIcon }}</span>
@@ -630,42 +704,42 @@ input::placeholder{color:#B49A86}
         </section>
       </section>
 
-      <section id="lb-quests" style="scroll-margin-top:12px;background:#E1F0FB;border:2px solid #3B2A20;border-radius:24px;padding:16px;box-shadow:4px 4px 0 #3B2A20;display:flex;flex-direction:column;gap:8px">
+      <section id="lb-quests" style="scroll-margin-top:12px;background:linear-gradient(180deg,#F0F8FF 0%,#E2F0FB 100%);border:1px solid #D2E5F4;border-radius:28px;padding:16px;box-shadow:0 22px 30px -18px rgba(40,90,140,.42),0 6px 14px -4px rgba(40,90,140,.12),inset 0 1px 0 #fff;display:flex;flex-direction:column;gap:10px">
         <div style="display:flex;align-items:baseline;justify-content:space-between;gap:8px">
           <h2 style="font-family:'Baloo 2',sans-serif;font-size:22px;margin:0;font-weight:800;line-height:1.1">🎯 Daily quests</h2>
-          <span style="font-size:14px;white-space:nowrap">{{ questDots }}</span>
+          <span style="font-size:12px;font-weight:800;color:#33709A;white-space:nowrap;background:rgba(255,255,255,.85);border-radius:999px;padding:4px 10px;box-shadow:0 4px 8px -5px rgba(40,90,140,.4)">{{ questDots }}</span>
         </div>
         <sc-for list="{{ quests }}" as="q" hint-placeholder-count="3">
-          <button sc-camel-on-click="{{ q.onClick }}" style="min-height:54px;border-radius:16px;border:2px solid #3B2A20;background:{{ q.bg }};display:flex;align-items:center;gap:10px;padding:6px 10px;font-family:inherit;color:#3B2A20;cursor:pointer;text-align:left">
+          <button sc-camel-on-click="{{ q.onClick }}" style="min-height:54px;border-radius:18px;border:none;box-shadow:0 8px 14px -9px rgba(40,90,140,.5),inset 0 -2px 0 rgba(40,90,140,.07);background:{{ q.bg }};display:flex;align-items:center;gap:10px;padding:6px 10px;font-family:inherit;color:#3B2A20;cursor:pointer;text-align:left">
             <span style="font-size:24px;flex:none">{{ q.e }}</span>
             <span style="flex:1;min-width:0"><span style="display:block;font-weight:800;font-size:15px;line-height:1.2">{{ q.text }}</span><span style="display:block;font-size:12px;font-weight:700;color:#8A6E5A">{{ q.hint }}</span></span>
-            <span style="width:30px;height:30px;border-radius:50%;border:2px solid #3B2A20;background:{{ q.checkBg }};display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:800;color:#fff;flex:none">{{ q.check }}</span>
+            <span style="width:30px;height:30px;border-radius:50%;border:none;box-shadow:inset 0 0 0 2px rgba(40,90,140,.2),inset 0 2px 4px rgba(40,90,140,.15);background:{{ q.checkBg }};display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:800;color:#fff;flex:none">{{ q.check }}</span>
           </button>
         </sc-for>
-        <div style="height:10px;border-radius:999px;background:#fff;border:2px solid #3B2A20;overflow:hidden"><div style="height:100%;width:{{ qPct }};background:#5AA9E6;transition:width .3s"></div></div>
-        <button sc-camel-on-click="{{ goQuestBoard }}" style="min-height:46px;border-radius:16px;border:2px dashed #3B2A20;background:#fff;font-family:inherit;font-weight:800;font-size:13px;color:#3B2A20;cursor:pointer;display:flex;align-items:center;gap:8px;padding:6px 12px;text-align:left"><span style="flex:1;min-width:0">{{ questReward }}</span><span style="font-size:18px">›</span></button>
+        <div style="height:10px;border-radius:999px;background:rgba(255,255,255,.9);box-shadow:inset 0 1px 3px rgba(40,90,140,.25);overflow:hidden"><div style="height:100%;width:{{ qPct }};border-radius:999px;background:linear-gradient(90deg,#7CC0F0,#4A9BE0);transition:width .3s"></div></div>
+        <button sc-camel-on-click="{{ goQuestBoard }}" style="min-height:46px;border-radius:18px;border:1.5px dashed rgba(40,90,140,.35);background:rgba(255,255,255,.75);font-family:inherit;font-weight:800;font-size:13px;color:#3B2A20;cursor:pointer;display:flex;align-items:center;gap:8px;padding:6px 12px;text-align:left"><span style="flex:1;min-width:0">{{ questReward }}</span><span style="font-size:18px">›</span></button>
       </section>
 
-      <section id="lb-eat" style="scroll-margin-top:12px;background:#DDF5E8;border:2px solid #3B2A20;border-radius:24px;padding:16px;box-shadow:4px 4px 0 #3B2A20">
+      <section id="lb-eat" style="scroll-margin-top:12px;background:linear-gradient(180deg,#F0FBF5 0%,#DFF4E8 100%);border:1px solid #CBEAD9;border-radius:28px;padding:16px;box-shadow:0 22px 30px -18px rgba(30,110,70,.42),0 6px 14px -4px rgba(30,110,70,.12),inset 0 1px 0 #fff">
         <h2 style="font-family:'Baloo 2',sans-serif;font-size:22px;margin:0 0 4px;font-weight:800">🌈 What did you eat?</h2>
         <div style="font-size:13px;font-weight:600;color:#2E6B4F;margin-bottom:12px">Tap each food group on your plate. Hit {{ threshold }} to earn a badge!</div>
         <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px">
           <sc-for list="{{ groups }}" as="g" hint-placeholder-count="6">
-            <button sc-camel-on-click="{{ g.onClick }}" style="min-height:64px;border-radius:18px;border:2px solid #3B2A20;background:{{ g.bg }};cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;font-family:inherit;transform:{{ g.tf }}">
+            <button sc-camel-on-click="{{ g.onClick }}" style="min-height:64px;border-radius:18px;border:none;box-shadow:0 8px 14px -9px rgba(30,110,70,.5),inset 0 -2px 0 rgba(30,110,70,.08);background:{{ g.bg }};transition:transform .15s;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;font-family:inherit;transform:{{ g.tf }}">
               <span style="font-size:26px;line-height:1">{{ g.e }}</span>
               <span style="font-size:12px;font-weight:800;color:#3B2A20">{{ g.label }}</span>
             </button>
           </sc-for>
         </div>
-        <div style="margin-top:14px;height:14px;border-radius:999px;background:#fff;border:2px solid #3B2A20;overflow:hidden">
-          <div style="height:100%;width:{{ progress }};background:#3DBE8B;transition:width .3s"></div>
+        <div style="margin-top:14px;height:12px;border-radius:999px;background:rgba(255,255,255,.9);box-shadow:inset 0 1px 3px rgba(30,110,70,.25);overflow:hidden">
+          <div style="height:100%;width:{{ progress }};border-radius:999px;background:linear-gradient(90deg,#6FD3A4,#2FB07A);transition:width .3s"></div>
         </div>
         <div style="display:flex;justify-content:space-between;font-size:12px;font-weight:800;color:#2E6B4F;margin-top:6px"><span>{{ groupCount }} of 5 food groups</span><span>{{ progressMsg }}</span></div>
         <sc-if value="{{ canClaim }}" hint-placeholder-val="{{ false }}">
-          <button sc-camel-on-click="{{ claim }}" style="margin-top:12px;width:100%;height:54px;border-radius:18px;border:2px solid #3B2A20;background:#3B2A20;color:#FFD166;font-family:'Baloo 2',sans-serif;font-size:20px;font-weight:800;cursor:pointer;box-shadow:0 4px 0 #1E140E">🏅 Claim my badge!</button>
+          <button sc-camel-on-click="{{ claim }}" style="margin-top:12px;width:100%;height:54px;border-radius:18px;border:none;background:linear-gradient(180deg,#4A3628 0%,#33241A 100%);color:#FFD166;font-family:'Baloo 2',sans-serif;font-size:20px;font-weight:800;cursor:pointer;box-shadow:0 12px 18px -9px rgba(40,25,15,.65),inset 0 1px 0 rgba(255,255,255,.15)">🏅 Claim my badge!</button>
         </sc-if>
         <sc-if value="{{ hasEarned }}" hint-placeholder-val="{{ false }}">
-          <div style="margin-top:12px;display:flex;align-items:center;gap:12px;background:#fff;border:2px solid #3B2A20;border-radius:18px;padding:10px 12px">
+          <div style="margin-top:12px;display:flex;align-items:center;gap:12px;background:#fff;border:none;border-radius:18px;padding:10px 12px;box-shadow:0 8px 14px -9px rgba(30,110,70,.5)">
             <span style="width:48px;height:48px;border-radius:50%;background:{{ earned.color }};display:flex;align-items:center;justify-content:center;font-size:26px;flex:none;box-shadow:0 0 0 3px #fff,0 0 0 5px {{ earned.color }}">{{ earned.emoji }}</span>
             <div><div style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:17px">{{ earned.name }}</div><div style="font-size:12px;font-weight:700;color:#8A6E5A">Earned for {{ dayShort }}'s lunch</div></div>
           </div>
@@ -936,7 +1010,7 @@ input::placeholder{color:#B49A86}
           </sc-for>
         </sc-if>
 
-        <div style="font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#8A6E5A;margin-top:4px">Plate badges · earned on the Menu tab</div>
+        <div style="font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#8A6E5A;margin-top:4px">Plate badges · earned on the Meals tab</div>
         <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px">
           <sc-for list="{{ catalog }}" as="c" hint-placeholder-count="4">
             <div style="background:#fff;border:2px solid #3B2A20;border-radius:22px;padding:16px 10px 12px;display:flex;flex-direction:column;align-items:center;text-align:center;gap:6px;opacity:{{ c.op }}">
@@ -2452,14 +2526,6 @@ const IDEAS = [
   { emoji: '🥚', title: 'Deviled Egg Duo', time: '10 min', g: ['protein'], how: 'Use eggs boiled the night before: halve two, mash the yolks with a little mayo and mustard, spoon it back in.' }
 ];
 // The Menu tab's idea kitchen picks a theme for each school day (it changes from week to week too).
-const THEMES = [
-  { e: '🍎', name: 'Fruity', bg: '#FFE3EC', ink: '#8A4A5E', line: 'fruity picks', test: i => i.g.includes('fruit') },
-  { e: '🥦', name: 'Green', bg: '#DDF5E8', ink: '#2E6B4F', line: 'veggie-packed picks', test: i => i.g.includes('veggie') },
-  { e: '💪', name: 'Power-up', bg: '#FFE9C7', ink: '#7A4B12', line: 'protein picks', test: i => i.g.includes('protein') },
-  { e: '⚡', name: 'Speedy', bg: '#E1F0FB', ink: '#3B5E7A', line: 'picks ready in 4 minutes or less', test: i => parseInt(i.time) <= 4 },
-  { e: '🌈', name: 'Rainbow', bg: '#F1EAFB', ink: '#5B3F86', line: 'picks with 3 food groups or more', test: i => i.g.length >= 3 },
-  { e: '🧀', name: 'Cheesy', bg: '#FFF1C2', ink: '#7A4B12', line: 'picks with dairy', test: i => i.g.includes('dairy') }
-];
 const SAMPLE = [
   [['Main', ['Pepperoni Pizza', 'Chicken Caesar Salad']], ['Sides', ['Steamed Broccoli', 'Fresh Apple', 'Chocolate Milk']]],
   [['Main', ['Soft Chicken Tacos', 'Turkey & Cheese Sub']], ['Sides', ['Seasoned Black Beans', 'Salsa', 'Mandarin Oranges', '1% Milk']]],
@@ -3204,7 +3270,7 @@ class Component extends DCLogic {
       sched: cleanSched(saved.sched), cal: cleanCal(saved.cal), passion: cleanPassion(saved.passion), calM: firstOfMonth(now), calSel: null, calSheet: null, fpWs: monOf(now), fpIdx: (wd + 6) % 7, fpSheet: null, fpKid: null, fpKidSched: {}, fpKidPassion: {}, famCal: [], fpNotes: [], fpTag: '',
       fpNoteDraft: '', fpNoteEdit: false, fpReplyFor: null, fpReplyDraft: '', fpReplyEdit: null, fpBusy: false, tick: 0,
       frWeeks: {}, frBoard: [], frTotals: {}, frSheet: null, frBusy: false, frBoardOpen: false, frPost: '', frReflOpen: false, nestWs: monOf(now),
-      art: null, frArtEdit: false, frArtKidDraft: '', frArtDel: null,
+      art: null, frArtEdit: false, frArtKidDraft: '', frArtDel: null, artMeals: { breakfast: {}, dinner: {} }, mealDraft: { breakfast: null, dinner: null }, shelfIdx: 0,
       famOk: false, fam: null, famBusy: false, famErr: '', famEvents: [], famLastSeen: 0, famPlans: [], pushState: 'unknown',
       backupAt: ((lsGet(FKEY, {}) || {}).token ? (lsGet(FKEY, {}) || {}).bAt : (lsGet(VKEY, {}) || {}).bAt) || 0, moveCode: null,
       famForm: { familyName: '', startName: '', code: '', joinName: '', role: 'kid', moveCode: '' }
@@ -4132,8 +4198,16 @@ class Component extends DCLogic {
       const d = await db.doc(ART_FAM).get(), v = d.exists ? d.data() : null;
       if (v && Array.isArray(v.kids)) kids = v.kids.filter(k => k && k.id && k.name).slice(0, 8).map(k => ({ id: String(k.id), nickname: String(k.name).slice(0, 24), role: 'kid', status: 'active' }));
     } catch (e) {}
+    // Breakfast and dinner at home: one dish per meal per day, typed by a parent.
+    const artMeals = { breakfast: {}, dinner: {} };
+    await Promise.all(Object.keys(artMeals).map(async meal => {
+      try {
+        const ds = await db.collection(ART_FAM + '/' + meal).limit(400).get();
+        ds.docs.forEach(d => { const v = d.data() || {}; if (/^\d{4}-\d{2}-\d{2}$/.test(d.id) && v.t) artMeals[meal][d.id] = { t: String(v.t).slice(0, 40), at: Number(v.at) || 0 }; });
+      } catch (e) {}
+    }));
     this._artDb = db;
-    this.setState({ art: { parent, me, kids }, frArtEdit: parent && !kids.length }, () => {
+    this.setState({ art: { parent, me, kids }, frArtEdit: parent && !kids.length, artMeals }, () => {
       const t = this.state.tab;
       if (t === 'plan') this.frLoad(this.state.fpWs);
       if (t === 'nest') this.frLoad(this.state.nestWs);
@@ -4183,6 +4257,42 @@ class Component extends DCLogic {
     if (route === 'POST rhythm/goal/done') { await goals.doc(String(b.id || '')).update({ done: !!b.done }); return { ok: true }; }
     if (route === 'POST rhythm/goal/delete') { await goals.doc(String(b.id || '')).delete(); return { ok: true }; }
     throw new Error('That needs the Lunch Buddy family app.');
+  }
+  // Idea kitchen: one idea at a time on the board; swipe, or use the arrows under it.
+  onShelfScroll(e) {
+    const el = e.currentTarget, i = Math.round(el.scrollLeft / Math.max(1, el.clientWidth));
+    if (i !== this.state.shelfIdx) this.setState({ shelfIdx: i });
+  }
+  shelfGo(d) {
+    const el = document.getElementById('lb-shelf'); if (!el) return;
+    el.scrollBy({ left: d * el.clientWidth, behavior: 'smooth' });
+  }
+  shelfReset() {
+    this.setState({ shelfIdx: 0 });
+    const el = document.getElementById('lb-shelf'); if (el) el.scrollLeft = 0;
+  }
+  // Breakfast and dinner at home (artifact copy): a parent types the day's dish and everyone sees it on the plate.
+  artMealSet(meal, day, v) { this.setState(s => { const m = { ...s.artMeals[meal] }; if (v) m[day] = v; else delete m[day]; return { artMeals: { ...s.artMeals, [meal]: m } }; }); }
+  artMealSave(meal, day) {
+    const a = this.state.art, db = this._artDb; if (!a || !a.parent || !db) return;
+    const t = String(this.state.mealDraft[meal] || '').replace(/\s+/g, ' ').trim().slice(0, 40);
+    if (!t) { this.flash('✏️ Type the dish first'); return; }
+    const prev = this.state.artMeals[meal][day], at = Date.now();
+    this.artMealSet(meal, day, { t, at });
+    this.setState(s => ({ mealDraft: { ...s.mealDraft, [meal]: null } }));
+    db.collection(ART_FAM + '/' + meal).doc(day).set({ t, by: a.me, at })
+      .then(() => this.flash(meal === 'breakfast' ? `🍳 Breakfast is ${t}` : `🍲 Dinner is ${t}`))
+      .catch(() => { this.artMealSet(meal, day, prev); this.flash('⚠️ Couldn’t save that. Please try again.'); });
+  }
+  artMealClear(meal, day) {
+    const a = this.state.art, db = this._artDb; if (!a || !a.parent || !db) return;
+    const prev = this.state.artMeals[meal][day];
+    this.setState(s => ({ mealDraft: { ...s.mealDraft, [meal]: null } }));
+    if (!prev) return;
+    this.artMealSet(meal, day, null);
+    db.collection(ART_FAM + '/' + meal).doc(day).delete()
+      .then(() => this.flash('🍽️ Plate cleared'))
+      .catch(() => { this.artMealSet(meal, day, prev); this.flash('⚠️ Couldn’t save that. Please try again.'); });
   }
   async artKidsSave(kids, msg) {
     const db = this._artDb; if (!db || !this.state.art || !this.state.art.parent) return;
@@ -4479,8 +4589,9 @@ class Component extends DCLogic {
       const dk = iso(add(ws, i)), m = s.menus[dk], sel = i === s.dayIdx, we = i > 4;
       return {
         label, date: add(ws, i).getDate(), emoji: we ? '🏡' : m ? foodPic(m[0].items[0], `d${i}`) : '🍽️', hasBadge: !!s.badges[dk], hasAdd: !we && !!(s.favs[dk] || []).length,
-        bg: sel ? '#FF6B57' : we ? '#FFF7EC' : '#fff', fg: sel ? '#fff' : '#3B2A20', shadow: sel ? '0 4px 0 #3B2A20' : 'none',
-        onClick: () => this.setState({ dayIdx: i })
+        bg: sel ? 'linear-gradient(180deg,#FF8270 0%,#F2563F 100%)' : we ? '#FFF7EC' : '#fff', fg: sel ? '#fff' : '#3B2A20', border: sel ? 'transparent' : 'rgba(120,90,60,.12)',
+         shadow: sel ? '0 12px 18px -9px rgba(220,70,45,.7),inset 0 1px 0 rgba(255,255,255,.35)' : '0 6px 12px -8px rgba(80,55,30,.4),inset 0 -2px 0 rgba(120,90,60,.07)',
+        onClick: () => this.setState({ dayIdx: i, mealDraft: { breakfast: null, dinner: null } })
       };
     });
     let ti = 0;
@@ -4506,7 +4617,7 @@ class Component extends DCLogic {
       const on = used.has(i.title), wk = DOW.filter((_, d) => (s.favs[iso(add(ws, d))] || []).includes(i.title));
       return {
         ...i, mine: !!i.mine, onDelete: () => this.deleteIdea(i.title), groupEmojis: gEm(i),
-        bg: i.mine ? '#FFE3EC' : TILE[n % TILE.length], cardBg: on ? '#F2FBF6' : '#fff',
+        bg: i.mine ? '#FFE3EC' : TILE[n % TILE.length], cardBg: on ? 'linear-gradient(180deg,#F6FCF8 0%,#E4F4EA 100%)' : 'radial-gradient(130% 100% at 30% 0%,#FFFFFF 0%,#FCFAF6 60%,#F3EDE4 100%)',
         btn: wkend ? '📅' : on ? '✅' : '➕', btnBg: on ? '#DDF5E8' : '#FFD166', addLabel: wkend ? '📅 Pick a day' : on ? `✅ On ${FDAYS[s.dayIdx]}` : `➕ ${FDAYS[s.dayIdx]}`,
         addAria: wkend ? `Pick school days for ${i.title}` : on ? `Remove ${i.title} from ${FDAYSL[s.dayIdx]}` : `Add ${i.title} to ${FDAYSL[s.dayIdx]}`,
         onAdd: () => wkend ? this.setState({ pickIdea: { title: i.title, emoji: i.emoji } }) : this.toggleFavOn(k, i.title, FDAYS[s.dayIdx]),
@@ -4516,13 +4627,9 @@ class Component extends DCLogic {
       };
     };
     // Theme of the day: changes with the day and the week; three ideas that fit it, the ones not added yet first.
-    const wkNo = Math.round(ws / 6048e5), th = THEMES[(wkNo * 2 + s.dayIdx) % THEMES.length];
-    const thAll = ALL.filter(th.test), thStart = thAll.length ? (wkNo * 5 + s.dayIdx * 3) % thAll.length : 0;
-    const thPicks = [...thAll.slice(thStart), ...thAll.slice(0, thStart)].sort((a, b) => used.has(a.title) - used.has(b.title)).slice(0, 3);
-    const thSet = new Set(thPicks.map(i => i.title));
     // The idea shelf (swipe sideways): the theme's picks lead, then the rest that match the filter.
     const shelf = ALL.filter(i => s.filter === 'all' || (s.filter === 'mine' ? i.mine : s.filter === 'quick' ? parseInt(i.time) <= 5 : i.g.includes(s.filter)));
-    const ideas = [...shelf.filter(i => thSet.has(i.title)), ...shelf.filter(i => !thSet.has(i.title))].map((i, n) => ({ ...ideaRow(i, n), isTheme: thSet.has(i.title) }));
+    const ideas = shelf.map((i, n) => ideaRow(i, n));
     const spotIdea = s.spot ? ALL.find(i => i.title === s.spot) : null;
     const counts = {}; Object.values(s.badges).forEach(b => counts[b] = (counts[b] || 0) + 1);
     // Idea icons: the best matches for the name being typed (or the popular ones), plus the one picked.
@@ -4533,7 +4640,7 @@ class Component extends DCLogic {
       return { e, label: ic ? ic.label : 'Icon', pressed: on ? 'true' : 'false', bg: on ? '#FFD166' : '#fff', border: on ? '#3B2A20' : '#E8D3BC', onClick: () => this.setDraft({ emoji: e, picked: true }) }; };
     const total = Object.keys(s.badges).length;
     const yum = ['🥄', '🍴', '🍽️', '😋', '🤩'];
-    const tabs = [['menu', '🍽️', 'Menu'], ['plan', '🗓️', 'Plan'], ['nest', '🐣', 'Nest'], ['game', '🎮', 'Game']];   // Ideas lives inside Menu
+    const tabs = [['menu', '🍽️', 'Meals'], ['plan', '🗓️', 'Plan'], ['nest', '🐣', 'Nest'], ['game', '🎮', 'Game']];   // Ideas lives inside Menu
     if (s.famOk) tabs.push(['family', '👪', 'Family']);
     // Family view values
     const fam = s.fam, famIn = !!(fam && fam.me), famAct = famIn && fam.me.status === 'active';
@@ -4781,7 +4888,7 @@ class Component extends DCLogic {
       mMeals: famAct, mBreakfast: mealRow('breakfast', '🍳', 'Breakfast'), mDinner: mealRow('dinner', '🍽️', 'Dinner'),
       trayTitle: famAct ? '🍴 What’s on the menu?' : '🍽️ School tray', lunchEyebrow: s.dayIdx > 4 ? '☀️ Lunch' : '☀️ Lunch · school tray',
       // On its own the whole card is the porcelain tray; in the family menu card the lunch part is.
-      secBg: famAct ? '#fff' : PORC_BG, secBorder: famAct ? '2px solid #3B2A20' : '1px solid #E8DFD3', secRadius: famAct ? '24px' : '30px', secShadow: famAct ? '4px 4px 0 #3B2A20' : PORC_SHADOW,
+      secBg: PORC_BG, secBorder: '1px solid #E8DFD3', secRadius: '30px', secShadow: PORC_SHADOW,
       lwMargin: famAct ? '10px 0 14px' : '0', lwBorder: famAct ? '1px solid #E8DFD3' : 'none', lwPad: famAct ? '10px' : '0', lwBg: famAct ? PORC_BG : 'transparent',
       lwShadow: famAct ? PORC_SHADOW : 'none', lwRadius: famAct ? '26px' : '0',
       frDayLabel: `${FDAYS[s.fpIdx]}, ${MON[fpD.getMonth()]} ${fpD.getDate()}`,
@@ -5144,17 +5251,16 @@ class Component extends DCLogic {
       isMenu: s.tab === 'menu', isNest: s.tab === 'nest', isGame: s.tab === 'game',
       goQuests: () => { this.setState({ nestView: 'quests' }); this.goTab('nest'); },
       questSummary: hasSticker ? `Badge found: ${todaySticker.e} ${todaySticker.name}` : `${qDone} of 3 done · reward: mystery badge`,
-      questDots: qs.map(q => q.done ? '✅' : '⬜').join(' '),
+      questDots: `${qs.filter(q => q.done).length} of ${qs.length} done`,
       quests: qs.map(q => ({
         e: q.e, text: q.text, hint: q.manual ? 'Tap when you’ve done it' : q.done ? 'Auto-checked' : s.tab === 'menu' ? (q.go === 'create' ? 'Create one in the idea kitchen ↑' : q.go === 'lunch' ? 'Pick one in your lunch ↑' : 'Tap your food groups below ↓')
-          : q.go === 'create' ? 'Create one on the Menu tab →' : 'Track it on the Menu tab →',
+          : q.go === 'create' ? 'Create one on the Meals tab →' : 'Track it on the Meals tab →',
         bg: q.done ? '#DDF5E8' : '#fff', check: q.done ? '✓' : '', checkBg: q.done ? '#3DBE8B' : '#fff', checked: q.done ? 'true' : 'false',
         onClick: () => q.manual ? this.toggleManual(k, q.id) : (!q.done && this.goMenuSpot(q.go || 'lunch'))
       })),
       goQuestBoard: () => { this.setState({ nestView: 'quests' }); this.goTab('nest'); },
       questReward: hasSticker ? `🎉 Mystery badge found: ${todaySticker.e} ${todaySticker.name}` : qDone === 3 ? '🎁 All 3 done! Reveal your mystery badge.' : `🎁 Finish all 3 to reveal a mystery badge (${qDone} of 3)`,
       // Theme of the day and the spotlight (Surprise me, or tapping an idea tile).
-      thTitle: `${th.e} ${th.name} ${FDAYSL[s.dayIdx]}`, thBg: th.bg, thInk: th.ink,
       hasSpot: !!spotIdea, spot: spotIdea ? ideaRow(spotIdea, ALL.indexOf(spotIdea)) : {},
       surprise: () => this.surprise(), closeSpot: () => this.setState({ spot: null }),
       ideaCount: ideas.length > 2 ? `${ideas.length} ideas · swipe for more →` : `${ideas.length} idea${ideas.length === 1 ? '' : 's'}`,
@@ -5176,6 +5282,25 @@ class Component extends DCLogic {
       weekLabel: `${MON[ws.getMonth()]} ${ws.getDate()} – ${MON[add(ws, days.length - 1).getMonth()]} ${add(ws, days.length - 1).getDate()}`,
       sourceNote: s.loading ? 'Loading menu…' : src === 'live' ? '🟢 Live from MealViewer' : '🟠 Sample menu · live menu unavailable',
       sourceColor: src === 'live' ? '#2E8A5E' : '#B86A12',
+      ...(() => {
+        const art = !famWk && s.art, par = !!(art && art.parent);
+        const plate = (meal, c) => {
+          const it = art ? (s.artMeals[meal] || {})[k] || null : null, d = s.mealDraft[meal], editing = d !== null && d !== undefined;
+          const setD = v => this.setState(x => ({ mealDraft: { ...x.mealDraft, [meal]: v } }));
+          return {
+            day: `${FDAYSL[s.dayIdx]}, ${MON[day.getMonth()]} ${day.getDate()}`, emoji: it ? foodPic(it.t, meal[0] + k) : '🍽️', emojiOp: it ? '1' : '.32',
+            title: it ? it.t : par ? c.ask : c.surprise, sub: it ? c.love : par ? 'Type the dish below. Everyone sees it here.' : c.wait,
+            showForm: par && (editing || !it), showChange: par && !!it && !editing, cancelShow: par && editing && !!it,
+            val: d ?? '', ph: c.ph, onInput: e => setD(e.target.value),
+            save: () => this.artMealSave(meal, k), change: () => setD(it ? it.t : ''), cancel: () => setD(null), remove: () => this.artMealClear(meal, k)
+          };
+        };
+        return {
+          showDinner: !!art, showBreakfast: !!art,
+          bf: plate('breakfast', { ask: 'What’s for breakfast?', surprise: 'Breakfast is a surprise', love: 'Made fresh this morning ☀️', wait: 'A parent will put breakfast here.', ph: 'e.g. Pancakes and berries' }),
+          dn: plate('dinner', { ask: 'What’s cooking tonight?', surprise: 'Dinner’s a surprise tonight', love: 'Made with love at home 💛', wait: 'A parent will put tonight’s dinner here.', ph: 'e.g. Chicken soup and rice' })
+        };
+      })(),
       days, trayCells, isLoading: !wkend && s.loading && !menu, noMenu: !wkend && !s.loading && !menu,
       addonCols: addCorner ? '1' : '2', addonRows: addCorner && lastN % 2 === 0 ? '2' : '1',
       addonOrd: String(!addCorner ? tOrd + 2 : lastN % 2 ? tOrd + 1 : tOrd - 1),
@@ -5197,7 +5322,7 @@ class Component extends DCLogic {
       groupCount: food, threshold, progress: `${Math.min(100, food / 5 * 100)}%`,
       progressMsg: earnedId ? 'Badge earned! 🎉' : food >= threshold ? 'Badge ready! ✨' : `${threshold - food} more to go`,
       canClaim: food >= threshold && !earnedId, hasEarned: !!earnedId, earned, claim: () => this.claim(),
-      filters: filters.map(([id, label]) => ({ label, pressed: s.filter === id ? 'true' : 'false', bg: s.filter === id ? '#3B2A20' : '#fff', fg: s.filter === id ? '#FFD166' : '#3B2A20', onClick: () => this.setState({ filter: id }) })),
+      filters: filters.map(([id, label]) => ({ label, pressed: s.filter === id ? 'true' : 'false', bg: s.filter === id ? '#3B2A20' : '#FFFBF3', fg: s.filter === id ? '#FFD166' : '#3B2A20', onClick: () => { this.setState({ filter: id }); this.shelfReset(); } })),
       ideaSheet: !!s.ideaSheet, openIdeaSheet: () => this.setState({ ideaSheet: true }), goKitchen: () => this.goMenuSpot('kitchen'), closeIdeaSheet: () => this.setState({ ideaSheet: false }),
       goCreate: () => this.goMenuSpot('create'),
       sheetIdeas: ALL.map((i, n) => {
@@ -5222,6 +5347,9 @@ class Component extends DCLogic {
         };
       }) : [],
       ideas, noIdeas: s.filter === 'mine' && !ideas.length,
+      shelfNav: ideas.length > 1, shelfPos: `${Math.min(s.shelfIdx, Math.max(0, ideas.length - 1)) + 1} of ${ideas.length} ideas`,
+      shelfPrevOp: s.shelfIdx > 0 ? '1' : '.4', shelfNextOp: s.shelfIdx < ideas.length - 1 ? '1' : '.4',
+      shelfPrev: () => this.shelfGo(-1), shelfNext: () => this.shelfGo(1), onShelfScroll: e => this.onShelfScroll(e),
       showForm: s.showForm, formIcon: s.showForm ? '–' : '+', toggleForm: () => this.setState(x => ({ showForm: !x.showForm })),
       emojiOpts: iconRow.map(iconBtn), iconHasMatch: iconHits.length > 0, iconMatchLine: `Best matches for “${s.draft.title.trim()}”`,
       iconShowAll: s.iconAll, iconAllOpen: s.iconAll ? 'true' : 'false', toggleIconAll: () => this.setState(x => ({ iconAll: !x.iconAll })),
