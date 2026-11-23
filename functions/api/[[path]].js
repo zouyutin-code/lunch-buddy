@@ -614,9 +614,16 @@ const ROUTES = {
       env.DB.prepare('SELECT data FROM backups WHERE member_id = ?').bind(kid.id).first()
     ]);
     // The kid's passion project name lives in their saved data (backed up a few seconds after each change).
-    let passion = '';
-    try { const d = bk ? JSON.parse(bk.data) : null; if (d && typeof d.passion === 'string') passion = d.passion.replace(/[\u0000-\u001f\u007f]/g, '').replace(/\s+/g, ' ').trim().slice(0, 24); } catch (e) {}
-    return json({ plans: results.map((r) => ({ day: r.day, blocks: JSON.parse(r.blocks) })), passion });
+    // Newer apps keep up to 4 projects in passions; passion (the first) is still sent for older apps.
+    const cleanP = (v) => typeof v === 'string' ? v.replace(/[\u0000-\u001f\u007f]/g, '').replace(/\s+/g, ' ').trim().slice(0, 24) : '';
+    let passion = '', passions = [];
+    try {
+      const d = bk ? JSON.parse(bk.data) : null;
+      if (d && Array.isArray(d.passions)) passions = d.passions.map(cleanP).filter(Boolean).slice(0, 4);
+      if (d) passion = cleanP(d.passion) || passions[0] || '';
+      if (!passions.length && passion) passions = [passion];
+    } catch (e) {}
+    return json({ plans: results.map((r) => ({ day: r.day, blocks: JSON.parse(r.blocks) })), passion, passions });
   },
 
   // ── Family calendar: everyone adds events and sees everyone's; you change your own, parents change any ──
