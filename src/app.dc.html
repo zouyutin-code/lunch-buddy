@@ -393,7 +393,7 @@ input::placeholder{color:#B49A86}
         <button sc-camel-on-click="{{ nextWeek }}" style="width:44px;height:44px;border-radius:50%;border:2px solid #3B2A20;background:#fff;font-size:18px;font-weight:800;cursor:pointer;color:#3B2A20">›</button>
       </div>
 
-      <div style="display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px">
+      <div style="display:grid;grid-template-columns:repeat({{ dayCols }},minmax(0,1fr));gap:{{ dayGap }}">
         <sc-for list="{{ days }}" as="d" hint-placeholder-count="5">
           <button sc-camel-on-click="{{ d.onClick }}" style="border:2px solid #3B2A20;border-radius:18px;padding:8px 0 6px;background:{{ d.bg }};color:{{ d.fg }};cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:2px;font-family:inherit;box-shadow:{{ d.shadow }};position:relative">
             <span style="font-size:22px;line-height:1">{{ d.emoji }}</span>
@@ -433,7 +433,7 @@ input::placeholder{color:#B49A86}
         </sc-if>
         <div style="margin:{{ lwMargin }};border:{{ lwBorder }};border-radius:20px;padding:{{ lwPad }};background:{{ lwBg }}">
         <sc-if value="{{ mMeals }}" hint-placeholder-val="{{ false }}">
-          <div style="font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#E2553F;margin-bottom:2px">☀️ Lunch · school tray</div>
+          <div style="font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#E2553F;margin-bottom:2px">{{ lunchEyebrow }}</div>
         </sc-if>
         <sc-if value="{{ isLoading }}" hint-placeholder-val="{{ false }}">
           <div style="display:flex;align-items:center;gap:10px;padding:18px 4px;font-weight:700;color:#8A6E5A">
@@ -442,6 +442,9 @@ input::placeholder{color:#B49A86}
         </sc-if>
         <sc-if value="{{ noMenu }}" hint-placeholder-val="{{ false }}">
           <div style="padding:14px 4px;text-align:center;color:#8A6E5A;font-weight:700"><div style="font-size:40px">😴</div>No lunch posted for this day.</div>
+        </sc-if>
+        <sc-if value="{{ isWeekendDay }}" hint-placeholder-val="{{ false }}">
+          <div style="padding:8px 4px 4px;text-align:center;color:#8A6E5A;font-weight:700;line-height:1.35"><div style="font-size:34px">🏡</div>No school lunch on weekends.<br>Lunch is at home!</div>
         </sc-if>
         <sc-for list="{{ lines }}" as="ln" hint-placeholder-count="1">
           <div style="margin-top:6px">
@@ -456,6 +459,7 @@ input::placeholder{color:#B49A86}
             </div>
           </div>
         </sc-for>
+        <sc-if value="{{ isSchoolDay }}" hint-placeholder-val="{{ true }}">
         <div style="margin-top:14px;background:#FFE3EC;border:2px solid #3B2A20;border-radius:20px;padding:12px;display:flex;flex-direction:column;gap:10px">
           <div style="display:flex;align-items:baseline;justify-content:space-between;gap:8px">
             <h3 style="font-family:'Baloo 2',sans-serif;font-size:19px;margin:0;font-weight:800;line-height:1.1">💖 My lunch add-on</h3>
@@ -497,6 +501,7 @@ input::placeholder{color:#B49A86}
           <div style="margin-top:10px;font-size:12px;font-weight:700;color:#8A6E5A">{{ famDayNoneText }}</div>
         </sc-if>
         <a href="https://schools.mealviewer.com/school/SoutheastBullochMiddle" target="_blank" style="display:inline-block;margin-top:12px;font-size:12px;font-weight:700">Open official MealViewer ↗</a>
+        </sc-if>
         </div>
         <sc-if value="{{ mMeals }}" hint-placeholder-val="{{ false }}">
           <button aria-label="{{ mDinner.aria }}" sc-camel-on-click="{{ mDinner.onClick }}" style="display:flex;align-items:center;gap:10px;width:100%;min-height:62px;padding:6px 10px;border-radius:18px;border:2px solid #3B2A20;background:#E1F0FB;box-shadow:0 3px 0 #3B2A20;font-family:inherit;color:#3B2A20;text-align:left;cursor:pointer">
@@ -1737,7 +1742,7 @@ input::placeholder{color:#B49A86}
         </div>
         <div style="display:flex;align-items:center;justify-content:space-between;gap:8px">
           <button sc-camel-on-click="{{ prevWeek }}" style="width:44px;height:44px;border-radius:50%;border:2px solid #3B2A20;background:#fff;font-size:18px;font-weight:800;cursor:pointer;color:#3B2A20">‹</button>
-          <div style="font-family:'Baloo 2',sans-serif;font-weight:700;font-size:17px">{{ weekLabel }}</div>
+          <div style="font-family:'Baloo 2',sans-serif;font-weight:700;font-size:17px">{{ pickWeekLabel }}</div>
           <button sc-camel-on-click="{{ nextWeek }}" style="width:44px;height:44px;border-radius:50%;border:2px solid #3B2A20;background:#fff;font-size:18px;font-weight:800;cursor:pointer;color:#3B2A20">›</button>
         </div>
         <div style="display:flex;flex-direction:column;gap:8px">
@@ -2453,6 +2458,7 @@ const CAT_EMO = [[/juice/i, '🧃'], [/entr|main/i, '🍽️'], [/veg/i, '🥦']
 const catEmoji = c => { for (const [r, e] of CAT_EMO) if (r.test(c)) return e; return '🍴'; };
 const DOW = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'];
 const DOWL = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
+const isWeekend = k => { const w = new Date(k + 'T12:00').getDay(); return w === 0 || w === 6; };
 const MON = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 const pad = n => String(n).padStart(2, '0');
 const iso = d => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
@@ -3161,10 +3167,10 @@ class Component extends DCLogic {
     let saved = {};
     try { saved = JSON.parse(localStorage.getItem(KEY) || '{}'); } catch (e) {}
     const now = new Date();
-    const ws = mondayOf(now);
-    const wd = now.getDay();
+    const wd = now.getDay(), famWkend = (wd === 0 || wd === 6) && !!(lsGet(FKEY, {}) || {}).token;
+    const ws = famWkend ? monOf(now) : mondayOf(now);
     this.state = {
-      tab: 'menu', weekStart: ws, dayIdx: wd >= 1 && wd <= 5 ? wd - 1 : 0,
+      tab: 'menu', weekStart: ws, dayIdx: famWkend ? (wd + 6) % 7 : wd >= 1 && wd <= 5 ? wd - 1 : 0,
       menus: {}, source: {}, loading: false, pv: PARSE_V,
       favs: saved.favs || {}, eaten: saved.eaten || {}, badges: saved.badges || {},
       myIdeas: saved.myIdeas || [], showForm: false, draft: { title: '', how: '', emoji: '🥪', picked: false, g: [], time: '5 min' }, iconAll: false,
@@ -3221,7 +3227,7 @@ class Component extends DCLogic {
   famFail(e, quiet) {
     if (e && e.code === 'no_session') {
       lsSet(FKEY, null); lsSet(FDIRTY, null); lsSet(PDIRTY, null);
-      this.setState({ fam: null, famEvents: [], famPlans: [], fpNotes: [], fpKidSched: {}, fpKidPassion: {}, frWeeks: {}, frBoard: [], frTotals: {}, frSheet: null, backupAt: this.vSession().bAt || 0, moveCode: null, famErr: quiet ? '' : e.message }, () => this.backupSoon());
+      this.setState({ fam: null, famEvents: [], famPlans: [], fpNotes: [], fpKidSched: {}, fpKidPassion: {}, frWeeks: {}, frBoard: [], frTotals: {}, frSheet: null, ...(this.state.dayIdx > 4 ? { weekStart: mondayOf(new Date()), dayIdx: 0 } : {}), backupAt: this.vSession().bAt || 0, moveCode: null, famErr: quiet ? '' : e.message }, () => this.backupSoon());
       return;
     }
     if (!quiet) this.setState({ famErr: (e && e.message) || 'Something went wrong.' });
@@ -3347,7 +3353,7 @@ class Component extends DCLogic {
       await this.pushDisable(true);
       await this.api('POST', 'family/leave', {});
       lsSet(FKEY, null); lsSet(FDIRTY, null); lsSet(PDIRTY, null);
-      this.setState({ fam: null, famEvents: [], famPlans: [], fpNotes: [], fpKidSched: {}, fpKidPassion: {}, frWeeks: {}, frBoard: [], frTotals: {}, frSheet: null, backupAt: this.vSession().bAt || 0, moveCode: null }, () => this.backupSoon());
+      this.setState({ fam: null, famEvents: [], famPlans: [], fpNotes: [], fpKidSched: {}, fpKidPassion: {}, frWeeks: {}, frBoard: [], frTotals: {}, frSheet: null, ...(this.state.dayIdx > 4 ? { weekStart: mondayOf(new Date()), dayIdx: 0 } : {}), backupAt: this.vSession().bAt || 0, moveCode: null }, () => this.backupSoon());
       this.flash(lastParent ? 'Family deleted' : pending ? 'Request cancelled' : 'You left the family');
     });
   }
@@ -3684,13 +3690,15 @@ class Component extends DCLogic {
   addFav(text) {
     text = (text || '').trim(); if (!text) return;
     const k = this.curKey();
+    if (isWeekend(k)) { this.flash('🏡 No school lunch on weekends'); return; }
     this.setState(s => {
       const list = s.favs[k] || [];
       if (list.includes(text)) return { input: '' };
       return { favs: { ...s.favs, [k]: [...list, text] }, input: '' };
-    }, () => { this.persist(); this.famMark(k); this.flash(`${emojiFor(text)} Added to ${DOW[this.state.dayIdx]}!`); });
+    }, () => { this.persist(); this.famMark(k); this.flash(`${emojiFor(text)} Added to ${FDAYS[this.state.dayIdx]}!`); });
   }
   toggleFavOn(k, t, dayName) {
+    if (isWeekend(k)) { this.flash('🏡 No school lunch on weekends'); return; }
     const has = (this.state.favs[k] || []).includes(t);
     this.setState(s => ({ favs: { ...s.favs, [k]: has ? (s.favs[k] || []).filter(x => x !== t) : [...(s.favs[k] || []), t] } }),
       () => { this.persist(); this.famMark(k); this.flash(has ? `Removed from ${dayName}` : `${emojiFor(t)} Added to ${dayName}!`); });
@@ -3756,7 +3764,7 @@ class Component extends DCLogic {
     }, () => this.persist());
   }
   questsFor(k) {
-    let h = hashStr(k), pool = [...Q_AUTO], picks = [];
+    let h = hashStr(k), pool = Q_AUTO.filter(q => !(isWeekend(k) && q.go === 'lunch')), picks = [];
     while (picks.length < 2 && pool.length) {
       const q = pool.splice(h % pool.length, 1)[0]; h = Math.imul(h ^ (h >>> 13), 2654435761) >>> 0;
       if (!picks.some(p => p.clash === q.id)) picks.push(q);
@@ -4371,11 +4379,13 @@ class Component extends DCLogic {
     const ws = s.weekStart, k = this.curKey(), day = add(ws, s.dayIdx), wk = iso(ws);
     const src = s.source[wk];
     const menu = s.menus[k];
-    const days = DOW.map((label, i) => {
-      const dk = iso(add(ws, i)), m = s.menus[dk], sel = i === s.dayIdx;
+    // Families also get Sat and Sun (breakfast and dinner); a weekend day has no school lunch or add-on.
+    const famWk = !!(s.fam && s.fam.me && s.fam.me.status === 'active'), wkend = s.dayIdx > 4;
+    const days = (famWk ? FDAYS : DOW).map((label, i) => {
+      const dk = iso(add(ws, i)), m = s.menus[dk], sel = i === s.dayIdx, we = i > 4;
       return {
-        label, date: add(ws, i).getDate(), emoji: m ? foodPic(m[0].items[0], `d${i}`) : '🍽️', hasBadge: !!s.badges[dk], hasAdd: !!(s.favs[dk] || []).length,
-        bg: sel ? '#FF6B57' : '#fff', fg: sel ? '#fff' : '#3B2A20', shadow: sel ? '0 4px 0 #3B2A20' : 'none',
+        label, date: add(ws, i).getDate(), emoji: we ? '🏡' : m ? foodPic(m[0].items[0], `d${i}`) : '🍽️', hasBadge: !!s.badges[dk], hasAdd: !we && !!(s.favs[dk] || []).length,
+        bg: sel ? '#FF6B57' : we ? '#FFF7EC' : '#fff', fg: sel ? '#fff' : '#3B2A20', shadow: sel ? '0 4px 0 #3B2A20' : 'none',
         onClick: () => this.setState({ dayIdx: i })
       };
     });
@@ -4397,9 +4407,9 @@ class Component extends DCLogic {
       return {
         ...i, mine: !!i.mine, onDelete: () => this.deleteIdea(i.title), groupEmojis: gEm(i),
         bg: i.mine ? '#FFE3EC' : TILE[n % TILE.length], cardBg: on ? '#F2FBF6' : '#fff',
-        btn: on ? '✅' : '➕', btnBg: on ? '#DDF5E8' : '#FFD166', addLabel: on ? `✅ On ${DOW[s.dayIdx]}` : `➕ ${DOW[s.dayIdx]}`,
-        addAria: on ? `Remove ${i.title} from ${DOWL[s.dayIdx]}` : `Add ${i.title} to ${DOWL[s.dayIdx]}`,
-        onAdd: () => this.toggleFavOn(k, i.title, DOW[s.dayIdx]),
+        btn: wkend ? '📅' : on ? '✅' : '➕', btnBg: on ? '#DDF5E8' : '#FFD166', addLabel: wkend ? '📅 Pick a day' : on ? `✅ On ${FDAYS[s.dayIdx]}` : `➕ ${FDAYS[s.dayIdx]}`,
+        addAria: wkend ? `Pick school days for ${i.title}` : on ? `Remove ${i.title} from ${FDAYSL[s.dayIdx]}` : `Add ${i.title} to ${FDAYSL[s.dayIdx]}`,
+        onAdd: () => wkend ? this.setState({ pickIdea: { title: i.title, emoji: i.emoji } }) : this.toggleFavOn(k, i.title, FDAYS[s.dayIdx]),
         weekLine: wk.length ? `📅 ${wk.join(' · ')}` : '📅 Pick days', daysAria: `Pick days for ${i.title}`, openAria: `More about ${i.title}`, delAria: `Delete ${i.title}`,
         onDays: () => this.setState({ pickIdea: { title: i.title, emoji: i.emoji } }),
         onOpen: () => this.setState({ spot: i.title }, () => { const el = document.getElementById('lb-spot'); if (el) el.scrollIntoView({ block: 'nearest', behavior: 'smooth' }); })
@@ -4665,7 +4675,7 @@ class Component extends DCLogic {
       frAddTask: () => this.frTaskOpen(fk, null),
       // Menu tab: breakfast and dinner wrap around the school tray once the family is on.
       mMeals: famAct, mBreakfast: mealRow('breakfast', '🍳', 'Breakfast'), mDinner: mealRow('dinner', '🍽️', 'Dinner'),
-      trayTitle: famAct ? '🍴 What’s on the menu?' : '🍽️ School tray',
+      trayTitle: famAct ? '🍴 What’s on the menu?' : '🍽️ School tray', lunchEyebrow: s.dayIdx > 4 ? '☀️ Lunch' : '☀️ Lunch · school tray',
       lwMargin: famAct ? '10px 0' : '0', lwBorder: famAct ? '2px solid #3B2A20' : 'none', lwPad: famAct ? '10px 12px 12px' : '0', lwBg: famAct ? '#FFFDF8' : 'transparent',
       frDayLabel: `${FDAYS[s.fpIdx]}, ${MON[fpD.getMonth()]} ${fpD.getDate()}`,
       frTasks: dayTasks.map(taskView), frNoTasks: famAct && !dayTasks.length,
@@ -5024,7 +5034,7 @@ class Component extends DCLogic {
       questReward: hasSticker ? `🎉 Mystery badge found: ${todaySticker.e} ${todaySticker.name}` : qDone === 3 ? '🎁 All 3 done! Reveal your mystery badge.' : `🎁 Finish all 3 to reveal a mystery badge (${qDone} of 3)`,
       jumps: [['lunch', '🍽️', 'Lunch'], ['kitchen', '💡', 'Ideas'], ['quests', '🎯', 'Quests'], ['eat', '🌈', 'I ate']].map(([id, e, label]) => ({ e, label, aria: `Jump to ${label}`, onClick: () => this.goMenuSpot(id) })),
       // Theme of the day and the spotlight (Surprise me, or tapping an idea tile).
-      thTitle: `${th.e} ${th.name} ${DOWL[s.dayIdx]}`, thBg: th.bg, thInk: th.ink,
+      thTitle: `${th.e} ${th.name} ${FDAYSL[s.dayIdx]}`, thBg: th.bg, thInk: th.ink,
       hasSpot: !!spotIdea, spot: spotIdea ? ideaRow(spotIdea, ALL.indexOf(spotIdea)) : {},
       surprise: () => this.surprise(), closeSpot: () => this.setState({ spot: null }),
       ideaCount: ideas.length > 2 ? `${ideas.length} ideas · swipe for more →` : `${ideas.length} idea${ideas.length === 1 ? '' : 's'}`,
@@ -5032,7 +5042,7 @@ class Component extends DCLogic {
       famDayPicks: (famAct ? s.famPlans : []).filter(p => !p.mine && p.day === k && p.items.length).map(p => ({ who: `${ROLE_EMO[p.role] || '🙂'} ${p.nickname}`, text: p.items.map(t => `${this.itemEmoji(t)} ${t}`).join(' · ') })),
       hasFamDay: famAct && s.famPlans.some(p => !p.mine && p.day === k && p.items.length),
       famDayNone: famParent && !s.famPlans.some(p => !p.mine && p.day === k && p.items.length) && famMembersAll.some(m => m.role === 'kid' && m.status === 'active'),
-      famDayNoneText: `👪 No add-on picked by your kids for ${DOWL[s.dayIdx]} yet.`,
+      famDayNoneText: `👪 No add-on picked by your kids for ${FDAYSL[s.dayIdx]} yet.`,
       qDone, qPct: `${qDone / 3 * 100}%`, canSticker: qDone === 3 && !hasSticker, hasSticker, notSticker: !hasSticker,
       claimSticker: () => this.claimSticker(k),
       stickerPreview: hasSticker ? todaySticker.e : '❔', stickerName: hasSticker ? todaySticker.name : 'Mystery badge',
@@ -5043,11 +5053,12 @@ class Component extends DCLogic {
       }),
       book, hasBook: book.length > 0, noBook: book.length === 0, bookCount: book.length, bookTotal: MYSTERY.length,
       prevWeek: () => this.shiftWeek(-1), nextWeek: () => this.shiftWeek(1),
-      weekLabel: `${MON[ws.getMonth()]} ${ws.getDate()} – ${MON[add(ws, 4).getMonth()]} ${add(ws, 4).getDate()}`,
+      weekLabel: `${MON[ws.getMonth()]} ${ws.getDate()} – ${MON[add(ws, days.length - 1).getMonth()]} ${add(ws, days.length - 1).getDate()}`,
       sourceNote: s.loading ? 'Loading menu…' : src === 'live' ? '🟢 Live from MealViewer' : '🟠 Sample menu · live menu unavailable',
       sourceColor: src === 'live' ? '#2E8A5E' : '#B86A12',
-      days, lines, isLoading: s.loading && !menu, noMenu: !s.loading && !menu,
-      dayTitle: `${DOWL[s.dayIdx]}, ${MON[day.getMonth()]} ${day.getDate()}`, dayShort: DOW[s.dayIdx],
+      days, lines, isLoading: !wkend && s.loading && !menu, noMenu: !wkend && !s.loading && !menu,
+      dayCols: String(days.length), dayGap: days.length > 5 ? '4px' : '6px', isSchoolDay: !wkend, isWeekendDay: wkend,
+      dayTitle: `${FDAYSL[s.dayIdx]}, ${MON[day.getMonth()]} ${day.getDate()}`, dayShort: FDAYS[s.dayIdx],
       inputVal: s.input, onInput: e => this.setState({ input: e.target.value }),
       onKey: e => { if (e.key === 'Enter') this.addFav(s.input); }, onAdd: () => this.addFav(s.input),
       favs: favList.map(t => ({ text: t, emoji: (IDEAS.find(i => i.title === t) || {}).emoji || emojiFor(t), onRemove: () => this.removeFav(k, t) })),
@@ -5071,17 +5082,18 @@ class Component extends DCLogic {
           groupEmojis: i.g.map(g => (GROUPS.find(x => x.id === g) || {}).e || '').join('') || '🍴',
           tile: i.mine ? '#FFE3EC' : TILE[n % TILE.length], bg: on ? '#DDF5E8' : '#fff',
           check: on ? '✓' : '', checkBg: on ? '#3DBE8B' : '#fff',
-          onClick: () => this.toggleFavOn(k, i.title, DOW[s.dayIdx])
+          onClick: () => this.toggleFavOn(k, i.title, FDAYS[s.dayIdx])
         };
       }),
       hasPick: !!s.pickIdea, pick: s.pickIdea || {}, closePick: () => this.setState({ pickIdea: null }),
+      pickWeekLabel: (w => `${MON[w.getMonth()]} ${w.getDate()} – ${MON[add(w, 4).getMonth()]} ${add(w, 4).getDate()}`)(add(ws, wkend ? 7 : 0)),   // on a weekend it lists next week's school days
       pickDays: s.pickIdea ? DOWL.map((name, d) => {
-        const dt = add(ws, d), dk = iso(dt), m = s.menus[dk], on = (s.favs[dk] || []).includes(s.pickIdea.title);
+        const dt = add(ws, wkend ? d + 7 : d), dk = iso(dt), m = s.menus[dk], on = (s.favs[dk] || []).includes(s.pickIdea.title);
         return {
           label: `${name}, ${MON[dt.getMonth()]} ${dt.getDate()}`, emoji: m ? foodPic(m[0].items[0], `p${d}`) : '🍽️',
           sub: m ? `School: ${m[0].items[0]}` : 'No school menu yet',
           bg: on ? '#DDF5E8' : '#fff', check: on ? '✓' : '', checkBg: on ? '#3DBE8B' : '#fff',
-          onClick: () => { this.setState({ dayIdx: d }); this.toggleFavOn(dk, s.pickIdea.title, DOW[d]); }
+          onClick: () => { if (!wkend) this.setState({ dayIdx: d }); this.toggleFavOn(dk, s.pickIdea.title, DOW[d]); }
         };
       }) : [],
       ideas, noIdeas: s.filter === 'mine' && !ideas.length,
