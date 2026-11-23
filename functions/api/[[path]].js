@@ -25,6 +25,8 @@ const json = (data, status = 200) => new Response(JSON.stringify(data), {
 
 const now = () => Date.now();
 const uid = () => crypto.randomUUID();
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/;
+const CAL_KINDS = ['bday', 'test', 'game', 'show', 'doctor', 'trip', 'school', 'party', 'other'];
 function randomToken() {
   const b = crypto.getRandomValues(new Uint8Array(32));
   return btoa(String.fromCharCode(...b)).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
@@ -77,7 +79,9 @@ function ensureRhythmTables(env) {
       env.DB.prepare("CREATE TABLE IF NOT EXISTS reflections (id TEXT PRIMARY KEY, family_id TEXT NOT NULL, member_id TEXT NOT NULL REFERENCES members(id) ON DELETE CASCADE, author_id TEXT NOT NULL, week TEXT NOT NULL, win TEXT NOT NULL DEFAULT '', adjust TEXT NOT NULL DEFAULT '', created_at INTEGER NOT NULL, updated_at INTEGER NOT NULL, UNIQUE (member_id, author_id, week))"),
       env.DB.prepare('CREATE INDEX IF NOT EXISTS reflections_family_week ON reflections(family_id, week)'),
       env.DB.prepare('CREATE TABLE IF NOT EXISTS board (id TEXT PRIMARY KEY, family_id TEXT NOT NULL, member_id TEXT NOT NULL REFERENCES members(id) ON DELETE CASCADE, text TEXT NOT NULL, created_at INTEGER NOT NULL)'),
-      env.DB.prepare('CREATE INDEX IF NOT EXISTS board_family ON board(family_id, created_at)')
+      env.DB.prepare('CREATE INDEX IF NOT EXISTS board_family ON board(family_id, created_at)'),
+      env.DB.prepare("CREATE TABLE IF NOT EXISTS calendar (id TEXT PRIMARY KEY, family_id TEXT NOT NULL, member_id TEXT NOT NULL REFERENCES members(id) ON DELETE CASCADE, day TEXT NOT NULL, title TEXT NOT NULL, kind TEXT NOT NULL DEFAULT 'other', important INTEGER NOT NULL DEFAULT 0, tm TEXT NOT NULL DEFAULT '', created_at INTEGER NOT NULL, updated_at INTEGER NOT NULL)"),
+      env.DB.prepare('CREATE INDEX IF NOT EXISTS calendar_family_day ON calendar(family_id, day)')
     ]).catch((e) => { rhythmReady = null; throw e; });
   }
   return rhythmReady;
@@ -155,6 +159,7 @@ function cleanBlocks(v) {
     const x = { s, n, a, d: b.d ? 1 : 0 };
     if (a === 'other') x.t = clean(b.t, 24, 'Activity name');
     if (a === 'passion' && b.t) x.t = clean(b.t, 24, 'Passion project');   // the kid's own project name
+    if (typeof b.w === 'string' && UUID_RE.test(b.w)) x.w = b.w;   // added by a parent
     out.push(x);
   }
   return out.sort((p, q) => p.s - q.s);
@@ -577,18 +582,26 @@ const ROUTES = {
   // ── Flight Plan: kids' after-school plans, and parents' notes of encouragement ──
   'PUT plans': async ({ env, request, body }) => {
     const me = await auth(env, request);
-    if (me.role !== 'kid') throw new HttpError(403, 'kids_only', 'Only kids share a plan.');
+    if (me.role !== 'kid' && me.role !== 'parent') throw new HttpError(403, 'not_allowed', 'Only kids and parents plan afternoons.');
     await ensureBackupTables(env);
+    const kid = me.role === 'kid' ? me : await kidFor(env, me, body.member);
     await limit(env, 'plan:' + me.id, 200, 600);
-    const day = dayArg(body.day), blocks = cleanBlocks(body.blocks);
+    const day = dayArg(body.day), blocks = cleanBlocks(body.blocks), byParent = kid.id !== me.id;
+    if (byParent) {
+      // Only the kid checks things off: keep the kid's own Done marks.
+      const old = await env.DB.prepare('SELECT blocks FROM plans WHERE member_id = ? AND day = ?').bind(kid.id, day).first();
+      let ob = []; try { ob = old ? JSON.parse(old.blocks) : []; } catch (e) {}
+      blocks.forEach((b) => { const o = ob.find((x) => x.s === b.s && x.a === b.a); b.d = o && o.d ? 1 : 0; });
+    }
     await env.DB.batch([
-      blocks.length
+      // A parent's change keeps the row, even an empty one, so the kid's phone picks it up.
+      blocks.length || byParent
         ? env.DB.prepare('INSERT INTO plans (member_id, family_id, day, blocks, updated_at) VALUES (?, ?, ?, ?, ?) ON CONFLICT (member_id, day) DO UPDATE SET blocks = excluded.blocks, updated_at = excluded.updated_at')
-          .bind(me.id, me.family_id, day, JSON.stringify(blocks), now())
+          .bind(kid.id, me.family_id, day, JSON.stringify(blocks), now())
         : env.DB.prepare('DELETE FROM plans WHERE member_id = ? AND day = ?').bind(me.id, day),
-      env.DB.prepare('DELETE FROM plans WHERE member_id = ? AND day < ?').bind(me.id, oldDay())
+      env.DB.prepare('DELETE FROM plans WHERE member_id = ? AND day < ?').bind(kid.id, oldDay())
     ]);
-    return json({ ok: true });
+    return json({ ok: true, blocks });
   },
 
   'GET plans': async ({ env, request, url }) => {
@@ -604,6 +617,46 @@ const ROUTES = {
     let passion = '';
     try { const d = bk ? JSON.parse(bk.data) : null; if (d && typeof d.passion === 'string') passion = d.passion.replace(/[\u0000-\u001f\u007f]/g, '').replace(/\s+/g, ' ').trim().slice(0, 24); } catch (e) {}
     return json({ plans: results.map((r) => ({ day: r.day, blocks: JSON.parse(r.blocks) })), passion });
+  },
+
+  // ── Family calendar: everyone adds events and sees everyone's; you change your own, parents change any ──
+  'GET calendar': async ({ env, request }) => {
+    const me = await auth(env, request);
+    await ensureRhythmTables(env);
+    const { results } = await env.DB.prepare("SELECT c.*, m.nickname FROM calendar c LEFT JOIN members m ON m.id = c.member_id WHERE c.family_id = ? AND (c.day >= ? OR c.kind = 'bday') ORDER BY c.day, c.tm, c.created_at LIMIT 800")
+      .bind(me.family_id, oldDay()).all();
+    return json({ events: results.map((e) => ({ id: e.id, day: e.day, t: e.title, k: e.kind, imp: e.important ? 1 : 0, tm: e.tm, by: e.member_id, byName: e.nickname || 'Someone' })) });
+  },
+  'PUT calendar': async ({ env, request, body }) => {
+    const me = await auth(env, request);
+    await ensureRhythmTables(env);
+    await limit(env, 'cal:' + me.id, 120, 600);
+    const day = dayArg(body.day), k = CAL_KINDS.includes(body.k) ? body.k : 'other', title = clean(body.t, 40, 'Event');
+    const imp = body.imp ? 1 : 0, tm = TM_RE.test(String(body.tm || '')) ? String(body.tm) : '', t = now();
+    if (body.id) {
+      const old = await env.DB.prepare('SELECT * FROM calendar WHERE id = ? AND family_id = ?').bind(String(body.id), me.family_id).first();
+      if (!old) throw new HttpError(404, 'gone', 'That event was removed.');
+      if (me.role !== 'parent' && old.member_id !== me.id) throw new HttpError(403, 'not_yours', 'You can only change events you added.');
+      await env.DB.prepare('UPDATE calendar SET day = ?, title = ?, kind = ?, important = ?, tm = ?, updated_at = ? WHERE id = ?').bind(day, title, k, imp, tm, t, old.id).run();
+      return json({ ok: true, id: old.id });
+    }
+    const n = await env.DB.prepare('SELECT COUNT(*) AS n FROM calendar WHERE family_id = ? AND day = ?').bind(me.family_id, day).first();
+    if (n.n >= 20) throw new HttpError(400, 'too_many', 'That day is full. Remove an event first.');
+    const id = uid();
+    await env.DB.batch([
+      env.DB.prepare('INSERT INTO calendar (id, family_id, member_id, day, title, kind, important, tm, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)').bind(id, me.family_id, me.id, day, title, k, imp, tm, t, t),
+      env.DB.prepare("DELETE FROM calendar WHERE family_id = ? AND day < ? AND kind != 'bday'").bind(me.family_id, oldDay())
+    ]);
+    return json({ ok: true, id });
+  },
+  'POST calendar/delete': async ({ env, request, body }) => {
+    const me = await auth(env, request);
+    await ensureRhythmTables(env);
+    const old = await env.DB.prepare('SELECT * FROM calendar WHERE id = ? AND family_id = ?').bind(String(body.id || ''), me.family_id).first();
+    if (!old) return json({ ok: true });
+    if (me.role !== 'parent' && old.member_id !== me.id) throw new HttpError(403, 'not_yours', 'You can only remove events you added.');
+    await env.DB.prepare('DELETE FROM calendar WHERE id = ?').bind(old.id).run();
+    return json({ ok: true });
   },
 
   'GET notes': async ({ env, request, url }) => {
